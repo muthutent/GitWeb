@@ -1,0 +1,200 @@
+<!--
+	
+	   Copyright 2001-15 Creatus Inc.,
+	   2328 Walsh Avenue, Suite G, Santa Clara, CA 95051, U.S.A.
+	   All rights reserved.
+	
+	   This software is the confidential and proprietary information
+	   of Creatus Inc. ("Confidential Information").  You shall not disclose
+	   such Confidential Information and shall use it only in accordance
+	   the terms of the license agreement you entered into with
+	   Creatus Inc.
+	
+	   Company        : Creatus Inc.
+	   Author         :	Creatus
+	   Date Created   :	02/25/2015
+	   Last Modified  : 03/10/2015 
+	   Modifier       : Sathish
+	   Description    :	Displays the list of Saved Contact Tracker in the DataTable
+ 						After the Lead Manager Migration from coldfusion to JBoss
+-->
+<!DOCTYPE html PUBLIC "-//W3C//Dtd XHTML 1.0 Transitional//EN" "http://www.w3.org/tr/xhtml1/Dtd/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:f="http://java.sun.com/jsf/core" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:a4j="http://richfaces.org/a4j" 
+	 xmlns:ui="http://java.sun.com/jsf/facelets"
+	 xmlns:c="http://java.sun.com/jsp/jstl/core"
+	  xmlns:rich="http://richfaces.org/rich"
+	  xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:o="http://omnifaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+	 <h:outputStylesheet library="css" name="contact_tracker/contact_tracker_list.css" />
+	  <h:outputStylesheet library="css" name="buttons.css" />
+	  <h:outputStylesheet name="sheet.css" library="css" />
+	   <meta name="robots" content="noindex, nofollow"/> 
+	<h:form id="ctList">	 
+		<h:panelGrid width="365" border="0" cellspacing="0" cellpadding="0"  bgcolor="EFF4FA" styleClass="ctListTableStyle black10px" h5:align="left">
+		     <c:choose>
+			 	<c:when test="${fn:length(contactBean.contactTrackerList) eq 0}">
+					<c:choose>
+						 <c:when test="${fn:toUpperCase(userBean.icnOnlineHomeOtherSearch) == 'UC'}">
+							 <h:outputLabel value="Updated Contacts will list any of your tracked contacts that have updated information."/>
+							  <h:outputLabel value="There are no updated contacts currently."/>
+						 </c:when>
+						 <c:otherwise>
+							 <h:column>
+								 <h:outputLabel value="This area stores your contact tracker, click "/>
+								 <h:outputLink value="#{request.contextPath}/online-product/contact-search?navother=cs">here</h:outputLink>
+								 <h:outputLabel value=" to conduct a contact search."/>
+							</h:column>
+						</c:otherwise>
+					</c:choose>
+				</c:when>
+				<c:otherwise>
+					<c:choose>
+						 <c:when test="${fn:toUpperCase(userBean.icnOnlineHomeOtherSearch) == 'UC'}">
+							<h:outputLabel value="Listed below are your tracked contacts which have updated since your last login."/>
+							<h:outputLabel value="Click &quot;View&quot; in Added-To Projects to display projects the contact was added-to."/>
+							<h:outputLabel value="If there are no projects displayed the contact's profile was updated."/>
+							<h:outputLabel value="Click &quot;View&quot; in View Profile to view the contact's updated profile."/>
+						</c:when>
+						<c:otherwise>
+							<h:outputLabel value="Listed below are the contacts you have tracked in your Contact Tracker."/>
+							<h:outputLabel value="Click &quot;View&quot; in View Profile to display a contact's profile."/>
+							<h:outputLabel value="Click &quot;Edit&quot; to change the email option for a tracked contact."/>
+							<h:outputLabel value="Click &quot;Delete&quot; to remove a contact from Contact Tracker."/>
+							<h:outputLabel value="Click &quot;View&quot; in View Projects to view all projects where a contact is listed."/>
+						</c:otherwise>
+					</c:choose>
+					<rich:dataTable id="ct_list" value="#{contactBean.contactTrackerList}" var="contact" rowClasses="oddRowColor,evenRowColor"   style="border:none !important;text-align:center;width:100%">
+					<rich:column headerClass="alignLeft" style="text-align:left !important;">
+						<f:facet name="header">Contact Company Name</f:facet>
+						<h:outputText value="#{contact.companyName}" styleClass="black10px" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">View<br/>Profile</f:facet>
+						  <a4j:commandLink oncomplete="#{rich:component('viewConProfile')}.show();"  render="contact_profile_render" limitRender="true" execute="@this" style="text-align:center"> 
+						  	<f:setPropertyActionListener target="#{contactBean.contactId}" value="#{contact.contactId}"/> 
+							<h:graphicImage styleClass="cursorPointer" name="buttons/button_view_icn.gif" library="images" style="border:0px" alt="View Profile"/>
+						</a4j:commandLink>
+					</rich:column>
+					<c:choose>
+						<c:when test="${fn:toUpperCase(userBean.icnOnlineHomeOtherSearch) == 'UC'}">
+							<rich:column>
+								<f:facet name="header">Added-To<br/>Projects</f:facet>
+								<!--<a4j:commandLink>
+									<f:setPropertyActionListener target="#{contactBean.contactId}" value="#{contact.contactId}" />
+						  			<f:setPropertyActionListener target="#{contactBean.companyName}" value="#{fn:escapeXml(contact.companyName)}" />
+									<h:graphicImage name="buttons/button_view_icn.gif" library="images" styleClass="cursorPointer" onclick="javascript:call_profile('#{contact.contactId}', '#{contact.companyName}')" style="border:0px" alt="View Projects"/>
+									<f:ajax execute="@this" render="@none" limitRender="true"/>
+								</a4j:commandLink>-->
+								<a4j:commandLink id="AddedToProjects"   oncomplete="#{rich:component('viewProjects')}.show();" render="contactProjectsList" limitRender="true" execute="@this" style="text-align:center"> 
+									<f:setPropertyActionListener target="#{contactBean.contactId}" value="#{contact.contactId}"/> 
+									<h:graphicImage name="buttons/button_view_icn.gif" library="images" styleClass="cursorPointer" style="border:0px" alt="View Projects"/> 
+								</a4j:commandLink>
+							</rich:column>
+						</c:when>
+						<c:otherwise>
+							<rich:column>
+								<f:facet name="header">Edit</f:facet>   
+							 
+							<a4j:commandLink   oncomplete="setContactTracker('#{contact.contactId}','#{contact.contactTrackerId}','#{contact.doNotSendEmailFlag}','#{contact.email1}')" execute="@this" render="@this" limitRender="true"> 
+									<h:graphicImage name="buttons/button_edit_icn.gif" library="images" styleClass="cursorPointer"   style="border:0px" alt="Edit"/>  
+							</a4j:commandLink> 
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">Delete</f:facet>
+								<a4j:commandLink onclick="setViewProfile('#{contact.contactId}','#{fn:escapeXml(contact.companyName)}');" oncomplete="#{rich:component('deleteCT')}.show()" render="@none" limitRender="true" execute="@none"> 
+									<h:graphicImage name="buttons/button_delete_icn.gif" library="images" styleClass="cursorPointer"  style="border:0px;padding-left:6px" alt="Delete"/>				 
+								</a4j:commandLink>
+							</rich:column>
+							<rich:column>
+								<f:facet name="header">View<br/>Projects</f:facet>
+							 	<a4j:commandLink id="viewProjectsButton"   oncomplete="#{rich:component('viewProjects')}.show();" render="contactProjectsList" limitRender="true" execute="@this"> 
+									<f:setPropertyActionListener target="#{contactBean.contactId}" value="#{contact.contactId}"/> 
+									<h:graphicImage name="buttons/button_view_icn.gif" library="images" styleClass="cursorPointer" style="border:0px" alt="View Projects"/> 
+								</a4j:commandLink>
+							</rich:column>
+						</c:otherwise>
+					</c:choose>
+				</rich:dataTable>
+				</c:otherwise>
+			  </c:choose>
+		 </h:panelGrid>
+	</h:form>
+	<rich:popupPanel id="deleteCT" height="75" width="331" moveable="true">
+				 <f:facet name="header">
+				 	<h:outputText value=""/>
+				 </f:facet>
+				 <rich:hotKey key="Esc">
+							<rich:componentControl target="deleteCT" operation="hide"/>
+				 </rich:hotKey>
+				 <f:facet name="controls"> 
+					<h:commandButton value=" " type="button" styleClass="popupCloseImage" onclick="#{rich:component('deleteCT')}.hide(); return false;"/>
+				 </f:facet>
+					<h:panelGrid>
+						<h:outputLabel value="You will stop tracking a contact, would you like to continue?"/>
+						 
+						<h:panelGroup>
+							<a4j:commandButton value=" " styleClass="deleteButtonImage"  action="#{ctController.deleteContactTracker(request)}" 
+							onclick="#{rich:component('deleteCT')}.hide();"  render="ct_list" limitRender="true" execute="@this"> 
+							</a4j:commandButton>
+							<a4j:commandButton value=" " styleClass="cancelButtonImage"  onclick="#{rich:component('deleteCT')}.hide();return false" render="@none"/>
+					</h:panelGroup>
+					</h:panelGrid>
+	</rich:popupPanel>	
+	 <!-- view profile popup panel -->
+	<rich:popupPanel id="viewConProfile" autosized="true">		  
+	 <f:facet name="header">
+				<h:outputText value="View Profile" styleClass="black12px"/>
+	 </f:facet>
+	 <rich:hotKey key="Esc">
+							<rich:componentControl target="viewConProfile" operation="hide"/>
+				 </rich:hotKey>
+	<f:facet name="controls"> 
+		<h:commandButton value=" " type="button" styleClass="popupCloseImage" onclick="#{rich:component('viewConProfile')}.hide(); return false;"/>
+	</f:facet>
+	<rich:panel>
+		<ui:include src="#{csController.contactProfile(request)}"/>
+	</rich:panel>
+	</rich:popupPanel>
+ 
+	
+	<!-- contact tracker -->
+	<rich:popupPanel id="contactTracker" autosized="true" domElementAttachment="form">		  
+	 <f:facet name="header">
+				<h:outputText value="Tracker" styleClass="black12px"/>
+	 </f:facet>
+	<f:facet name="controls"> 
+		<h:commandButton value=" " type="button" styleClass="popupCloseImage" onclick="#{rich:component('contactTracker')}.hide(); return false;"/>
+	</f:facet>
+	 <rich:hotKey key="Esc">
+							<rich:componentControl target="contactTracker" operation="hide"/>
+				 </rich:hotKey>
+	<rich:panel>
+	<a4j:outputPanel id="trackRender" ajaxRendered="true">
+		<ui:include src="/online_product/contact_tracker/contacts_tracker_addTo.xhtml"/>
+	</a4j:outputPanel>
+	</rich:panel>
+	</rich:popupPanel>
+	
+	<!-- view projects -->
+	<rich:popupPanel id="viewProjects" autosized="true"  maxHeight="500">		  
+	 <f:facet name="header">
+				<h:outputText value="View Projects" styleClass="black12px"/>
+	 </f:facet>
+	 <rich:hotKey key="Esc">
+							<rich:componentControl target="viewProjects" operation="hide"/>
+				 </rich:hotKey>
+	<f:facet name="controls"> 
+		<h:commandButton value=" " type="button" styleClass="popupCloseImage" onclick="#{rich:component('viewProjects')}.hide(); return false;"/>
+	</f:facet>
+	<rich:panel>
+		<ui:include src="#{csController.contactProjectsList(request)}"/>
+	</rich:panel>
+</rich:popupPanel>
+
+	 <a4j:jsFunction name="renCT" remder="contactTracker" limitRender="true"/>
+</ui:composition>

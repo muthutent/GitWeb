@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:ui="http://java.sun.com/jsf/facelets"
+     xmlns:c="http://java.sun.com/jsp/jstl/core">
+     
+     <h:head>
+     <c:if test="#{requestScope.temp == '1'}">
+     <script>
+		window.close();
+	</script>
+	</c:if>
+	
+     <h:outputStylesheet name="sheet.css" library="css" />
+     <h:outputStylesheet name="buttons.css" library="css" />
+     </h:head>
+     
+     <h:body>
+     <h:graphicImage name="comingSoonMessage/LM_Mobile_Pop-Up.jpg" library="images" alt="" width="600" height="449" />
+     <h:form>
+     <h:panelGrid width="100%">
+     <h:panelGroup styleClass="textAlignCenter">
+     <h:outputLink value="http://cdclb.cdcnews.com/LM_Mobile" target="_blank" styleClass="fontWeightBold blue12px">Click here</h:outputLink>
+     <h:outputText value=" to view the features of the NEW Lead Manager Mobile." />
+     </h:panelGroup>
+     <h:panelGroup>
+     <h:selectBooleanCheckbox value="#{userBean.newFeatureViewedFlag}" /><h:outputText styleClass="black12px" value="Check here to prevent this message from appearing each time you login." />
+     </h:panelGroup>
+     </h:panelGrid>
+     <h:panelGroup styleClass="textAlignCenter">
+     <h:commandLink value=" " action="#{loginController.newFeature(request)}">
+     <h:graphicImage name="buttons/button_close.gif" library="images" alt="Close" />
+     </h:commandLink>
+     
+     <input type="hidden" name="temp" value="1" />
+     </h:panelGroup>
+     </h:form>
+     </h:body>
+</ui:composition>

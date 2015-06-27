@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<h:head>
+<meta name="robots" content="noindex, nofollow"/>
+<c:if test="#{requestScope.temp == '1'}">
+    <script>
+	window.close();
+</script>
+</c:if>
+<h:outputStylesheet name="sheet.css" library="css" />
+</h:head>
+
+<h:panelGrid width="600" border="0">
+<h:panelGroup styleClass="offblack12px">
+<h:outputText value="Kindly go to " />
+<h:outputText value="Manage" styleClass="fontWeightBold" />
+<h:outputText value=" and click " />
+<h:outputText value="Update my company profile" styleClass="fontWeightBold" />
+<h:outputText value=" link. If you have any questions or need assistance  using these  new features please call " />
+<h:outputText value="800-652-0008." styleClass="fontWeightBold" />
+</h:panelGroup>
+
+<h:panelGroup styleClass="offblack12px">
+<h:form id="form1">
+<h:selectBooleanCheckbox value="#{userBean.companyProfileUpdateFlag}" id="messagechecked" />
+<h:outputText value="Don't show me this message again." styleClass="fontWeightBold" />
+<br/><br/>
+
+<h:commandLink value=" " action="#{loginController.companyProfilePopup(request)}" styleClass="textAlignCenter">
+<h:graphicImage name="companyProfileMessage/CloseBtn.gif" library="images" width="75" height="25" />
+</h:commandLink>
+
+<input type="hidden" name="temp" value="1" />
+</h:form>
+</h:panelGroup>
+</h:panelGrid>
+</ui:composition>

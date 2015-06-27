@@ -1,0 +1,76 @@
+<!--
+
+ 	Copyright 2001-15 Creatus Inc.,
+   	2328 Walsh Avenue, Suite G, Santa Clara, CA 95051, U.S.A.
+ 	 All rights reserved.
+
+   This software is the confidential and proprietary information
+   of Creatus Inc. ("Confidential Information").  You shall not disclose
+   such Confidential Information and shall use it only in accordance
+   the terms of the license agreement you entered into with
+   Creatus Inc.
+
+   Company        : Creatus Inc.
+   Author         : Creatus
+   Date Created   : 04/13/2015
+   Last Modified  : 04/13/2015
+   Modifier       : Selva 
+   Description    : Displays the  ocr save search form
+					After the Lead Manager Migration from coldfusion to JBoss
+
+  
+
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+<h:head> 
+<h:outputStylesheet name="sheet.css" library="css" />
+<h:outputStylesheet name="buttons.css" library="css" />
+<h:outputScript library="js" name="JSScripts/Javascript_template.js" />
+<h:outputScript name="search_result/OCRSave.js" library="js" />
+</h:head>
+
+<h:form id="ocr_save_form">
+<h:panelGrid border="0" cellspacing="0" cellpadding="0" bgcolor="white" styleClass="panelGridCenter">
+<h:panelGroup>
+
+<h:graphicImage name="saved_search/navbar_ss.gif" library="images" />
+
+<h:panelGrid  width="360" border="0" cellspacing="0" cellpadding="0" bgcolor="white" styleClass="panelGridCenter border1px_3579bd borderRadius borderTopLeftRadiusNone">
+<br/>
+<h:panelGroup styleClass="black12px padding10">
+<h:outputText value="Please enter a OCR keyword search name for login :" />
+<h:outputText value="#{userBean.loginId}" styleClass="fontWeightBold" />
+</h:panelGroup>
+<br/>
+<h:panelGroup>
+<rich:message id="searchNameErr" for="search_name" />
+</h:panelGroup>
+
+<h:panelGroup styleClass="black12px padding10 border-top displayBlock">
+<h:outputText value="Search Name:" />
+<h:inputText id="search_name" value="#{searchBean.ocrSearchName}" size="30" maxlength="30" />
+</h:panelGroup>
+<br/>
+<h:panelGroup styleClass="black10px padding10">
+<h:outputText value="Please avoid apostrophe and quotes(',&quot;) in search name." />
+</h:panelGroup>
+<br/>
+<h:panelGroup styleClass="displayBlock textAlignCenter">
+<h:commandButton action="#{searchResultsController.saveOCRkeywordAction(request)}" styleClass="submitButtonImage" value=" " onclick="return validateForm();" />
+<input type="hidden" value="#{requestScope.ocrkeyword}" name="ocrkeyword" />
+<c:if test="#{not empty requestScope.ss}">
+<input type="hidden" value="yes" name="ss" />
+</c:if>
+</h:panelGroup>
+<br/>
+</h:panelGrid>
+</h:panelGroup>
+</h:panelGrid>
+</h:form>
+</ui:composition>

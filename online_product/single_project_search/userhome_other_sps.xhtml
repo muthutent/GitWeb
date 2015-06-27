@@ -1,0 +1,120 @@
+<!--
+
+   Copyright 2001-15 Creatus Inc.,
+   2328 Walsh Avenue, Suite G, Santa Clara, CA 95051, U.S.A.
+   All rights reserved.
+
+   This software is the confidential and proprietary information
+   of Creatus Inc. ("Confidential Information").  You shall not disclose
+   such Confidential Information and shall use it only in accordance
+   the terms of the license agreement you entered into with
+   Creatus Inc.
+
+   Company        : Creatus Inc.
+   Author         : Creatus
+   Date Created   : 03/10/2015
+   Last Modified  : 03/10/2015
+   Modifier       : Selva 
+   Description    : Displays the Single Project Search
+   					After the Lead Manager Migration from coldfusion to JBoss
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+    xmlns:o="http://omnifaces.org/ui">
+
+<ui:include src="/online_product/check_session_subfolder.xhtml" />
+
+<h:outputStylesheet library="css" name="sheet.css" />
+<h:outputStylesheet library="css" name="buttons.css" />
+<h:outputStylesheet library="css" name="single_project_search/userhome_other_sps.css"/>
+
+<h:outputScript library="js" name="JSScripts/Javascript_template.js" />
+<h:outputScript library="js" name="single_project_search/userhome_other_sps.js?v=1.0" />
+
+<h:panelGrid  width="360" border="0" cellspacing="0" cellpadding="0"
+												align="center" bgcolor="white" styleClass="otherSps">
+	<h:panelGroup>
+		
+
+				<h:form id="spsform2">
+				<h:panelGrid id="form2" cellspacing="0" cellpadding="0" columns="2" border="0" styleClass="cdcJobId black11px">
+
+					<h:outputText value="To search for a specific project enter the CDC Job ID below."/><h:column/>
+					<rich:message id="jobIdMsg" for="sps_cdcid" ajaxRendered="true"/><h:column/>
+					
+					<h:column>
+					<h:outputText value="CDC Job ID: " />
+					<h:inputText id="sps_cdcid" value="#{searchBean.jobId}" style="height:17px;" size="16" maxlength="20" />
+					<h:outputText value=" " />
+					<h:commandButton type="submit" id="submit_form2" value=" " action="#{spsController.searchResults(request)}" 
+						styleClass="searchButtonImage" onclick="return validateform2();">
+					<f:param value="0" name="spsflag" />
+					</h:commandButton>
+					</h:column>
+					<h:column/>
+					
+					<h:column><h:outputText value="For example: "/><h:outputText styleClass="lightblue11px" value="N020600449"/></h:column>
+					<h:column/>
+				</h:panelGrid>
+
+				</h:form>
+
+
+			
+			
+ 	  
+ 	  <h:form id="spsform3">
+			<h:panelGrid cellspacing="0" cellpadding="0" border="0" styleClass="cdcJobId black11px spsform3Style">
+				<h:column>
+					<h:column height="60">
+						<h:outputText value="If the CDC Job ID is unknown, you can enter the "/>
+						<h:outputText styleClass="lightblue11px" value="Job	Title, and/or the Bid Date"/>
+						<h:outputText value=" below. NOTE: enter the State when searching for a job this way."/>
+					</h:column>
+				</h:column>
+				<h:panelGrid styleClass="jobtitlePadding"/>
+				<rich:message for="sps_state" id="sps_stateMsg2"/>
+				<rich:message for="sps_title" id="sps_stateMsg"/>
+				<h:panelGroup>
+						<h:outputText value="Job Title:"/>
+						<h:inputText id="sps_title" size="14" maxlength="50" style="height:18px;" value="#{searchBean.jobTitle}"/> 
+						<h:outputText value="*" styleClass="red10px"/>
+						
+						<h:outputText value="State:"/> 
+						<rich:select id="sps_state" styleClass="otherSpsSelect"  style="width:80px;" value="#{searchBean.stateName}">
+						   <f:selectItem itemValue="Select" itemLabel="Select" h5:selected="selected"/>
+						  <c:forEach items="#{userBean.userStateIdNameList}" var="state">
+						   <c:if test="${state.stateAbb!='US'}">
+						 		<f:selectItem itemValue="#{state.stateName}" itemLabel="#{state.stateAbb}" />
+						   </c:if>
+						  </c:forEach>
+					
+						</rich:select>
+					</h:panelGroup>
+					<h:panelGrid   styleClass="bidDatePadding"/>
+				<h:column>
+					<h:column>
+						Bid Date:
+						<rich:calendar  id="sps_bidate" showWeeksBar="false" popup="true" datePattern="#{userBean.datePattern}" inputSize="9" maxlength="9" value="#{searchBean.bidDate}">
+               			</rich:calendar>
+
+						<h:commandButton id="submit_form3" action="#{spsController.searchResults(request)}" onclick="return validateform3('#{userBean.nationalUser}');" value=" "  styleClass="searchButtonImage">
+						<f:param value="1" name="spsflag" />
+						</h:commandButton>
+						
+						<h:commandButton type="reset" value=" "  styleClass="resetButtonImage"/>
+					</h:column>
+				</h:column>
+			</h:panelGrid>
+	</h:form>
+	</h:panelGroup>
+	</h:panelGrid>
+<o:resourceInclude path="/online_product/sessionVariables.jsp" />
+
+</ui:composition>

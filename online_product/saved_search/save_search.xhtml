@@ -1,0 +1,332 @@
+<!--
+
+   Copyright 2001-15 Creatus Inc.,
+   2328 Walsh Avenue, Suite G, Santa Clara, CA 95051, U.S.A.
+   All rights reserved.
+
+   This software is the confidential and proprietary information
+   of Creatus Inc. ("Confidential Information").  You shall not disclose
+   such Confidential Information and shall use it only in accordance
+   the terms of the license agreement you entered into with
+   Creatus Inc.
+
+   Company        : Creatus Inc.
+   Author         : Creatus
+   Date Created   : 03/10/2015
+   Last Modified  : 03/10/2015
+   Modifier       : Sathish
+   Description    : Displays the UI to save a Search From Advanced Search with Hotlist Information
+   					After the Lead Manager Migration from coldfusion to JBoss
+-->
+<!DOCTYPE html PUBLIC "-//W3C//Dtd XHTML 1.0 Transitional//EN" "http://www.w3.org/tr/xhtml1/Dtd/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:a4j="http://richfaces.org/a4j"
+	 xmlns:rich="http://richfaces.org/rich"
+	 xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+ 
+
+		<meta http-equiv="Expires" content="Tue, 01 Jan 1985 00:00:01 GMT" />
+		<meta http-equiv="Pragma" content="no-cache" />
+		<meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate" />
+		
+		<h:outputStylesheet name="sheet.css" library="css" />
+		<h:outputStylesheet library="css" name="buttons.css" />
+		<h:outputStylesheet name="saved_search/saveSearch.css" library="css" />
+		
+		<h:outputScript name="saved_search/saveSearch.js?v=1.1" library="js" />
+		<h:outputScript name="JSScripts/Javascript_template.js"	library="js" />
+
+
+		<h:panelGroup layout="block">
+			<c:choose>
+				<c:when test="${empty userBean.loginId}">
+					<ui:include src="/online_product/check_session_subfolder.xhtml" />
+				</c:when>
+				<c:otherwise>
+
+					<h:panelGrid width="510" cellpadding="0" cellspacing="0" border="0" h5:align="center">
+						    
+								 <c:choose>
+										<c:when test="${empty userBean.masterId and (fn:length(userBean.subUserList) ge requestScope.searches_allowed)}">
+											<h:panelGrid width="510" cellpadding="0" cellspacing="0" border="0">
+												<h:outputText style="text-align:center;" stylestyleClass="orange12px"><b>You
+															already have ${requestScope.searches_allowed} searches.
+															Please delete unwanted saved searches</b>
+											    </h:outputText>
+												<h:outputText style="text-align:center;" stylestyleClass="orange12px">
+													<h:link outcome="javascript:history.go(-1)">Back</h:link>
+												</h:outputText>
+											</h:panelGrid>
+										</c:when>
+										<c:otherwise>
+										<h:form id="search_save">
+								<h:panelGrid width="510" border="0"
+									styleClass="tabelStyle paddingpx">
+ 
+											<h:panelGrid width="508" border="0" cellspacing="1"  columns="2"
+												  cellpadding="1"  styleClass="black11px tableStyle2" columnClasses="columnOneSearch,columnTwoSearch," >
+											<h:column/>	  <rich:message for="search_name" id="search_name_Msg" ajaxRendered="false"/>
+																		<h:outputText value="Name of Search" styleClass="boldpx" />
+											<h:inputText id="search_name" size="20" maxlength="50"
+												value="#{savedSearchBean.savedSearchName}" />
+																		<h:column/>
+																		 <h:outputText styleClass="black10px" value="Please avoid apostrophe and quotes(',') in search name."/>
+
+																		<c:choose><!-- here it is functioning wrongly so I have change the condition "not empty" to empty by Sathish-->                      											
+																			<c:when
+																				test="${not empty userBean.masterId and fn:length(userBean.subUserList) gt 1}">
+												<h:column/> <rich:message for="loginid" id="select_loginid_msg"/>
+												<h:outputText value="Save it for" styleClass="boldpx"
+													width="122" />
+												<h:selectOneMenu  id="loginid"  value="#{searchBean.saveItFor}" onchange="setEmail2()">
+																							<f:selectItem h5:id="loginidItems" itemValue="Select a login id" itemLabel="Select a login id"/>
+																							<c:forEach items="#{userBean.subUserList}"
+																								var="masterSub">
+																								<f:selectItem itemValue="#{fn:replace(masterSub[0],'\'', '')}" 
+																								itemLabel="#{fn:replace(masterSub[0],'\'','')}" />
+																							</c:forEach>
+																					</h:selectOneMenu>
+																				
+																			</c:when>
+																		</c:choose>
+</h:panelGrid><h:panelGrid width="508" border="0" cellspacing="1"  columns="2"
+												  cellpadding="1"   styleClass="gre10pxbold emailHotList">
+																		<c:choose>
+																			<c:when
+																				test="${fn:containsIgnoreCase(userBean.userFeatures, 'Email Hotlist')}">
+																				<h:outputText value="&nbsp;&nbsp;&nbsp;Email Hotlist Information" 
+																				 /></c:when></c:choose>
+</h:panelGrid><h:panelGrid width="508" border="0" cellspacing="1"  columns="2"
+												  cellpadding="1"  styleClass="black11px tableStyle2" columnClasses="columnOne,columnTwo">																		
+																			<c:choose>
+																			<c:when
+																				test="${fn:containsIgnoreCase(userBean.userFeatures, 'Email Hotlist')}">		
+																					<h:outputText value="Do Not Email"  styleClass="boldpx"/>
+																					<h:selectOneRadio id="Frequency_donot" class="selectClass"
+													onclick="checkFrequency('donot');" value="#{hotListBean.doNotEmail}">
+																						<f:selectItem itemValue="N" />
+																					</h:selectOneRadio>
+																				
+																				
+																					<h:outputText value="Every Day" styleClass="boldpx"/>
+												<h:selectOneRadio id="Frequency_everyday"
+													 onclick="javascript:checkFrequency('everyday');" value="#{hotListBean.everyDay}">
+																						<f:selectItem itemValue="D" />
+																					</h:selectOneRadio>
+																				<h:column/><rich:message for="Frequency_everyweek" id="daysMsg"/>
+																				 <h:outputText value="Every Week" styleClass="boldpx"/>
+																					<h:panelGroup>
+													<h:selectOneRadio id="Frequency_everyweek"
+														style="float:left;" value="#{hotListBean.everyWeek}"
+																						 onclick="javascript:checkFrequency('everyweek');">
+																						    <f:selectItem itemValue="W" />
+																						</h:selectOneRadio>
+																						
+																				       <c:set
+																							var="SHORTDAYLIST" value="M,T,W,R,F,S,N" /> <c:set
+																							var="LONGDAYLIST"
+																							value="Mon,Tue,Wed,Thu,Fri,Sat,Sun" /> 
+																							<c:set
+																							var="SHORTDAYLIST"
+																							value="${fn:split(SHORTDAYLIST, ',')}" /> <c:set
+																							var="LONGDAYLIST"
+																							value="${fn:split(LONGDAYLIST, ',')}" />
+													<h:selectManyCheckbox id="Weekly" value="#{hotListBean.daysInEveryWeek}" onclick="javascript:checkWeekly();">
+														<c:forEach begin="0" end="${fn:length(SHORTDAYLIST)-1}"
+																							var="ndx"> 
+																							<c:set var="THISDAY"
+																								value="${fn:trim(SHORTDAYLIST[ndx])}" />
+																								
+														<f:selectItem 
+															itemValue="${THISDAY}" itemLabel="${LONGDAYLIST[ndx]}"
+															 />
+																						</c:forEach>
+													</h:selectManyCheckbox>
+																					
+																				 </h:panelGroup>
+																				<!-- Weekdays(M-F) 05/26/2004 -->
+																			     	<h:outputText value="Weekdays(M-F)" styleClass="boldpx"/>
+																					 <h:panelGroup>
+													<h:selectOneRadio id="Frequency_weekdays"
+														 onclick="javascript:checkFrequency('weekdays');" value="#{hotListBean.weekDays}">
+																								<f:selectItem itemValue="Wd" />
+																						</h:selectOneRadio>
+																						<h:inputHidden id="Weekdays" value="M,T,W,R,F" />
+																					</h:panelGroup>
+																				
+																					<h:outputText value="Every Month" styleClass="boldpx"/>
+																					<h:panelGroup>
+																						<h:inputHidden 	h5:id="Frequency_everymonth" value="M"
+																							 /> 
+													<h:selectOneRadio id="Frequency_everymonth"
+														 style="display:inline-table;"
+														onclick="javascript:checkFrequency('everymonth');" value="#{hotListBean.everyMonth}">
+																								<f:selectItem itemValue="M" />
+																						</h:selectOneRadio>	
+																						<h:outputText value="On Day" styleClass="boldpx"/>
+													<h:selectOneMenu id="OnDay" onfocus="checkMonthly();" value="#{hotListBean.onDay}">
+																								<c:forEach var="LoopCount" begin="1" end="31">
+																									<f:selectItem itemValue="#{LoopCount}" itemLabel="#{LoopCount}"/>
+																								</c:forEach>
+																						</h:selectOneMenu>
+																				    </h:panelGroup>
+																					<h:column/>	  <rich:message for="OnCalDate" id="specific_date_msg"/>
+																				    <h:outputText value="Specific Date" styleClass="boldpx"/>
+																					<h:panelGroup>
+													<h:selectOneRadio id="Frequency_specificDate"
+														 style="display:inline-table;"
+														onclick="javascript:checkFrequency('specificDate');" value="#{hotListBean.specificDate}">
+																							<f:selectItem itemValue="S"/> 
+																						</h:selectOneRadio>
+													<rich:calendar id="OnCalDate" popup="true" value="#{hotListBean.onDate}"
+														datePattern="#{userBean.datePattern}" inputSize="9" showWeeksBar="false"
+														maxlength="9" onchange="javascript:checkOnCalDate();"
+																								onfocus="javascript:checkOnCalDate();"/>
+																				
+																					</h:panelGroup>
+																					<h:column/><rich:message for="EmailTo" id="email_addr_msg"/>
+																					<h:outputText value="Send Results To" styleClass="boldpx"/>
+																					<h:column style="padding-left:11px;">
+																					<h:inputText id="EmailTo" size="30"
+														value="#{hotListBean.sendResultsTo}"
+																						maxlength="200" />
+																					</h:column>
+																			    	<!-- Added for Saved Search Enhancement by Muthu on 05/05/14 -->
+																				<c:if
+																					test="${fn:containsIgnoreCase(userBean.userFeatures, 'Email Hotlist')}">
+																				    	<h:outputText value="Format:" styleClass="boldpx"/>
+																						<h:panelGroup>
+													<h:panelGrid columns="2"> 
+													<h:selectOneRadio layout="pageDirection" id="hotlistFrmt"
+														style="display:inline-table;"
+														value="#{hotListBean.hotListFormat}">
+														<f:selectItem id="detail" itemValue="d" itemLabel="Detail" />
+														<f:selectItem id="brief" itemValue="b" itemLabel="Brief" />
+													</h:selectOneRadio>
+													<h:panelGrid columns="1">
+     <h:graphicImage id="id_img_det"
+		alt="EmailHotlist More info" style="cursor: pointer"
+		width="17" height="15" align="center"
+		name="emailhotlist/infoicon_emailhotlist.png" library="images">
+		
+		<rich:tooltip showEvent="click" mode="client" id="detailtp" onshow="#{rich:component('search_save:brieftp')}.hide();" styleClass="tooltip" layout="block" zindex="100" hideEvent="none" followMouse="false">
+		<f:facet name="loading">
+			<strong>Wait...</strong>
+		</f:facet>
+		<span class="textAlignRight fontWeightBold"><h:outputLink onclick="#{rich:component('search_save:detailtp')}.hide();return false;" style="color:blue;font-size:12px;">X</h:outputLink></span>
+		<h:panelGrid>
+			<h:outputText value="ONLY projects which are New &amp; Updated since last Email
+				Reminder was sent are contained in the current email(s)"/><br />
+			<h:outputLink value="#{request.contextPath}/online_product/shared/NewHotlistEmail_Detail.html"
+					target="_blank">Click here for a sample</h:outputLink>
+		</h:panelGrid>
+		</rich:tooltip>
+		
+	</h:graphicImage>
+	<h:graphicImage id="id_img_brf"
+		alt="EmailHotlist More info" style="cursor: pointer"
+		width="17" height="15" align="center"
+		name="emailhotlist/infoicon_emailhotlist.png" library="images">
+		
+		<rich:tooltip showEvent="click" mode="client" id="brieftp" onshow="#{rich:component('search_save:detailtp')}.hide();" styleClass="tooltip" layout="block" zindex="100" hideEvent="none" followMouse="false">
+		<f:facet name="loading">
+			<strong>Wait...</strong>
+		</f:facet>
+		<span class="textAlignRight fontWeightBold"><h:outputLink onclick="#{rich:component('search_save:brieftp')}.hide();return false;" style="color:blue;font-size:12px;">X</h:outputLink></span>
+		<h:panelGrid>
+			<h:outputText value="ALL projects which have compiled since the Last Searched
+													Date are contained in the current email(s)"/><br />
+			<h:outputLink value="#{request.contextPath}/online_product/shared/NewHotlistEmail_Brief.html"
+					target="_blank">Click here for a sample</h:outputLink>
+		</h:panelGrid>
+		</rich:tooltip>
+		
+	</h:graphicImage>
+	</h:panelGrid>
+													</h:panelGrid>
+																						</h:panelGroup>
+																						<h:outputText value="Select To Send Results:" styleClass="boldpx"/>		
+																						<h:panelGroup>																				
+																							<h:selectBooleanCheckbox id="hotlistrsltTyp" value="#{hotListBean.hotListResultType}" />
+																								<h:outputLabel  for="hotlistrsltTyp" value="In one
+																									combined email with other Email Reminders in
+																									same format" />
+																						</h:panelGroup>
+																				</c:if>
+																				<!-- End Saved Search Enhancement fields -->
+																				<h:column/><rich:message for="Notes" id="email_err_msg"/>
+												<h:outputText value="Email Hotlist Notes"
+													styleClass="boldpx" />
+												<h:inputTextarea id="Notes" cols="44" rows="5" value="#{hotListBean.emailHLNotes}" />
+																				
+																			</c:when>
+																			<c:otherwise>
+																				<h:column>
+																					<h:column styleClass="black11px" height="225" colspan="2"><strong>You
+																							have not subscribed to Email Hotlist feature.</strong><br />
+																						<br />The <strong>Email Hotlist</strong> function
+																						allows you to create automatic email updates for
+																						your Saved Searches (My Searches). You will
+																						receive an email showing you the number of new and
+																						updated projects since your last online visit. <br />
+																						<br />Call us at 1-800-652-0008 to subscribe to
+																						this feature.</h:column>
+																				
+																				<h:inputHidden id="EmailTo" size="30"
+																					value="${userBean.loginEmail}" />
+																				 </h:column>
+																			</c:otherwise>
+																		</c:choose>
+																		<h:column/>
+																		<h:column>
+ 
+											<h:commandButton styleClass="saveButtonImage" action="#{savedSearchController.saveSearchAction(request)}" value=" " onclick="return formSubmit(this,'#{userBean.masterId}','#{userBean.userFeatures}');">
+											<f:param value="1" name="flag" />
+											</h:commandButton>
+ 
+											<a4j:commandButton onclick="#{rich:component('saveYourSearch')}.hide(); return false;" styleClass="cancelButtonImage" value=" " />
+																		</h:column>
+																		</h:panelGrid>
+																	</h:panelGrid>
+										</h:form>
+									</c:otherwise>
+								</c:choose>
+							
+						
+					</h:panelGrid>
+					</c:otherwise>
+			</c:choose>
+		</h:panelGroup> 
+<script type="text/javascript">
+
+//clears the Name input field
+document.getElementById("search_save:search_name").value = '';
+
+//<![CDATA[ 
+
+	if((${not empty userBean.masterId})) {
+		var counter = 0;
+		for(var counter = 0; counter<${fn:length(userBean.subUserList)}; counter++) {
+			masterSub = ${userBean.subUserList}[counter];
+			allusersArray[counter] = masterSub[0]+'|'+masterSub[1]+'|'+masterSub[2];
+		}
+	}
+
+//]]>
+var searchName = "#{savedSearchBean.savedSearchName}";
+	 function getAllSSnames()
+	 {
+	 	var i=0;
+	 	<ui:repeat value="#{userBean.subUserList}" var="name">
+	 		SSnames[i]= #{name}[0];
+			i++;
+		</ui:repeat>
+	}
+formId = "search_save";
+</script>
+</ui:composition>

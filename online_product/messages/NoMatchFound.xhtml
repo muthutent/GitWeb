@@ -1,0 +1,45 @@
+<!--
+
+   Copyright 2001-15 Creatus Inc.,
+   2328 Walsh Avenue, Suite G, Santa Clara, CA 95051, U.S.A.
+   All rights reserved.
+
+   This software is the confidential and proprietary information
+   of Creatus Inc. ("Confidential Information").  You shall not disclose
+   such Confidential Information and shall use it only in accordance
+   the terms of the license agreement you entered into with
+   Creatus Inc.
+
+   Company        : Creatus Inc.
+   Author         : Creatus
+   Date Created   : 03/10/2015
+   Last Modified  : 03/10/2015
+   Modifier       : Selva 
+   Description    : Displays No Match Found Message on the searches
+   					After the Lead Manager Migration from coldfusion to JBoss
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/WEB-INF/templates/cdc_template.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:o="http://omnifaces.org/ui">
+	<ui:define name="content">
+		<h:head>
+			<h:outputStylesheet name="sheet.css" library="css" />
+		</h:head>
+		<h:body>
+			<table align="center" width="700" cellspacing="2" cellpadding="2"
+				border="0">
+				<tr>
+					<td align="center" style="font-family:normal">No match found <br /> For Assistance <a
+						href="http://lm.cdcnews.com/general/offices_editorial.html" style="font-family:normal; font-size: 16px; color: blue"
+						target="_blank">Click Here</a></td>
+				</tr>
+			</table>
+		</h:body>
+	</ui:define>
+</ui:composition>

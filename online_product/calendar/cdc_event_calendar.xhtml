@@ -1,0 +1,324 @@
+ <!--
+
+   Copyright 2001-15 Creatus Inc.,
+   2328 Walsh Avenue, Suite G, Santa Clara, CA 95051, U.S.A.
+   All rights reserved.
+
+   This software is the confidential and proprietary information
+   of Creatus Inc. ("Confidential Information").  You shall not disclose
+   such Confidential Information and shall use it only in accordance
+   the terms of the license agreement you entered into with
+   Creatus Inc.
+
+   Company        : Creatus Inc.
+   Author         :	Creatus
+   Date Created   :	03/26/2015
+   Last Modified  : 03/26/2015
+   Modifier       : Sathish
+   Description    :	Displays the Calender to Perfrom Event
+ 					After the Lead Manager Migration from coldfusion to JBoss
+-->
+<!DOCTYPE html PUBLIC "-//W3C//Dtd XHTML 1.0 Transitional//EN" "http://www.w3.org/tr/xhtml1/Dtd/xhtml1-transitional.dtd">
+<!-- THE PAGE USES THE JSF 2.0 TEMPLATE -->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	 xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	 template="/WEB-INF/templates/cdc_template.xhtml"
+	  xmlns:a4j="http://richfaces.org/a4j" 
+	 xmlns:rich="http://richfaces.org/rich"
+	  xmlns:cdccomp="http://java.sun.com/jsf/composite/cdccomp">
+	 
+	  <meta name="robots" content="noindex, nofollow"/>
+		<!-- AND THE CONTENTS OF THE PAGE -->	
+		<ui:define name="content"> 
+			<h:outputStylesheet library="css"  name="calendar/cdc_calendar_home.css" />
+			<h:outputStylesheet name="buttons.css" library="css"/>
+			<h:outputScript>
+				contextPath = '#{request.contextPath}';
+			</h:outputScript>
+			<h:outputScript library="js" name="calendar/calendar.js?v=4.1" target="head"/> 
+			
+			<h:panelGrid columns="2" width="790" border="0" cellspacing="0" cellpadding="0" rowClasses="rowOne" columnClasses=" ,floatLeft" >
+				
+				<!-- Todays Event -->   
+				<h:panelGrid >
+				<a4j:outputPanel id="myEventRender" ajaxRendered="true">
+				<h:form id="myEvents">
+				<rich:tabPanel id="eventTabPanel" switchType="client">
+					<rich:tab id="eventTab" header=" " headerClass="myEventsActive"> 
+					
+						<h:panelGrid width="280"    border="0" cellspacing="0" cellpadding="0"  bgcolor="EFF4FA" styleClass="eventsTable black10px">
+							<h:panelGrid width="280" columns="2"  border="0" cellspacing="0" cellpadding="0"   styleClass="paddingTable1">
+									<h:panelGroup rendered="#{empty calendarBean.calendarData}">
+										<h:outputLabel value="This area stores your today's events,click "/>
+										<a4j:commandLink value="here" execute="@this" render="@none" limitRender="true" oncomplete="#{rich:component('addEvent')}.show();">
+											<f:setPropertyActionListener target="#{calendarBean.event}" value="calendar"/>
+										</a4j:commandLink>&nbsp;to create your own events.
+								   </h:panelGroup>
+								   
+								   <h:panelGroup rendered="#{not empty calendarBean.calendarData}">
+										<h:outputLabel value="Below are your calendar events. From here you can add, edit or delete your events."/>										
+								   </h:panelGroup>
+								   
+								   <a4j:commandLink execute="@this" render="@none" limitRender="true" oncomplete="#{rich:component('addEvent')}.show();">
+								   		<f:setPropertyActionListener target="#{calendarBean.event}" value="calendar"/>
+								     <h:graphicImage library="images" name="buttons/button_add_calendar.gif" border="0" alt="Add an Event"/>  
+									</a4j:commandLink>
+							  </h:panelGrid> 
+							 <h:panelGrid id="calData" width="280" border="0" columns="2" cellspacing="0" cellpadding="0"  bgcolor="white" styleClass="paddingTable3"  rendered="#{not empty calendarBean.calendarData}"> 				 	 
+								<h:dataTable  value="#{calendarBean.calendarData}" var="calBean" varStatus="calIndex" columnClasses="breakLine displayBlock ,iconLegend,iconLegend,iconLegend,iconLegend">  
+									 <h:column>   
+									 			 
+													<a4j:commandLink   value="#{calBean.eventTitle}" render="@none" limitRender="true"    rendered="#{(not empty calBean.eventCdcId and calBean.eventCdcId ne 'null') and (not empty userBean.userViewJobWindow and userBean.userViewJobWindow  eq 0)}" onclick="view_job('#{calBean.eventCdcId}','#{calBean.eventSaveJoId}');return false;">
+														 <f:setPropertyActionListener target="#{calendarBean.eventCdcId}" value="#{calBean.eventCdcId}"/>
+													 </a4j:commandLink>
+											  
+													<a4j:commandLink   value="#{calBean.eventTitle}" render="@none" limitRender="true"   rendered="#{(not empty calBean.eventCdcId and calBean.eventCdcId ne 'null') and (not empty userBean.userViewJobWindow and userBean.userViewJobWindow eq 1)}" onclick="view_job('#{calBean.eventCdcId}','#{calBean.eventSaveJoId}');return false;">
+														 <f:setPropertyActionListener target="#{calendarBean.eventCdcId}" value="#{calBean.eventCdcId}"/>
+													 </a4j:commandLink>  
+													 
+												<a4j:commandLink  rendered="#{empty calBean.eventCdcId or calBean.eventCdcId eq 'null'}" value="#{calBean.eventTitle}" onclick="getEditOptionDetails('#{calBean.calendarId}')" render="@none" limitRender="true" execute="@none" > 
+										 
+														<f:param name="calendarId" value="#{calBean.calendarId}"/>   
+														<c:forEach items="#{calendarBean.hotListCalendarData}" var="hotBean" varStatus ="hot">
+																 
+																	  <h:outputScript>
+																			storeHotlistCalendarData('#{calBean.calendarId}','#{hotBean.frequency}','#{hotBean.periodValue}','#{hotBean.everyYearMonth}','#{hotBean.daysInEveryWeek}','#{hotBean.onDay}','#{hotBean.sendResultsTo}','#{hotBean.everyYearDay}','#{calBean.reminderFlag}');
+																	  </h:outputScript>
+														</c:forEach>
+										</a4j:commandLink> 
+											 <br/>   
+										 	 <h:outputText value="#{calBean.eventTime}" rendered="#{!(calBean.eventTime eq 'null' or calBean.eventTime eq null)}"/> <br/>
+										 
+										<c:choose>
+											<c:when test="${not empty calBean.eventFolderName  and not empty calBean.eventFolderName}">  
+												<h:outputText value="PTFolder: #{calBean.eventFolderName}"/>
+											</c:when>
+											<c:otherwise>
+												<h:outputText value="PTFolder: My Jobs"/>
+											</c:otherwise>
+										</c:choose> 
+									</h:column>
+									<h:column>    
+											<h:graphicImage name="project_tracker/pt.gif" library="images" alt="Project Tracker" styleClass="padding10Right" rendered="#{not empty calBean.eventCdcId and calBean.eventCdcId ne 'null'}"/> 
+									</h:column>									
+									<h:column>  
+										  
+										<c:if test="${calBean.reminderFlag ne 0}">
+											<h:graphicImage name="email_detail/email.gif"  border="0" width="18" height="18" alt="Email Reminder" library="images" styleClass="padding10Right"/>  
+										</c:if>  
+									</h:column>
+									<h:column> 
+										<a4j:commandLink onclick="getEditOptionDetails('#{calBean.calendarId}');" render="@none" limitRender="true" execute="@none" > 
+											<h:graphicImage name="buttons/button_edit_icn.gif" alt="Edit Event" library="images" styleClass="padding10Right"/> 
+											<f:param name="calendarId" value="#{calBean.calendarId}"/>   
+											<c:forEach items="#{calendarBean.hotListCalendarData}" var="hotBean" varStatus ="hot">
+													 
+													      <h:outputScript>
+														  		storeHotlistCalendarData('#{calBean.calendarId}','#{hotBean.frequency}','#{hotBean.periodValue}','#{hotBean.everyYearMonth}','#{hotBean.daysInEveryWeek}','#{hotBean.onDay}','#{hotBean.sendResultsTo}','#{hotBean.everyYearDay}','#{calBean.reminderFlag}');
+														  </h:outputScript>
+											</c:forEach>
+										</a4j:commandLink> 
+									</h:column>
+									<h:column>  
+									<a4j:region> 
+										<a4j:commandLink  id="delEvent" type="submit" onclick="setCalendarId('#{calBean.calendarId}');" oncomplete="#{rich:component('confirmPanel')}.show();" render="confirmPanel" limitRender="true" execute="@this">
+											<h:graphicImage name="buttons/button_delete_icn.gif" alt="Delete Event" library="images"/> 
+											 <f:setPropertyActionListener target="#{calendarBean.calendarId}" value="#{calBean.calendarId}"/>
+										</a4j:commandLink> 
+ 										</a4j:region>
+									</h:column>     
+								</h:dataTable> 
+							 </h:panelGrid>
+					   </h:panelGrid>
+					  
+					</rich:tab>
+				</rich:tabPanel>
+				
+				</h:form>
+				 
+				<!-- Icon Legend --> 
+				<h:form id="iconLegendForm">   
+				<rich:tabPanel id="iconLegendTabPanel" switchType="client" styleClass="richTabPadding"  rendered="#{not empty calendarBean.calendarData}">
+					<rich:tab id="iconsTab"  header=" " headerClass="myEventsActive2"> 
+						<h:panelGrid width="280"  border="0" cellspacing="0" cellpadding="0"  bgcolor="white" styleClass="eventsTable black10px">
+							<h:panelGrid width="280" columns="2"  border="0" cellspacing="0" cellpadding="0" bgcolor="EFF4FA"  styleClass="paddingTable4">
+								<h:outputLabel value="The following icons are the action buttons for each of your Calendar events."/>
+							</h:panelGrid>
+							 <h:panelGrid width="280" columns="3" border="0" cellspacing="0" cellpadding="0"  bgcolor="white" styleClass="paddingTable5" columnClasses="logo,labeltext">
+							 	<h:graphicImage name="project_tracker/pt.gif" library="images" alt="Project Tracker"/> &nbsp;=&nbsp;
+								<h:outputLabel value="Project Tracker Job"/>
+								<h:graphicImage name="email_detail/email.gif"  border="0" width="18" height="18" alt="Email Reminder" library="images" 
+								styleClass="padding10Right"/>   &nbsp;=&nbsp;
+								<h:outputLabel value="Email Reminder"/>
+								<h:graphicImage library="images" name="buttons/button_add_calendar.gif" border="0" alt="Add an Event"/>  &nbsp;=&nbsp;
+								<h:outputLabel value="Add Calendar Event"/>
+								<h:graphicImage name="buttons/button_edit_icn.gif" alt="Edit Event" library="images" styleClass="padding10Right"/>  &nbsp;=&nbsp;
+								<h:outputLabel value="Edit Calendar Event"/>
+								<h:graphicImage name="buttons/button_delete_icn.gif" alt="Delete Event" library="images"/>  &nbsp;=&nbsp;
+								<h:outputLabel value="Delete Calendar Event"/>
+							 </h:panelGrid>
+						</h:panelGrid>
+					</rich:tab>
+				</rich:tabPanel> 
+				</h:form>
+				</a4j:outputPanel> 
+				</h:panelGrid>
+				
+				<!-- CDC Event Calendar -->
+				<h:form id="calendarForm"> 
+				 
+				<a4j:outputPanel id="calPanelTabRender" ajaxRendered="true">
+				 <rich:tabPanel id="calPanel"  switchType="client">
+					<rich:tab id="calPanelTab" header=" " headerClass="myEventCalendar"> 
+						<h:panelGrid styleClass="eventsTable calHeader"> 
+							<h:panelGrid id="calendarHeader" styleClass="calHeaderHeight" columns="2"   rendered="true">
+								<h:outputText value="#{calendarBean.dayHeader}" rendered="true"/>
+								<h:outputText id="eventDate" value="#{calendarBean.dateHeader}" rendered="true" styleClass="paddingLeft"/>
+							</h:panelGrid>  
+							<a4j:jsFunction name="call"   render="cdcCalendar,calendarHeader,myEventRender" limitRender="true"  oncomplete="addCalendarIcon();"/>
+							 
+							<rich:calendar  id="cdcCalendar"   popup="false" showApplyButton="false" datePattern="#{userBean.datePattern}"  mode="ajax"   
+							showWeeksBar="false" showFooter="false" dataModel="#{calendarModelImpl}"   render="@this" oncomplete="call();" valueChangeListener="#{calendarModelImpl.calendarValueChangeListener}" limitRender="true" value="#{calendarBean.selectedDate}"> 
+							 	 <a4j:ajax event="change" execute="@this" render="myEventRender,iconLegendForm,calendarHeader" limitRender="true"  oncomplete="addCalendarIcon();"/>   
+							</rich:calendar> 
+							 <rich:contextMenu target="cdcCalendar" mode="ajax">
+                				<rich:menuItem label="Add Event" oncomplete="#{rich:component('addEvent')}.show();"
+                               	mode="ajax" icon="/images/icons/open.gif"/>
+            				</rich:contextMenu>
+          
+						</h:panelGrid>
+						<h:outputScript>
+						 	addCalendarIcon();//To set the Calendar Header 
+						</h:outputScript>
+					 </rich:tab>
+				</rich:tabPanel>
+				<h:panelGrid styleClass="black11px message" width="500"> 
+					<h:panelGroup styleClass="highlighter">
+						 <h:outputLabel   styleClass="redBold"><strong> NEW</strong></h:outputLabel>
+						 <h:outputLabel value=" Calendar search capability &ndash;"/>
+						 <h:outputLabel styleClass="redBold"><strong> CLICK</strong></h:outputLabel>
+						 <h:outputLabel value=" on "/>
+						 <h:outputLabel> <strong>Month, Year</strong></h:outputLabel>
+						 <h:outputLabel value=" in the Calendar header above to access !"/>
+					</h:panelGroup>
+				</h:panelGrid>
+				</a4j:outputPanel> 
+				
+				</h:form>
+				
+			</h:panelGrid>
+			
+			<h:form id="addEventForm"> 
+			<rich:popupPanel id="addEvent" modal="true" immediate="true" domElementAttachment="form" width="580" height="450" onshow="setFormId('addEventForm');clearAddEventFormInput('calendar');setEventDateMM_dd_yyyy('N');changreminder(document.getElementById('addEventForm:reminder:1'));" >	
+				<f:facet name="controls"> 		
+					<h:commandButton value=" " type="button" styleClass="popupCloseImage" onclick="#{rich:component('addEvent')}.hide(); return false;"/>  
+			 	</f:facet>
+				 <rich:hotKey key="Esc">
+					<rich:componentControl target="addEvent" operation="hide"/>
+				</rich:hotKey>			
+				
+				<a4j:outputPanel id="addEventRender" ajaxRendered="true">			
+					<ui:include src="/online_product/calendar/add_event.xhtml"/>
+				</a4j:outputPanel>				
+				 
+			</rich:popupPanel>
+			
+			<rich:popupPanel id="message" modal="true" immediate="true" domElementAttachment="form"  autosized="true" height="100">
+				
+				 <f:facet name="header">
+					 	<h:outputText value="Success !!!" style="color:green"/>
+					 </f:facet>
+					   
+				 <rich:panel>
+				<h:panelGroup styleClass="textAlignCenter" style="text-align:center">
+				 
+					<c:if test="${calendarBean.action eq 'add'}">
+						<h:outputText value="Your calendar event has been successfully added!"/>
+					</c:if>
+					<c:if test="${calendarBean.action eq 'update'}">
+						<h:outputText value="Your calendar event has been successfully Updated!"/>
+					</c:if>
+				</h:panelGroup>
+				<br/>
+				<h:panelGroup styleClass="textAlignCenter" style="text-align:center">						
+						<a4j:commandButton value=" " styleClass="okButtonImage" 
+						onclick="#{rich:component('message')}.hide(); " render="myEventRender" limitRender="true" execute="@this"/>
+				</h:panelGroup>		
+				</rich:panel>
+			</rich:popupPanel>
+			
+				<rich:popupPanel id="eventConfirmPanel" modal="true" immediate="true" domElementAttachment="form"  autosized="true" height="100">
+				
+				 <f:facet name="header">
+					 	<h:outputText value=" " style="color:green"/>
+					 </f:facet>
+					 
+				 <rich:hotKey key="Esc">
+					<rich:componentControl target="eventConfirmPanel" operation="hide"/>
+				</rich:hotKey>
+				
+				<h:panelGroup styleClass="textAlignCenter" style="text-align:center">
+				<h:outputText value="Your event is today, so you can not receive reminder email. 
+Do you still want to save this event to calendar?"/>
+				</h:panelGroup>
+				
+				<h:panelGroup styleClass="textAlignCenter" style="text-align:center">						
+						<h:commandButton value=" " styleClass="okButtonImage" onclick="#{rich:component('eventConfirmPanel')}.hide(); return true;"/>&nbsp;&nbsp;
+						<h:commandButton value=" " styleClass="cancelButtonImage" onclick="#{rich:component(eventConfirmPanel)}.hide(); return false;"/>
+				</h:panelGroup>		
+				
+			</rich:popupPanel>
+			 
+			<cdccomp:okCancel popupId="confirmPanel" message="Are you sure you want to delete this event ?" headerMsg="Delete Calendar Event" 
+			okAction="#{calendarController.deleteCalendarEvent(request)}" okRender="myEventRender,calPanelTabRender" performAction="YES" completeAction=""/> 
+			
+			 <cdccomp:okCancel popupId="confirmPanel1" message="" headerMsg="" 
+					 performAction="NO"/> 
+			
+			</h:form>
+			<h:form id="editEventForm"> 
+				<a4j:jsFunction name="showPopup" render="editEventRender" limitRender="true" oncomplete="#{rich:component('editEvent')}.show();"/>
+				<rich:popupPanel id="editEvent" modal="true" immediate="true" domElementAttachment="form"  width="573" height="430"  onshow="setFormId('editEventForm')">	
+					<f:facet name="controls"> 		
+						<h:commandButton value=" " type="button" styleClass="popupCloseImage" onclick="#{rich:component('editEvent')}.hide(); return false;"/>  
+					</f:facet>
+					 <rich:hotKey key="Esc">
+						<rich:componentControl target="editEvent" operation="hide"/>
+					</rich:hotKey>			
+					
+					<a4j:outputPanel id="editEventRender" ajaxRendered="true">	 
+						<ui:include src="/online_product/calendar/edit_event.xhtml"/>
+					</a4j:outputPanel>				
+				 
+			</rich:popupPanel>
+			<!-- view project details -->
+			<!--<rich:popupPanel id="viewProDetails" width="530" height="600" styleClass="textAlignLeft">		  
+			 <f:facet name="header">
+						<h:outputText value="View Project Details" styleClass="black12px" style="text-align:center"/>
+			 </f:facet>
+			<f:facet name="controls"> 
+				<h:commandButton value=" " type="button" styleClass="popupCloseImage" onclick="#{rich:component('viewProDetails')}.hide(); return false;"/>
+			</f:facet>
+			<a4j:outputPanel id="viewProDetailsRender" ajaxRendered="true">  
+				<c:if test="#{not empty calendarBean.eventCdcId and calendarBean.eventCdcId ne 'null'}">
+					<ui:include src="/online_product/project_detail/pt_details.xhtml"/>
+				</c:if>
+				<c:if test="#{empty calendarBean.eventCdcId or calendarBean.eventCdcId eq 'null'}">
+					There is no updated Info about the Project
+				</c:if>
+			</a4j:outputPanel>
+		</rich:popupPanel>-->
+			<h:outputScript>
+				$(".rf-tab-hdr-tabs").css("width", "102%");
+			</h:outputScript>
+			<h:outputScript library="js" name="JSScripts/Javascript_template.js?v=1.0" target="head"/>
+			<h:outputScript name="jquery-1.11.3.min.js" library="jquery-ui-1.8.16.custom"/>
+			</h:form> 
+		</ui:define>
+		
+</ui:composition>

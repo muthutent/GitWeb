@@ -1,0 +1,59 @@
+<!--
+
+   Copyright 2001-15 Creatus Inc.,
+   1754 Technology Drive, San Jose, California 95110, U.S.A.
+   All rights reserved.
+
+   This software is the confidential and proprietary information
+   of Creatus Inc. ("Confidential Information").  You shall not disclose
+   such Confidential Information and shall use it only in accordance
+   the terms of the license agreement you entered into with
+   Creatus Inc.
+
+   Company        : Creatus Inc.
+   Author         : Creatus
+   Date Created   : 03/10/2015
+   Last Modified  : 03/10/2015
+   Modifier       : Selva
+   Description    : Displays the Message as a Popup
+   					After the Lead Manager Migration from coldfusion to JBoss
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+ 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:ui="http://java.sun.com/jsf/facelets"
+     xmlns:c="http://java.sun.com/jsp/jstl/core"
+	 xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+     <h:head>
+     <h:outputStylesheet name="sheet.css" library="css" />
+     <h:outputScript>
+     	var myheight = 200;
+		var mywidth = 400;
+		this.resizeTo(mywidth,myheight);
+		this.moveTo(this.screen.width/2-mywidth/2,this.screen.height/2-myheight/2);
+     </h:outputScript>
+     </h:head>
+     <h:body>
+     
+     <h:panelGrid cellspacing="2" cellpadding="3" border="0" width="390">
+     <h:panelGroup styleClass="deepblue14px">
+     <c:choose>
+     <c:when test="#{requestScope.type == 'news'}">
+     <h:outputText value="To gain access to projects details, including bid lists &amb; contact information, " />
+     </c:when>
+     <c:when test="#{requestScope.type == 'plans'}">
+     <h:outputText value="To gain access to Plans &amb; Specs section, " />
+     </c:when>
+     <c:when test="#{requestScope.type == 'features'}">
+     <h:outputText value="To gain access to this feature, " />
+     </c:when>
+     </c:choose>
+     <h:outputText value="call us at 800-652-0008." />
+     </h:panelGroup>
+     </h:panelGrid>
+     
+     </h:body>
+     
+</ui:composition>

@@ -1,0 +1,184 @@
+<!--
+
+   Copyright 2001-15 Creatus Inc.,
+   2328 Walsh Avenue, Suite G, Santa Clara, CA 95051, U.S.A.
+   All rights reserved.
+
+   This software is the confidential and proprietary information
+   of Creatus Inc. ("Confidential Information").  You shall not disclose
+   such Confidential Information and shall use it only in accordance
+   the terms of the license agreement you entered into with
+   Creatus Inc.
+
+   Company        : Creatus Inc.
+   Author         : Creatus
+   Date Created   : 03/10/2015
+   Last Modified  : 03/10/2015
+   Modifier       : Selva
+   Description    : For Editing a Contact Saved Search
+   					After the Lead Manager Migration from coldfusion to JBoss
+-->	
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	 xmlns:f="http://java.sun.com/jsf/core" 
+	 xmlns:h="http://java.sun.com/jsf/html" 
+	 xmlns:a4j="http://richfaces.org/a4j" 
+	 xmlns:ui="http://java.sun.com/jsf/facelets"
+	 xmlns:c="http://java.sun.com/jsp/jstl/core"
+	 xmlns:rich="http://richfaces.org/rich"
+	 xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+     xmlns:o="http://omnifaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	template="/WEB-INF/templates/cdc_template.xhtml">
+<ui:define name="content">
+<h:outputScript library="js" name="contact_search/contactSearchJs.js" />
+<h:outputScript library="js" name="JSScripts/Javascript_template.js" />
+<h:outputScript library="js" name="contact_search/userhome_other_cs.js" />
+<h:outputStylesheet library="css" name="sheet.css" />
+<h:outputStylesheet library="css" name="buttons.css" />
+<h:outputStylesheet library="css" name="contact_savedsearch/contact_css_edit.css" />
+
+<div id="dhtmltooltip" align="left"></div>
+<h:panelGrid width="760" cellspacing="0" cellpadding="0" border="0">
+<h:panelGrid cellspacing="0" cellpadding="0" border="0" bgcolor="white" width="360" styleClass="panelGridCenter otherSps">
+<h:graphicImage name="tabs/navbar_css_on.gif" library="images" style="border:0;" alt="Contact Search"  id="nav_cs" styleClass="textAlignLeft"/>
+<h:panelGroup>	
+<h:form id="editContactsform">
+<h:panelGrid border="0" cellspacing="0" cellpadding="0" styleClass="tableStyle paddingLeft10">
+<h:panelGroup styleClass="csPaddingLeft">
+<h:outputText styleClass="black11px textAlignCenter" value="#{contactBean.contactSearchName}" />
+</h:panelGroup>
+<h:panelGroup>
+<rich:message for="contact_company" id="companyNameErrMsg" />
+</h:panelGroup>
+<h:panelGroup styleClass="csPaddingLeft">
+<h:outputText styleClass="red10px" style="height:40px;" value="*"/><h:outputText styleClass="black11px" style="font-weight:bold" value="Company Name:"/>&nbsp;&nbsp;
+<h:inputText id="contact_company" value="#{contactBean.companyName}" size="20" maxlength="50" />
+&nbsp;&nbsp;
+
+</h:panelGroup>
+<h:panelGroup>
+<rich:message for="contact_state" id="stateErrMsg" />
+</h:panelGroup>
+<h:panelGroup styleClass="csPaddingLeft">
+<h:outputText styleClass="black11px" style="font-weight:bold" value="State"/>
+</h:panelGroup>
+<h:panelGroup styleClass="csPaddingLeft">
+<h:selectManyListbox id="contact_state" size="5" value="#{contactBean.stateIds}">
+<f:selectItems value="#{contactBean.csStateIdNameList}" var="state" itemValue="#{state.state_id}" itemLabel="#{state.state_name}"/>
+</h:selectManyListbox>
+</h:panelGroup>
+
+<h:panelGroup>
+<rich:message for="cTypeId" id="contactTypeErrMsg" />
+</h:panelGroup>
+<h:panelGroup styleClass="csPaddingLeft">
+<h:selectOneListbox size="1" value="#{contactBean.contactTypeId}" onchange="getSubType(document.editContactsform)" id="cTypeId" styleClass="mylengthcs1">
+<f:selectItem itemValue="" itemLabel="Contact Type" h5:selected="true"/>
+<f:selectItems value="#{contactBean.contactTypeIdNameList}" var="contactType" itemValue="#{contactType.contact_type_id}" itemLabel="#{contactType.contact_type_name}"/>
+</h:selectOneListbox>
+&nbsp;
+<h:selectOneListbox id="cTypeIdSub" value="#{contactBean.contactSubTypeId}" size="1" style="width:180px; position:relative;">
+<f:selectItem itemValue="" itemLabel="Contact Sub Type" />
+<f:selectItems value="#{contactBean.contactSubTypeIdNameMap}" var="contactSubType" itemValue="#{contactSubType.contactTypeId}" itemLabel="#{contactSubType.contactTypeName}" itemDisabled="true"/>
+</h:selectOneListbox>
+
+</h:panelGroup>
+
+<h:panelGroup>
+<rich:message for="contact_addToProjDays" id="contactAddedErrMsg" />
+</h:panelGroup>
+<h:panelGroup styleClass="csPaddingLeft">
+<h:outputText styleClass="black11px" value="Contact added on project:" style="font-weight:bold"/>
+&nbsp;&nbsp;
+<h:selectOneListbox id="contact_addToProjDays" value="#{contactBean.daysContactAddedOnProject}" size="1">
+<f:selectItem itemValue="90" h5:selected="true" itemLabel="In the last 90 days" />
+<f:selectItem itemValue="60" itemLabel="In the last 60 days" />
+<f:selectItem itemValue="30" itemLabel="In the last 30 days" />
+<f:selectItem itemValue="91" itemLabel="Anytime" />
+</h:selectOneListbox>
+</h:panelGroup>
+
+<h:panelGroup>
+<rich:message for="contact_keyword" id="keywordErrMsg" />
+</h:panelGroup>
+<h:panelGroup styleClass="csPaddingLeft">
+<h:outputText styleClass="black11px" style="height:40px;font-weight:bold" value="Keyword:&nbsp;&nbsp;"/>
+<h:inputText id="contact_keyword" value="#{contactBean.contactKeyword}" size="20" maxlength="50" />&nbsp;&nbsp;
+</h:panelGroup>
+
+<h:panelGroup>
+<rich:message for="contact_zip" id="zipCodeErrMsg" />
+</h:panelGroup>
+<h:panelGroup styleClass="csPaddingLeft">
+<h:outputText styleClass="red10px" value="*" /><h:outputText styleClass="black11px" value="Company Zip Code:" style="font-weight:bold"/>&nbsp;&nbsp; 
+<h:inputText id="contact_zip" value="#{contactBean.zipCode}" size="10" maxlength="5"/>
+</h:panelGroup>
+
+<h:panelGroup>
+<rich:message for="contact_zipRange" id="distanceErrMsg" />
+</h:panelGroup>
+<h:panelGroup styleClass="csPaddingLeft">
+<h:outputText styleClass="black11px" value="Distance: " style="font-weight:bold"/>
+<h:selectOneRadio value="#{contactBean.distance}" styleClass="black11px" id="contact_zipRange">
+<f:selectItem itemValue="0" itemLabel="Exact Zip"/>
+<f:selectItem itemValue="5" itemLabel="5"/>
+<f:selectItem itemValue="10" itemLabel="10"/>
+<f:selectItem itemValue="20" itemLabel="20"/>
+<f:selectItem itemValue="50" itemLabel="50"/>
+<f:selectItem itemValue="100" itemLabel="100 Miles"/>
+</h:selectOneRadio>
+</h:panelGroup>
+
+<h:panelGroup styleClass="textAlignCenter">
+<h:outputText styleClass="black11px" value="NOTE: Contact search results include contacts that have been listed on projects in your subscription coverage area." />
+</h:panelGroup>
+
+<h:panelGroup styleClass="textAlignCenter">	
+<c:if test="${fn:containsIgnoreCase(userBean.userFeatures,'Contact Save Search')}">
+
+<h:commandButton action="#{cssController.contactSaveSearch(request)}" value=" "  styleClass="saveasButtonImage" onclick="return validateCSform(document.contactsform);" />
+	 <!-- <f:ajax execute="@form"/>
+	 <rich:componentControl target="saveAsContactSearch"  operation="show"/>
+</h:commandButton> -->
+					
+</c:if>
+<h:commandButton action="#{cssController.contactSaveSearchAction(request)}" value=" " styleClass="updateButtonImage" onclick="return validateCSform(document.editContactsform);">
+<f:param name="src" value="edit" />
+</h:commandButton>
+<h:commandButton type="reset" value=" " styleClass="resetButtonImage" />
+</h:panelGroup>
+</h:panelGrid>
+
+</h:form>
+</h:panelGroup>
+</h:panelGrid>
+</h:panelGrid>
+
+<h:outputScript library="js" name="contact_savedsearch/contact_css_edit.js" />
+<script>
+contextPath = '#{request.contextPath}';
+subcTypeIdVArray = #{requestScope.subcTypeIdVArray};
+subcTypeIdTArray = #{requestScope.subcTypeIdTArray};
+
+var y=0;
+<ui:repeat value="#{contactBean.contactTypeIdNameList}" var="contactType">
+cTypeIdArray[y] = "#{contactType.contact_type_id}";
+cTypeNameArray[y]= "#{contactType.contact_type_name}";
+y++;
+</ui:repeat>
+
+setContactTypeIdandSubTypeId(document.editContactsform,'#{contactBean.contactTypeId}','#{contactBean.contactSubTypeId}');
+</script>
+
+<rich:popupPanel id="saveAsContactSearch" modal="true"   immediate="true" width="510" moveable="true">
+	<f:facet name="header">
+		<h:outputText value="Save Contact Search" />
+	</f:facet>
+	<f:facet name="controls">
+		<h:commandButton value=" " type="button" styleClass="popupCloseImage" onclick="#{rich:component('saveAsContactSearch')}.hide(); return false;"/>
+	</f:facet>
+	<!-- <ui:include src="#{cssController.contactSaveSearch(request)}" />  -->
+</rich:popupPanel>
+</ui:define>
+</ui:composition>

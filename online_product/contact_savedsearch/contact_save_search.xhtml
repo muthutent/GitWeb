@@ -1,0 +1,88 @@
+<!--
+
+   Copyright 2001-15 Creatus Inc., 
+   2328 Walsh Avenue, Suite G, Santa Clara, CA 95051, U.S.A.
+   All rights reserved.
+
+   This software is the confidential and proprietary information
+   of Creatus Inc. ("Confidential Information").  You shall not disclose
+   such Confidential Information and shall use it only in accordance
+   the terms of the license agreement you entered into with
+   Creatus Inc.
+
+   Company        : Creatus Inc. 
+   Author         : Creatus
+   Date Created   : 03/10/2015
+   Last Modified  : 03/10/2015
+   Modifier       : Selva
+   Description    : Save a Contact Search Popup
+   					After the Lead Manager Migration from coldfusion to JBoss
+-->	
+ 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	template="/WEB-INF/templates/cdc_template.xhtml">
+	
+	<ui:define name="content">
+	
+	<h:outputScript name="JSScripts/Javascript_template.js"
+		library="js" />
+	<h:outputScript name="contact_savedsearch/contact_save_search.js"
+		library="js" />
+	<h:outputStylesheet name="sheet.css" library="css" />
+	<h:outputStylesheet name="buttons.css" library="css" />
+
+	<h:form id="save_contact_search">
+	<h:panelGrid width="760" border="0" cellspacing="0" cellpadding="0" bgcolor="white">
+	<h:panelGroup>
+
+		<h:panelGrid width="500" border="0" cellpadding="3" cellspacing="2"
+			styleClass="panelGridCenter border1px_3579bd borderRadius" columns="2">
+			
+			<h:column/>
+			<h:panelGroup styleClass="displayBlock" style="height:80px;" />
+			
+			<h:column/>
+			<h:panelGroup styleClass="textAlignLeft"><rich:message id="contactSearchNameErr" /></h:panelGroup>
+			<h:outputText value="Name of Contact Search "
+				styleClass="black11px fontWeightBold" />
+			<h:inputText value="#{contactBean.contactSearchName}" styleClass="black11px textAlignLeft" size="20"
+				maxlength="50" id="searchName" />
+				
+			<h:column/>
+			<h:outputText value="Please avoid apostrophe and quotes(',&quot;) in
+				search name." styleClass="black10px textAlignLeft" />
+			
+			<h:column/>
+			<h:panelGroup styleClass="textAlignLeft" >
+			<h:commandButton value=" " styleClass="saveButtonImage" action="#{cssController.contactSaveSearchAction(request)}" onclick="return validateform(document.save_contact_search)" />
+			
+			<h:outputLink onclick="window.history.go(-1);return false;" style="margin-left:26px;">
+			<h:graphicImage name="buttons/button_cancel.gif" library="images" styleClass="verticalAlignBottom" alt="Back Button" style="border:0px" />
+			</h:outputLink>
+			</h:panelGroup>
+			
+			<h:column/>
+			<h:panelGroup styleClass="displayBlock" style="height:80px;" />
+		</h:panelGrid>
+
+	</h:panelGroup>
+	</h:panelGrid>
+	</h:form>
+	<script>
+	var i=0;
+	<ui:repeat value="#{requestScope.cssNames}" var="name">
+		oldCSSNameArray[i]= "#{name}";
+		i++;
+	</ui:repeat>
+	</script>
+	
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,290 @@
+<!--
+
+   Copyright 2001-15 Creatus Inc.,
+   2328 Walsh Avenue, Suite G, Santa Clara, CA 95051, U.S.A.
+   All rights reserved.
+
+   This software is the confidential and proprietary information
+   of Creatus Inc. ("Confidential Information").  You shall not disclose
+   such Confidential Information and shall use it only in accordance
+   the terms of the license agreement you entered into with
+   Creatus Inc.
+
+   Company        : Creatus Inc.
+   Author         : Creatus
+   Date Created   : 03/10/2015
+   Last Modified  : 03/10/2015
+   Modifier       :  
+   Description    : Landing Page of CDC News 
+   					It is Dash board containing all the required pages when the user land in to the CDC News After Login
+					Contains Three Dash Bords
+					1.Quick Search, Advanced Search and Saved Search
+					2.Quick Links (GeneralBuilding, Specialty Trades, Heavy Highway and Sewer & Water)
+					3.SingleProjectSearch, ContactSearch and ContactSavedSearches 			
+					After the Lead Manager Migration from coldfusion to JBoss		
+-->
+<!-- THE PAGE USES THE JSF 2.0 TEMPLATE -->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:a4j="http://richfaces.org/a4j" 
+	 template="/WEB-INF/templates/cdc_template.xhtml"
+	 xmlns:rich="http://richfaces.org/rich">
+	
+	<!-- AND THE CONTENTS OF THE PAGE -->	
+		<ui:define name="content"> 
+		<h:outputStylesheet library="css" name="login/userhome.css"/>
+		<c:if test="${sessionScope.loginActionAjax != 'Y'}">
+			<h:outputScript library="jquery-ui-1.8.16.custom" name="jquery-1.11.3.min.js"/>
+		</c:if>
+		
+			<h:panelGroup layout="block"> 
+				<c:choose>
+					<c:when test="${empty userBean.loginId}">
+						<ui:include src="/online_product/check_session_curfolder.xhtml" />
+					</c:when>
+					<c:otherwise>
+
+						<!-- arch, eng sections -->
+						<c:if test="${not empty requestScope.deHotlistEnable}">
+							<!--Email Reminder alert for Dataexport. The flag is set in dataexport_action.cfm. Added on 25-July-2012 by Muthu -->
+							<h:outputScript>
+								alert("Hotlist Email Reminder was enabled to send Data Export project update notifications!");
+							</h:outputScript>
+						</c:if>
+
+						<c:set var="nav_search" value="QS,ADV,SS" />
+						<c:set var="nav_other" value="SPS,CS,CSS" />
+
+						<c:set var="nav_search" value="${fn:split(nav_search, ',')}" />
+						<c:set var="nav_other" value="${fn:split(nav_other, ',')}" />
+
+<c:if test="${not empty contentBean.itbLeadsId}">
+<script>
+var myhref= "${request.contextPath}/online_product/itb/detailsPopUp.jsp?pid="+${contentBean.itbLeadsId};
+var mywindow4 = window.open(myhref, 'pewin', 'personalbar=no,toolbar=no,status=no,scrollbars=yes,resizable=yes,menubar=no,alwaysRaised=yes,width=700,height=500');
+				mywindow4.moveTo(0,0);
+				mywindow4.focus();
+</script>
+</c:if>
+
+<c:if
+	test="${not empty contentBean.deProjectId}">
+	<script>
+
+	//centerlize the window
+	var screenW = screen.width;
+	var screenH = screen.height;
+	var popupW = 480;
+	var popupH = 460;
+	var positionX = (screenW-popupW)/2;
+	var positionY = (screenH-popupH)/2;
+	var myhref= "${request.contextPath}/online_product/dataexport/de_projectDetail_new.jsp?pid="+${contentBean.deProjectId};
+	var mywindow4 = window.open(myhref, 'pewin', 'personalbar=no,toolbar=no,status=no,scrollbars=yes,resizable=yes,menubar=no,alwaysRaised=yes,width='+popupW+',height='+popupH+',top='+positionY+',left='+positionX+'');
+					//mywindow4.moveTo(0,0);
+					//mywindow4.focus();
+	</script>
+</c:if>
+<!--End DE-popup projectDetail-->
+
+						<div class="userhomeDiv">
+							<!-- Proficient: Start -->
+							<c:set var="feaSearches" value=""></c:set>
+							<c:if test="${fn:containsIgnoreCase(userBean.userFeatures, 'Adv Searches')}">
+							<c:set var="feaSearches" value="Y"></c:set>
+							</c:if>
+							<c:set var="feaSaveSearches" value=""></c:set>
+							<c:if test="${fn:containsIgnoreCase(userBean.userFeatures, 'Save Search')}">
+							<c:set var="feaSaveSearches" value="Y"></c:set>
+							</c:if>
+
+							<!-- PARENT TABLE CONTAINS SEARCH FORMS AND THE QUICK LINKS-->
+							<h:panelGrid width="760" border="0" cellspacing="0" cellpadding="0" columns="2"  styleClass="panelGridStyle1" rowClasses="rowStyle1">
+								<!-- REPRESENTS A COLUMN CONTAINIS TWO TABLES
+										 TABLE 1.
+										        A. IMAGE LINK TO QUICK SEARCH   
+												B. IMAGE LINK TO ADVANCED SEARCH   
+												C. IMAGE LINK TO SAVED SEARCH   
+										 TABLE 2 CONTAINS TWO ROWS
+										 		ROW 1 CONTAINS TWO TABLE -> QUICK LINKS
+												ROW 2 SINGLEPROJECT, CONTACT SEARCH AND CONTACK SAVED SEARCHES
+															
+									 -->
+								 <h:panelGroup>
+								   <div class="rowStyle1">
+									<h:panelGrid columns="2">
+										
+										<rich:column>
+											
+											<h:panelGrid cellspacing="0" cellpadding="0" border="0" bgcolor="white" width="360" >	
+												 
+												 <h:panelGroup styleClass="tab">
+													<c:forEach var="i" begin="0"
+																end="${(fn:length(nav_search))-1}">
+																<c:choose>
+																	<c:when test="${userBean.icnOnlineHomeSearch == nav_search[i]}">
+																		<h:graphicImage name="tabs/navbar_${fn:toLowerCase(nav_search[i])}_on.gif" alt="Search" library="images" width="118" border="0"
+																	id="nav_${fn:toLowerCase(nav_search[i])}"/>
+																	</c:when>
+																	<c:otherwise>
+																		<a href="#"	
+																		onmouseover
+																		="MM_swapImage('nav_#{fn:toLowerCase(nav_search[i])}','','#{request.contextPath}/resources/images/tabs/navbar_#{fn:toLowerCase(nav_search[i])}_on.gif',1)"
+																			onmouseout="MM_swapImgRestore()">
+																			
+																			<h:graphicImage name="tabs/navbar_${fn:toLowerCase(nav_search[i])}_off.gif" alt="Search" library="images" width="118" border="0"
+																	id="nav_${fn:toLowerCase(nav_search[i])}" onclick="javascript:linkSearchPenal('${nav_search[i]}','${feaSearches}', '${feaSaveSearches}');" />
+																			
+																			</a>
+																	</c:otherwise>
+																</c:choose>
+																<c:if test="${i lt fn:length(nav_search)}">
+																	<img src="#{request.contextPath}/images/pixel_trans.gif" width="3" height="1"
+																		 border="0" />
+																</c:if>
+														</c:forEach>
+													</h:panelGroup>
+												
+												</h:panelGrid>
+											
+												<h:panelGroup>
+													<c:choose>
+														<c:when test="${userBean.icnOnlineHomeSearch == 'QS'}">
+															<ui:include src="#{qSearchController.userhomeSearchQS(request)}" />
+														</c:when>
+														<c:when test="${userBean.icnOnlineHomeSearch == 'ADV'}">
+															<ui:include src="#{advSearchController.userhomeSearchAdv(request)}" />
+														</c:when>
+														<c:otherwise>
+															<ui:include src="#{savedSearchController.userhomeSearchSS(request)}" />
+														</c:otherwise>
+													</c:choose>
+											</h:panelGroup>
+										
+										</rich:column>
+									
+									</h:panelGrid>	
+								</div>
+								</h:panelGroup>
+								
+								<c:if test="${not empty userBean.home}">
+									<!-- 08/15/2003 display only in home page  
+										 THE CONTENTS INSIDE THIS PANEL GROUP WILL BE SHOWN ONLY ON THE HOME PAGE 	
+									-->
+								<rich:column rendered="#{not empty userBean.home}">	
+									<h:panelGroup style="padding-top:3px;float:right;padding-right:11px;">
+											<!-- displaying quick links --> 
+											<ui:include	src="#{qLinksController.userhomeQlinks(request)}" />											
+											<!-- //displaying quick links -->
+
+											<br /> <!-- displaying other searches -->
+											
+											<h:panelGrid styleClass="tab" width="360" border="0" cellspacing="0" cellpadding="0"
+												align="center" bgcolor="white">
+													<h:panelGroup>
+														<c:choose>
+															<c:when test="${not fn:containsIgnoreCase(userBean.userFeatures, 'Contacts')}">
+																<rich:column>
+																	<a href="#{request.contextPath}/online-product/home?navother=SPS&amp;home=yes">
+																	<h:graphicImage name="tabs/navbar_sps_on.gif" library="images" id="nav_sps" alt="Single Project Search" border="0" />
+																	</a>
+																		
+																	<img src="#{request.contextPath}/images/pixel_trans.gif"
+																	width="3" height="1" alt="" border="0" />
+																	
+																	<a href="javascript:popup_features();">
+																	<h:graphicImage name="tabs/navbar_cs_off.gif" library="images" id="nav_cs" alt="Contact Search" border="0" />
+																	</a>
+																		
+																	<img src="#{request.contextPath}/images/pixel_trans.gif"
+																	width="3" height="0" alt="" border="0" />
+																	
+																	<a href="javascript:popup_features();">
+																	<h:graphicImage name="tabs/navbar_css_off.gif" library="images" id="nav_css" alt="Contact Saved Searches" border="0" />
+																	</a>
+																</rich:column>
+															</c:when>
+															<c:otherwise>
+																<rich:column>
+																	<c:forEach var="i" begin="0"
+																		end="${fn:length(nav_other)-1}">
+																		<c:choose>
+																			<c:when
+																				test="${fn:toUpperCase(userBean.icnOnlineHomeOtherSearch) == nav_other[i]}">
+																				<h:graphicImage name="tabs/navbar_${fn:toLowerCase(nav_other[i])}_on.gif" library="images" id="nav_${fn:toLowerCase(nav_other[i])}" alt="${fn:toLowerCase(nav_other[i])}" border="0" />
+																			</c:when>
+																			<c:otherwise>
+																				<a
+																					href="#{request.contextPath}/online-product/home?navother=${nav_other[i]}&amp;home=yes"
+																					onmouseover="MM_swapImage('nav_#{fn:toLowerCase(nav_other[i])}','','#{request.contextPath}/resources/images/tabs/navbar_#{fn:toLowerCase(nav_other[i])}_on.gif',1)"
+																					onmouseout="MM_swapImgRestore()">
+																					<h:graphicImage name="tabs/navbar_${fn:toLowerCase(nav_other[i])}_off.gif" library="images" id="nav_${fn:toLowerCase(nav_other[i])}" alt="${fn:toLowerCase(nav_other[i])}" border="0" />
+																					</a>
+																			</c:otherwise>
+																		</c:choose>
+																		<c:if test="${i lt fn:length(nav_other)}">
+																			<c:if test="${i ==(fn:length(nav_other)-1) }">
+																				<img src="#{request.contextPath}/images/pixel_trans.gif" width="3" height="0"
+																				alt="" border="0" />
+																			</c:if>
+																			<c:if test="${i !=(fn:length(nav_other)-1) }">
+																				<img src="#{request.contextPath}/images/pixel_trans.gif" width="3" height="1"
+																				alt="" border="0" />
+																			</c:if>
+																		</c:if>
+																	</c:forEach>
+																</rich:column>
+															</c:otherwise>
+														</c:choose>
+														
+														
+														
+												</h:panelGroup>
+											</h:panelGrid>
+										
+											<!-- displaying other searches -->	
+											<c:choose>
+												<c:when test="${fn:toUpperCase(userBean.icnOnlineHomeOtherSearch) == 'SPS'}">
+													<ui:include src="#{spsController.userhomeOtherSps(request)}" />
+												</c:when>
+												<c:when test="${fn:toUpperCase(userBean.icnOnlineHomeOtherSearch) == 'CS'}">
+													<ui:include src="#{csController.userhomeOtherCS(request)}" />
+												</c:when>
+												<c:otherwise>
+													<ui:include src="#{cssController.userhomeOtherCSS(request)}" />
+												</c:otherwise>
+											</c:choose>
+											<!-- end of displaying other searches -->
+
+									</h:panelGroup>
+								  </rich:column>
+								</c:if>
+								<!-- //08/15/2003 display only in home page -->
+							</h:panelGrid>
+							<!-- PARENT TABLE ENDS -->
+							<h:inputHidden id="forEJB" value="yes" />
+						</div>
+					</c:otherwise>
+				</c:choose>
+			</h:panelGroup>
+			<h:outputScript library="js" name="JSScripts/Javascript_template.js" />
+		<h:outputScript library="js" name="login/userhome.js?v=4.2"/>
+			<script>
+			contextPath = '#{request.contextPath}';
+			ajaxAction = '#{sessionScope.loginActionAjax}';
+ 
+				// AJAX Functions
+				 if(ajaxAction!="Y")			 
+				 {	
+				 	// post login action session variables set.
+				 	loginActionAjax();
+					
+				}   
+			</script>
+			
+		</ui:define>
+		<!-- END OF CONTENT -->
+</ui:composition>

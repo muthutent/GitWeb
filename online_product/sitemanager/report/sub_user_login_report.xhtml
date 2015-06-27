@@ -1,0 +1,74 @@
+<!--
+
+   Copyright 2001-15 Creatus Inc.,
+   2328 Walsh Avenue, Suite G, Santa Clara, CA 95051, U.S.A.
+   All rights reserved.
+
+   This software is the confidential and proprietary information
+   of Creatus Inc. ("Confidential Information").  You shall not disclose
+   such Confidential Information and shall use it only in accordance
+   the terms of the license agreement you entered into with
+   Creatus Inc.
+
+   Company        : Creatus Inc.
+   Author         : Creatus
+   Date Created   : 03/11/2015
+   Last Modified  : 03/11/2015
+   Modifier       : Sathish
+   Description    : Displays the Sub User Login Report
+   					After the Lead Manager Migration from coldfusion to JBoss
+-->	
+<!DOCTYPE html PUBLIC "-//W3C//Dtd XHTML 1.0 Transitional//EN" "http://www.w3.org/tr/xhtml1/Dtd/xhtml1-transitional.dtd"> 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	 xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions" 
+	  xmlns:a4j="http://richfaces.org/a4j" 
+	 xmlns:rich="http://richfaces.org/rich"> 
+	 <h:head>
+	 <c:if test="${subUserBean.activeItem eq 'userSetting' || subUserBean.activeItem eq 'subUsersLoginReport' || subUserBean.activeItem eq 'manageSubUsers'}">
+	   <h:outputStylesheet library="css" name="sitemanager/manage_sub_user/sub_user.css" />
+	</c:if>
+	</h:head>
+	
+	 <h:form id="subUserReportForm">
+	 <a4j:outputPanel id="subUserRender"> 
+		 
+		<c:if test="${fn:length(subUserBean.subUserList) gt 0}">
+			  <h:panelGrid width="359" border="0" cellspacing="0" cellpadding="0"  bgcolor="EFF4FA" styleClass="subUserListTable black10px">	
+			  	<h:panelGroup styleClass="messageStyle">
+					<h:outputLabel value="Below is the activity of your sub accounts." />
+				</h:panelGroup>
+				<rich:dataTable styleClass="dataTableWidth black10px" bgcolor="EFF4FA" var="subUser"  value="#{subUserBean.subUserList}"   rowClasses="oddRowColor,evenRowColor">
+					<rich:column styleClass="account displayBlock" style="width: 160px; word-wrap: break-word;">
+						<f:facet name="header"><h:outputLabel value="Sub User Account"  styleClass="accountHeader"/></f:facet>
+						<h:outputText value="#{subUser.loginId} - #{subUser.firstName} #{subUser.lastName}"/>
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">Last Login</f:facet>
+						<h:outputText value="#{subUser.lastEntry}"/>
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">No.of Logins</f:facet>
+						<h:outputText value="#{subUser.totalCounter}"/>
+					</rich:column>
+				</rich:dataTable>
+			</h:panelGrid>
+		 </c:if>
+		 <c:if test="${fn:length(subUserBean.subUserList) eq 0}">
+		   <h:panelGrid width="359" border="0" cellspacing="0" cellpadding="0"  bgcolor="EFF4FA" styleClass="userSettingTable black10px">	
+				<h:panelGroup styleClass="messageStyle">
+					<h:outputLabel value="There is no sub account."/> &nbsp; &nbsp; &nbsp;
+					<h:commandLink  action="#{subUserController.displayAddSubUser(request)}">
+					<h:graphicImage name="buttons/button_add_icnSubuser.gif" library="images" border="0" alt="Add a Sub User"/>
+					</h:commandLink>
+				</h:panelGroup>
+			</h:panelGrid>
+		 </c:if>
+	   </a4j:outputPanel>
+	   </h:form>
+	   
+</ui:composition>

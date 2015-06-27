@@ -1,0 +1,218 @@
+<!--
+
+   Copyright 2001-15 Creatus Inc.,
+   2328 Walsh Avenue, Suite G, Santa Clara, CA 95051, U.S.A.
+   All rights reserved.
+
+   This software is the confidential and proprietary information
+   of Creatus Inc. ("Confidential Information").  You shall not disclose
+   such Confidential Information and shall use it only in accordance
+   the terms of the license agreement you entered into with
+   Creatus Inc.
+
+   Company        : Creatus Inc. 
+   Author         : Creatus
+   Date Created   : 03/10/2015
+   Last Modified  : 03/10/2015
+   Modifier       : Selva 
+   Description    : Displays the saved searches list in CDC Home Page
+   					After the Lead Manager Migration from coldfusion to JBoss
+-->
+<!DOCTYPE html PUBLIC "-//W3C//Dtd XHTML 1.0 Transitional//EN" "http://www.w3.org/tr/xhtml1/Dtd/xhtml1-transitional.dtd"> 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	 xmlns:rich="http://richfaces.org/rich"
+	   xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                xmlns:o="http://omnifaces.org/ui">
+ 
+<h:outputStylesheet name="saved_search/savedSearches.css" library="css" />
+<h:outputScript name="saved_search/userhome_search_ss.js?v=1.1" library="js"/>
+<h:form>
+<table width="360" border="0" cellspacing="0" cellpadding="0"
+												align="center" bgcolor="EFF4FA"
+												style="border-top: 1px solid #3579bd; border-bottom: 1px solid #3579bd; border-left: 1px solid #3579bd; border-right: 1px solid #3579bd; padding: 4px; margin-top:-1px;">
+												
+<c:if test="#{requestScope.empsaveas}">
+	<tr class="row">
+		<td><img src="images/pixel_blue.gif" width="1" height="20" alt=""
+			border="0" /></td>
+		<td class="orange11px" colspan="5">A saved search has been
+			transferred successfully.</td>
+		<td align="right"><img src="images/pixel_blue.gif" width="1"
+			height="20" alt="" border="0" /></td>
+	</tr>
+</c:if>
+<c:choose>
+	<c:when test="#{fn:length(savedSearchBean.savedSearchDetailList) == 0}">
+		<tr class="row">
+			<td><img src="images/pixel_blue.gif" width="1" height="50"
+				alt="" border="0" /></td>
+			<td class="black10px" colspan="5">This area stores your saved
+				searches, click <a href="#{request.contextPath}/online-product/adv-search">here</a> to
+				create your own search.
+			</td>
+			<td align="right"><img src="images/pixel_blue.gif" width="1"
+				height="50" alt="" border="0" /></td>
+		</tr>
+	</c:when>
+	<c:otherwise>
+		<tr class="row" align="left">
+			<td></td>
+			<td class="black10px" colspan="5">Below are your saved searches.
+				The Edit icon will allow you to edit the parameters of your saved
+				search. The Run Search button will simply run the search as it was
+				saved. The Run New &amp; Updated button will run the email hotlist
+				search. The Trash icon will delete the corresponding saved search.</td>
+			<td align="right"></td>
+		</tr>
+
+		<tr class="row" align="left"> 
+			<td></td>
+			<td class="black10px"><strong>Search Name</strong></td>
+			<td class="black10px" align="center"><strong>Run Saved
+					Search</strong></td>
+			<td class="black10px" align="center"><strong>Run Email<br />Hotlist
+			</strong></td>
+			<td class="black10px" align="center" width="30"><strong>Edit</strong></td>
+			<td class="black10px" align="center" width="30"><strong>Del</strong></td>
+			<td align="right"></td>
+		</tr>							
+		<c:forEach items="#{savedSearchBean.savedSearchDetailList}" var="item" varStatus="count">
+			<c:choose>
+				<c:when test="#{count.index % 2 != 1}">
+					<c:set value="" var="row"/>
+				</c:when>
+				<c:otherwise>
+					<c:set value="row" var="row"/>
+				</c:otherwise>
+			</c:choose>
+			<tr class="#{row}" align="left">
+						<td height="40"></td>
+						
+						<!-- Search Name -->
+						<td class="black10px">
+							<c:if test="#{fn:containsIgnoreCase(userBean.userFeatures, 'Email Hotlist')
+						and not empty fn:trim(item.frequency) 
+						and item.enabled_flag != 'N' }">
+								<c:choose>
+									<c:when
+										test="#{(fn:toUpperCase(item.hotlist_format) == 'D' or empty fn:trim(item.hotlist_format)) and fn:toUpperCase(item.hotlist_result_type) == 'C'}">
+										<h:graphicImage name="emailhotlist/detail-email-combined-new.gif" library="images" alt="Detail Email Combined New" />&nbsp;
+									</c:when>
+									<c:when
+										test="#{(fn:toUpperCase(item.hotlist_format) == 'D' or empty fn:trim(item.hotlist_format)) and fn:toUpperCase(item.hotlist_result_type) == 'S'}">
+										<h:graphicImage name="emailhotlist/detail-email-separate.gif" library="images" alt="Detail Email Seperate" />&nbsp;
+									</c:when>
+									<c:when
+										test="#{fn:toUpperCase(item.hotlist_format) == 'B' and fn:toUpperCase(item.hotlist_result_type) == 'C'}">
+										<h:graphicImage name="emailhotlist/brief-email-combined.gif" library="images" alt="Brief Email combined" />&nbsp;
+									</c:when>
+									<c:when
+										test="#{fn:toUpperCase(item.hotlist_format) == 'B' and fn:toUpperCase(item.hotlist_result_type) == 'S'}">
+										<h:graphicImage name="emailhotlist/brief-email-separate.gif" library="images" alt="Brief Email Seperate" />&nbsp;
+									</c:when>
+								</c:choose>
+							</c:if> <c:if
+								test="#{fn:containsIgnoreCase(userBean.userFeatures, 'Data Export') and item.dataexport_flag == true}">
+								<h:graphicImage library="images" name="saved_search/Navigation_Blue_Up.gif" />&nbsp;
+							</c:if> <c:if
+								test="#{fn:containsIgnoreCase(userBean.userFeatures, 'eProjects') and item.eproject_flag == true}">
+								<h:graphicImage library="images" name="saved_search/eProjects_Up.gif" />&nbsp;
+							</c:if>#{item.search_name}
+						</td>
+						
+						<!-- Run Saved Search Button -->
+						<td align="center">
+							<h:commandLink action="#{savedSearchController.savedSearchDecide(request)}">
+								<f:setPropertyActionListener target="#{savedSearchBean.savedSearchName}" value="#{item.search_name}"/>
+								<f:param name="action" value="run"/>
+								<h:graphicImage library="images" name="saved_search/button_runsavedsearch.gif" border="0" styleClass="editCursor" />
+								<f:setPropertyActionListener target="#{savedSearchBean.lastRundate}" value="#{item.last_run_date}"/>
+								<f:setPropertyActionListener target="#{savedSearchBean.todayRundate}" value="#{item.today_run_date}"/>
+							</h:commandLink>
+						</td>
+							
+						<!-- New and Updated Button -->
+						<td align="center">
+							<h:commandLink action="#{savedSearchController.savedSearchDecide(request)}">
+								<f:setPropertyActionListener target="#{savedSearchBean.savedSearchName}" value="#{item.search_name}"/>
+								<f:param name="action" value="run"/>
+								<f:param name="hotlist" value="yes"/>
+								<f:setPropertyActionListener target="#{savedSearchBean.lastRundate}" value="#{item.last_run_date}"/>
+								<f:setPropertyActionListener target="#{savedSearchBean.todayRundate}" value="#{item.today_run_date}"/>
+								<h:graphicImage library="images" name="saved_search/button_runnewupd.gif" border="0" styleClass="editCursor" />
+							</h:commandLink>
+						</td>
+						
+						<!-- Edit Button -->
+						<td align="right" width="30">	 
+							<a4j:commandLink oncomplete="openSSEdit();" limitRender="true">
+								<f:setPropertyActionListener target="#{savedSearchBean.savedSearchName}" value="#{item.search_name}"/>
+								<f:param value="1" name="flag" />
+								<h:graphicImage library="images" name="buttons/button_edit_icn.gif" border="0" styleClass="editCursor" />
+								<f:setPropertyActionListener target="#{savedSearchBean.lastRundate}" value="#{item.last_run_date}"/>
+								<f:setPropertyActionListener target="#{savedSearchBean.todayRundate}" value="#{item.today_run_date}"/>
+							</a4j:commandLink>
+						</td>
+						
+						<!-- Delete Button -->
+						<td align="right" width="30">
+							<h:commandLink onclick="return delete_ss()" action="#{savedSearchController.deleteSavedSearch()}">
+								<f:param name="delete" value="yes" />
+								<f:setPropertyActionListener target="#{savedSearchBean.savedSearchName}" value="#{item.search_name}"/>
+								<f:setPropertyActionListener target="#{savedSearchBean.lastRundate}" value="#{item.last_run_date}"/>
+								<f:setPropertyActionListener target="#{savedSearchBean.todayRundate}" value="#{item.today_run_date}"/>
+								<h:graphicImage library="images" name="buttons/button_delete_icn.gif" border="0" styleClass="editCursor" />
+							</h:commandLink> 
+							
+						</td>
+						
+						<td align="right" height="40"></td>
+					</tr>
+		</c:forEach>
+
+	</c:otherwise>
+</c:choose>
+
+</table>
+  
+<input name="search_name" value="" type="hidden" />
+<input type="hidden" name="forEJB" value="yes" />
+</h:form>
+
+	<a4j:outputPanel id="listRe" ajaxRendered="true">
+	<c:choose>
+		<c:when test="#{fn:length(userBean.subUserList) gt 0}">
+			<c:set var="subUserList" value="#{userBean.subUserList}"/>
+			<c:set var="masterId" value="#{userBean.masterId}"/>
+		</c:when>
+		<c:otherwise>
+			<c:set var="subUserList" value="[]"/>
+			<c:set var="masterId" value="  "/>			
+		</c:otherwise>
+	</c:choose>
+	</a4j:outputPanel>
+	
+	<!-- Edit pop-up window -->
+	
+	<rich:popupPanel id="savedSearches" modal="true" immediate="true" onbeforeshow="createSelectMenu(#{subUserList},'#{masterId}')" width="381" 
+	height="318">
+						<f:facet name="header">
+						</f:facet>
+						<f:facet name="controls"> 
+							<h:commandButton value=" " type="button" styleClass="popupCloseImage" onclick="#{rich:component('savedSearches')}.hide(); return false;"/> 
+						</f:facet> 
+						<rich:hotKey key="Esc">  
+							<rich:componentControl target="savedSearches" operation="hide" />  
+						</rich:hotKey> 
+							
+			<a4j:outputPanel id="ssRender" ajaxRendered="true">							
+				<ui:include src="/online_product/saved_search/savedsearch_edit.xhtml" />
+			</a4j:outputPanel>
+	</rich:popupPanel>
+	
+</ui:composition>

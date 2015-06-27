@@ -1,0 +1,654 @@
+<!--
+
+   Copyright 2001-15 Creatus Inc.,
+   2328 Walsh Avenue, Suite G, Santa Clara, CA 95051, U.S.A.
+   All rights reserved.
+
+   This software is the confidential and proprietary information
+   of Creatus Inc. ("Confidential Information").  You shall not disclose
+   such Confidential Information and shall use it only in accordance
+   the terms of the license agreement you entered into with
+   Creatus Inc.
+
+   Company        : Creatus Inc.
+   Author         : Creatus
+   Date Created   : 03/10/2015
+   Last Modified  : 03/10/2015
+   Modifier       : Selva 
+   Description    : Displays the Advanced Search Form with User Selected Criterias
+   					After the Lead Manager Migration from coldfusion to JBoss
+-->
+<!DOCTYPE html PUBLIC "-//W3C//Dtd XHTML 1.0 Transitional//EN" "http://www.w3.org/tr/xhtml1/Dtd/xhtml1-transitional.dtd">
+ 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:o="http://omnifaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	template="/WEB-INF/templates/cdc_template.xhtml">
+	<ui:define name="content">
+		<h:panelGroup layout="block">
+			<h:outputStylesheet library="css" name="login/userhome.css" />
+			<h:outputStylesheet library="css" name="adv_search/searchADV.css" />
+			<h:outputStylesheet library="css" name="buttons.css" />
+			<h:outputStylesheet library="css" name="sheet.css" />
+			
+			<h:outputScript library="js" name="adv_search/searchADV.js?v=1.4" />
+			<h:outputScript library="js" name="JSScripts/Javascript_template.js" />
+			
+			<h:panelGrid width="760" border="0" cellspacing="0" cellpadding="0"
+				styleClass="panelGridStyle1" rowClasses="rowStyle1">
+				<h:panelGroup>
+					<div class="rowStyle1">
+						<h:panelGrid cellpadding="0" cellspacing="0">
+							<h:graphicImage name="tabs/navbar_ss_on.gif" library="images" alt="Saved Search" border="0"
+								style="float:left;vertical-align:bottom;" />
+							<h:form id="adv_search_form">
+								<!-- TABLE 1 -->
+								<h:panelGrid width="360" border="0" cellspacing="0"
+									cellpadding="0" bgcolor="EFF4FA"
+									styleClass="advTableStyle panelGridCenter">
+
+									<!-- TABLE 1.1 -->
+									<h:panelGrid styleClass="textLeftAlign black10px all_table"
+										style="padding:1px" columnClasses="columnStyle"
+										rowClasses="rowStyle">
+										<h:panelGroup>
+										<center><h:outputText value="#{savedSearchBean.savedSearchName}" style="font-weight: bold;"/></center>
+											<h:outputText value="&nbsp;*" styleClass="red10px"
+												style="font-size:7px;" />
+											<h:outputText value="&nbsp;indicates required fields." />
+											<br />
+											<h:outputText value="&nbsp;Select a " />
+											<h:outputText value="*" styleClass="red10px"
+												style="font-size:7px;" />
+											<h:outputText
+												value="State(Mandatory), then a County/Independent City" />
+										</h:panelGroup>
+										<h:panelGroup>
+											<rich:message id="stateMsg" for="state" />
+											<rich:message id="county_Message" for="county" />
+										</h:panelGroup>
+										<!-- TABLE 1.1.1 -->
+										<h:panelGrid columns="3"
+											styleClass="panelGridCenter all_table" style="float:left"
+											columnClasses="panelGridColumn,panelGridColumn,panelGridColumn">
+
+											<!-- STATE -->
+											<h:selectManyListbox styleClass="mylength2" id="state"
+												immediate="true" style="width:80px"
+												value="#{searchBean.stateList}"
+												onchange="getCountyLists()" size="5" label="State">
+												<f:selectItems itemValue="#{list.stateName}"
+													value="#{userBean.userStateIdNameList}" var="list"
+													itemLabel="#{list.stateAbb}" />
+											</h:selectManyListbox>
+
+											<!-- COUNTY -->
+											<h:selectManyListbox id="county" styleClass="mylength3"
+												value="#{searchBean.countyList}"
+												onclick="getSelectAllDeselect(this)" immediate="true"
+												style="width:110px" size="5">
+												<f:selectItem itemLabel="All Counties"
+													itemValue="All Counties" h5:selected="true" />
+												<f:selectItems value="#{userBean.userCountyIdNameList}"
+													var="list" itemLabel="#{list.countyName}"
+													itemValue="#{list.countyId}" />
+												<f:selectItem itemLabel="Multiple" itemValue="#{applicationConfig.MULTIPLE_COUNTY}" />
+											</h:selectManyListbox>
+
+											<!-- DAYS -->
+											<h:selectOneListbox var="days" id="days" style="width:110px;"
+												onclick="getSelectAllDeselect(this)" size="5"
+												value="#{searchBean.editionDays}">
+												<c:choose>
+													<c:when test="#{userBean.daysJobs == 'all'}">
+														<f:selectItem itemLabel="All (180 days)" itemValue="180"
+															h5:selected="true" />
+														<f:selectItem itemLabel="Last 90 days" itemValue="90" />
+														<f:selectItem itemLabel="Last 60 days" itemValue="60" />
+														<f:selectItem itemLabel="Last 45 days" itemValue="45" />
+													</c:when>
+													<c:when test="#{userBean.daysJobs == '90'}">
+														<f:selectItem itemLabel="All (90 days)" itemValue="90"
+															h5:selected="true" />
+														<f:selectItem itemLabel="Last 60 days" itemValue="60" />
+														<f:selectItem itemLabel="Last 45 days" itemValue="45" />
+													</c:when>
+													<c:when test="#{userBean.daysJobs == '45'}">
+														<f:selectItem itemLabel="All (45 days)" itemValue="45"
+															h5:selected="true" />
+													</c:when>
+												</c:choose>
+
+												<f:selectItem itemLabel="Last 30 days" itemValue="30" />
+												<f:selectItem itemLabel="Last 15 days" itemValue="15" />
+												<f:selectItem itemLabel="Last 10 days" itemValue="10" />
+												<f:selectItem itemLabel="Last 7 days" itemValue="7" />
+												<f:selectItem itemLabel="Last 5 days" itemValue="5" />
+												<f:selectItem itemLabel="Last 48 Hours" itemValue="2" />
+												<f:selectItem itemLabel="Last 24 Hours" itemValue="1" />
+											</h:selectOneListbox>
+
+										</h:panelGrid>
+										<!-- END TABLE 1.1.1-->
+										<h:outputText
+											value="&nbsp;HINT: Holding the Control Key will allow you to select multiple states &nbsp;and counties."
+											styleClass="black10px" />
+
+										<!-- NEW ALL JOBS -->
+										<h:panelGrid columns="2" styleClass="black11px all_table">
+											<h:outputText value="New/All jobs:" />
+											<h:selectOneRadio id="project_job"
+												styleClass="black11px all_table"
+												value="#{searchBean.newUpdated}"
+												style="display: inline-table;">&nbsp;
+					<f:selectItem itemValue="0" itemLabel="All Projects" />
+												<f:selectItem itemValue="1" itemLabel="New Projects" />
+											</h:selectOneRadio>
+										</h:panelGrid>
+
+										<!-- For Validation Error Message -->
+										<h:panelGroup id="section_stage_Message">
+										</h:panelGroup>
+
+										<!-- SECTION -->
+										<h:panelGrid styleClass="borderStyle all_table">
+											<h:panelGroup>
+												<h:graphicImage name="adv_search/navheader_section.gif" library="images" alt="Section"
+													border="0" align="left" />
+												<h:selectBooleanCheckbox id="section_selectall"
+													itemValue="SelectAll"
+													value="#{searchBean.selectAllSection}"
+													onclick="CheckAll(document.getElementsByName('adv_search_form:section'),this)" />
+												<h:outputLabel for="adv_search_form:section_selectall"
+													value="Select All" styleClass="checkBoxAlign" />
+											</h:panelGroup>
+										</h:panelGrid>
+
+
+										<h:panelGroup styleClass="selection">
+											<h:selectManyCheckbox id="section"
+												styleClass="black11px all_table"
+												value="#{searchBean.sectionList}"
+												style="padding-left:10px;" layout="pageDirection"
+												onclick="UnCheck(document.getElementsByName('adv_search_form:section'),document.getElementById('adv_search_form:section_selectall'))">
+												<f:selectItems value="#{userBean.allSectionNameAbbList}"
+													var="section" itemValue="#{section.sectionName}"
+													itemLabel="#{section.sectionDesc}" itemDisabled="#{not empty userBean.userSectionList and not fn:containsIgnoreCase(userBean.userSectionList, section.sectionName)}"/>
+
+											</h:selectManyCheckbox>
+										</h:panelGroup>
+
+										<c:if
+											test="${not empty userBean.userSectionList}">
+			  <h:outputText value="CDC offers editions with private &amp; public bid opportunities." styleClass="textAlignCenter"/>
+			  <h:outputText value="Please call 800-652-0008 for details." styleClass="textAlignCenter"/>
+			</c:if>
+										<!--SECTION ENDS -->
+										<h:panelGroup />
+										<!-- For Empty Space -->
+										<!-- STAGE -->
+										<h:panelGrid styleClass="borderStyle all_table">
+											<h:panelGroup>
+												<h:graphicImage name="adv_search/navheader_bidstage.gif" library="images" alt="Bid Stage"
+													border="0" align="left" />
+												<h:selectBooleanCheckbox id="stage_selectall"
+													itemValue="SelectAll"
+													value="#{searchBean.selectAllSubSection}"
+													onclick="CheckAll(document.getElementsByName('adv_search_form:stage'),this)" />
+												<h:outputLabel for="adv_search_form:stage_selectall"
+													value="Select All" styleClass="checkBoxAlign" />
+											</h:panelGroup>
+										</h:panelGrid>
+
+										<h:panelGroup styleClass="selection" layout="block">
+											<h:selectManyCheckbox id="stage" varStatus="count"
+												styleClass="black11px all_table"
+												value="#{searchBean.subSectionList}"
+												style="padding-left:10px;" layout="pageDirection"
+												onclick="UnCheck(document.getElementsByName('adv_search_form:stage'),document.getElementById('adv_search_form:stage_selectall'))">
+												<f:selectItems value="#{userBean.bidStageNameAbbList}"
+													var="stage" itemValue="#{stage.subSectionAbb}"
+													itemLabel="#{stage.subSection}" itemDisabled="#{not empty userBean.bidStageList and not fn:containsIgnoreCase(userBean.bidStageList, stage.subSection)}"/>
+											</h:selectManyCheckbox>
+										</h:panelGroup>
+
+										<c:if test="${not empty userBean.bidStageList}">
+			   <h:outputText value="CDC offers editions with private &amp; public bid opportunities." styleClass="textAlignCenter"/>
+			  	<h:outputText value="Please call 800-652-0008 for details." styleClass="textAlignCenter"/>
+			</c:if>
+										<!-- STAGE ENDS-->
+
+										<h:panelGroup />
+										<!-- For Empty Space -->
+
+										<!-- CONSTRUCTION TYPE -->
+										<h:panelGrid styleClass="borderStyle all_table">
+											<h:panelGroup>
+												<h:graphicImage name="adv_search/navheader_constType.gif" library="images" alt="Construction type"
+													border="0" align="left" />
+												<h:outputText
+													value="Tip: Leave Boxes Un-Checked to Select All"
+													style="margin-left:10px" />
+											</h:panelGroup>
+										</h:panelGrid>
+
+										<h:panelGroup layout="block" styleClass="selection all_table">
+											<h:selectManyCheckbox layout="pageDirection"
+												value="#{searchBean.constTypeList}"
+												style="padding-left:10px;" styleClass="black11px all_table">
+												<f:selectItem itemValue="new" itemLabel="New Construction" />
+												<f:selectItem itemValue="ren" itemLabel="Renovation" />
+												<f:selectItem itemValue="alt" itemLabel="Alteration" />
+												<f:selectItem itemValue="add" itemLabel="Addition" />
+											</h:selectManyCheckbox>
+										</h:panelGroup>
+										<!-- CONSTRUCTION TYPE ENDS -->
+										<h:panelGroup />
+										<!-- For Empty Space -->
+										<!-- BID TYPE  -->
+										<h:panelGrid styleClass="borderStyle all_table">
+											<h:panelGroup>
+												<h:graphicImage name="adv_search/navheader_bidtype.gif" library="images" alt="Bid Type"
+													border="0" align="left" />
+												<h:outputText
+													value="Tip: Leave Boxes Un-Checked to Select All"
+													style="margin-left:65px" />
+											</h:panelGroup>
+										</h:panelGrid>
+
+										<h:panelGroup style="padding-left:11px;">
+											<h:selectManyCheckbox value="#{searchBean.bidTypeList}"
+												style="border-collapse: collapse;display:inline-table"
+												styleClass="black11px">
+												<f:selectItem itemValue="public"
+													itemLabel="Public Work &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" itemDisabled="#{userBean.nationalUser eq 'Y'}" />
+												<f:selectItem itemValue="private"
+													itemLabel="Private Work" />
+											</h:selectManyCheckbox>
+										</h:panelGroup>
+
+										<c:if test="${userBean.nationalUser == 'Y'}">
+				<h:outputText value="CDC offers editions with private &amp; public bid opportunities." styleClass="textAlignCenter"/>
+			  	<h:outputText value="Please call 800-652-0008 for details." styleClass="textAlignCenter"/>
+			</c:if>
+										<!-- BID TYPE ENDS -->
+
+										<h:panelGrid />
+										<!-- For Empty Space -->
+										<h:panelGroup />
+										<!-- For Empty Space -->
+										<h:panelGroup />
+										<!-- For Empty Space -->
+										<h:panelGroup />
+										<!-- For Empty Space -->
+										<!-- DIVISIONS  -->
+										<h:panelGrid styleClass="borderStyle all_table">
+											<h:panelGroup>
+												<h:graphicImage name="adv_search/navheader_divisions.gif" library="images" alt="Divisions"
+													border="0" align="left" />
+												<h:outputText
+													value="Tip: Leave Boxes Un-Checked to Select All"
+													style="margin-left:14px" />
+											</h:panelGroup>
+										</h:panelGrid>
+										<h:outputText value="" />
+										<h:outputText value="" />
+										<h:outputText value="" />
+										<h:outputText value="" />
+										<h:outputText value="" />
+										<h:outputText value="" />
+
+										<c:if test="${userBean.isIPhone == 'N'}">
+											<h:panelGroup layout="block" styleClass="divisions">
+												<h:selectManyCheckbox id="division"
+													value="#{searchBean.divisionList}"
+													style="text-align:left;" layout="pageDirection" size="5"
+													styleClass="black12px all_table">
+													<f:selectItems value="#{userBean.divisionIdNameList}"
+														var="division" itemValue="#{division.divisionId}"
+														itemLabel="#{division.division}" />
+												</h:selectManyCheckbox>
+											</h:panelGroup>
+										</c:if>
+
+										<c:if test="${userBean.isIPhone != 'N'}">
+											<h:panelGroup layout="block" styleClass="divisions">
+												<h:selectManyCheckbox id="division" style="text-align:left;"
+													value="#{searchBean.divisionList}"
+													layout="pageDirection" size="5"
+													styleClass="black12px all_table">
+													<f:selectItems value="#{userBean.divisionIdNameList}"
+														var="division" itemValue="#{division.divisionId}"
+														itemLabel="#{division.division}" />
+												</h:selectManyCheckbox>
+											</h:panelGroup>
+										</c:if>
+										<h:outputText value="" />
+										<h:outputText value="" />
+										<h:outputText value="" />
+										<!-- DIVISIONS ENDS  -->
+										<h:panelGroup />
+										<!-- For Empty Space -->
+
+										<!-- ADVANCED SEARCH OPTIONS -->
+										<h:graphicImage name="adv_search/navheader_advoptions.gif" library="images" alt="advanced search options"
+											border="0" align="left" />
+
+
+										<h:panelGroup id="project_contacts_Message">
+										</h:panelGroup>
+										<h:panelGroup styleClass="black11px">
+											<center>
+												<b>Keyword Search:</b>
+											</center>
+											<rich:message for="project" />
+											<h:panelGrid columns="4" styleClass="all_table">
+												<h:outputText value="Projects:" />
+												<h:inputText id="project" size="28" h5:maxlength="255"
+													value="#{searchBean.projectKeyword}"
+													styleClass="searchOptions" />
+												<h:outputLink value="javascript:search_tips()"
+													styleClass="black10px" style="float:left">Search Tips</h:outputLink>
+												<rich:message for="contacts" />
+												<h:outputText value="Contacts:" />
+												<h:inputText id="contacts" size="28"
+													value="#{searchBean.contactKeyword}"
+													h5:maxlength="255" styleClass="searchOptions" />
+												<h:outputLink value="javascript:search_tips()"
+													styleClass="black10px" style="float:left">Search Tips</h:outputLink>
+											</h:panelGrid>
+											<h:panelGrid columns="2" styleClass="borderStyle">
+												<h:outputLabel value=" " style="padding:20px;" />
+												<h:outputLabel styleClass="black10px">
+						NOTE: Multiple keywords must be separated by commas (Eg. Distribution, Storage, Warehouse) and be a <b>MAXIMUM</b> of <b>250
+														CHARACTERS.</b>
+												</h:outputLabel>
+											</h:panelGrid>
+										</h:panelGroup>
+										<!-- ADVANCED SEARCH OPTIONS ENDS-->
+
+										<!-- JOB PLANNING STAGES -->
+										<h:outputText />
+										<!-- For Empty Space -->
+										<h:panelGroup styleClass="black11px">
+			Job Planning Stages:
+			<h:selectOneMenu id="jobPlaningStage"
+												value="#{searchBean.jobPlanningStage}"
+												styleClass="mylength4">
+												<f:selectItem itemValue=""
+													itemLabel="All Planning Stage" />
+												<f:selectItems itemValue="#{planningStage}"
+													itemlabel="#{planningStage}"
+													value="#{userBean.jobPlanningStages}" var="planningStage" />
+											</h:selectOneMenu>
+											<h:panelGrid styleClass="borderStyle" />
+										</h:panelGroup>
+										<!-- JOB PLANNING STAGES ENDS -->
+
+										<!-- JOB CONTRACTION METHODS -->
+										<h:outputText />
+										<!-- For Empty Space -->
+										<h:outputText value="Job Contracting Method:"
+											styleClass="black11px" />
+										<h:selectManyListbox style="width:330px;" id="JobContracting"
+											value="#{searchBean.conMethodList}"
+											styleClass="mylength4" size="4"
+											onclick="getSelectAllDeselect(this)">
+											<f:selectItem itemValue=""
+												itemLabel="All Contracting Method" h5:selected="true" />
+											<f:selectItems value="#{userBean.conMethodList}"
+												var="list" itemLabel="#{list}" itemValue="#{list}" />
+										</h:selectManyListbox>
+										<h:panelGrid styleClass="borderStyle" />
+										<!-- JOB CONTRACTION METHODS ENDS -->
+
+										<!-- INDUSTRY TYPE -->
+										<h:outputText />
+										<!-- For Empty Space -->
+										<h:outputText value="Industry Type:" styleClass="black11px" />
+										<h:selectManyListbox style="width:330px" id="industry"
+											value="#{searchBean.industryList}"
+											styleClass="mylength4" size="5" onclick="getSubIndustry(1)">
+											<f:selectItem itemValue="Select All" itemLabel="Select All"
+												/>
+											<f:selectItems value="#{userBean.industryIdNameList}"
+												var="list" itemLabel="#{list.industryName}"
+												itemValue="#{list.industryIdName}" />
+										</h:selectManyListbox>
+										<!-- INDUSTRY TYPE ENDS -->
+										<!-- SUB INDUSTRY TYPE -->
+										<h:outputText />
+										<!-- For Empty Space -->
+										<h:outputText value="Industry Sub Type:"
+											styleClass="black11px" />
+										<h:selectManyListbox style="width:330px" id="subIndustry"
+											value="#{searchBean.subIndustryList}"
+											styleClass="mylength4" size="5"
+											onclick="getSelectAllDeselect(this)">
+											<f:selectItem itemValue="Select All Sub Type"
+												itemLabel="Select All Sub Type" />
+											<f:selectItems value="#{userBean.industrySubIdNameList}"
+												var="listItem"
+												itemValue="#{listItem.subIndustryIdName}"
+												itemLabel="#{listItem.subIndustryName}" itemDisabled="true" />
+										</h:selectManyListbox>
+										<h:panelGrid styleClass="borderStyle" />
+										<h:outputText />
+										<!-- EmptyLine -->
+										<!-- SUB INDUSTRY TYPE ENDS-->
+
+										<!-- VALUE -->
+										<rich:message id="low_costHighCostErr" for="low_cost"
+											ajaxRendered="false" />
+										<h:panelGroup>
+											<h:outputText value="Value:" styleClass="black11px"
+												style="padding-right:10px" immediate="true" />
+											<h:inputText id="low_cost" size="10"
+												value="#{searchBean.costLow}" style="height:18px;"
+												h5:maxlength="10" />
+						to
+				<h:inputText id="heigh_cost" value="#{searchBean.costHigh}"
+												size="10" style="height:18px;" h5:maxlength="10" />
+										</h:panelGroup>
+										<h:panelGrid styleClass="borderStyle" />
+										<h:outputText />
+										<!-- EmptyLine -->
+										<!-- VALUE ENDS-->
+
+										<!-- UNIT OF MEASURE -->
+										<rich:message for="Unit" id="UnitErr1" ajaxRendered="false" />
+										<rich:message for="Unit" id="UnitErr2" ajaxRendered="false" />
+										<rich:message id="sqrt_fromToErr" for="sqrt_from"
+											ajaxRendered="false" />
+										<h:panelGroup>
+											<h:outputText value="Units of Measure" styleClass="black11px"
+												style="padding-right:10px;" />
+											<h:selectOneMenu id="Unit" value="#{searchBean.unit}"
+												style="height:22px;">
+												<f:selectItem itemValue="" itemLabel="Unit" />
+												<f:selectItem itemValue="SF" itemLabel="SF" />
+												<f:selectItem itemValue="GSF" itemLabel="GSF" />
+											</h:selectOneMenu>&nbsp;
+				<h:inputText id="sqrt_from" value="#{searchBean.sqrftFrom}"
+												h5:maxlength="9" style="height:18px;" size="8" />
+							to
+				<h:inputText id="sqrt_to" value="#{searchBean.sqrftTo}"
+												h5:maxlength="9" style="height:18px;" size="8" />
+										</h:panelGroup>
+										<h:panelGrid styleClass="borderStyle" />
+										<h:outputText />
+										<!-- EmptyLine -->
+										<!-- UNIT OF MEASURE ENDS -->
+
+										<!-- STORIES -->
+										<rich:message id="stories_fromToErr" for="stories_from"
+											ajaxRendered="false" />
+										<h:panelGroup>
+											<h:outputText value="Stories:" styleClass="black11px"
+												style="padding-right:10px" />
+											<h:inputText id="stories_from"
+												value="#{searchBean.storiesFrom}" size="10"
+												style="height:18px;" h5:maxlength="10" />
+					to
+				<h:inputText id="stories_to" value="#{searchBean.storiesTo}"
+												size="10" style="height:18px;" h5:maxlength="10" />
+										</h:panelGroup>
+										<h:panelGrid styleClass="borderStyle" />
+										<h:outputText />
+										<!-- EmptyLine -->
+										<!-- STORIES ENDS -->
+
+										<!-- BID DATE -->
+										<rich:message for="bidDateFrom" id="bidDateBidDaysErr"
+											ajaxRendered="false" />
+										<h:panelGroup>
+											<h:outputText value="Bid Date:" styleClass="black11px"
+												style="padding-right:10px" />
+											<rich:calendar id="bidDateFrom"
+												value="#{searchBean.bidDateFrom}" popup="true"
+												datePattern="#{userBean.datePattern}" inputSize="10"
+												maxlength="9" showWeeksBar="false" label="BidDateFrom">
+											</rich:calendar> to
+				 <rich:calendar id="bidDateTo"
+												value="#{searchBean.bidDateTo}" popup="true"
+												datePattern="#{userBean.datePattern}" inputSize="10"
+												maxlength="9" showWeeksBar="false" label="BidDateTo">
+											</rich:calendar>
+										</h:panelGroup>
+										<h:outputText />
+										<!-- EmptyLine -->
+										<!-- BID DATE ENDS -->
+
+										<!-- OR -->
+										<h:outputText />
+										<!-- For Empty Space -->
+										<rich:message for="bidDay" id="bidDayErr" ajaxRendered="false" />
+										<h:panelGroup styleClass="black11px">
+											<strong>OR:</strong>
+											<h:outputText value=" Find all jobs bidding in the next " />
+											<h:inputText id="bidDay" label="days"
+												value="#{searchBean.bidDay}" style="height:18px;"
+												labelPosition="right" size="3" h5:maxlength="3" /> days
+			</h:panelGroup>
+										<h:panelGrid styleClass="borderStyle" />
+										<!-- OR ENDS -->
+
+										<!-- SHOW ALL AND BUTTONS -->
+										<h:outputText />
+										<!-- For Empty Space -->
+										<h:panelGrid styleClass="panelGridCenter all_table"
+											style="padding-left:66px" rowClasses="rowStyle"
+											columnClasses="columnStyle">
+
+											<h:panelGroup styleClass="black11px all_table">
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<Strong>Show All</Strong> (removes 1000 limit) <h:selectBooleanCheckbox
+													id="allRecords" value="#{searchBean.showAll}" />
+											</h:panelGroup>
+											<h:panelGrid columns="2" styleClass="black11px all_table">
+												<Strong>Display Mode:</Strong>
+												<h:selectOneRadio style="display: inline-table;"
+													value="#{searchBean.displayMode}" id="d_mode"
+													styleClass="all_table">
+													<f:selectItem itemValue="b" itemLabel="Brief" />
+													<f:selectItem itemValue="d" itemLabel="Details" />
+												</h:selectOneRadio>
+											</h:panelGrid>
+											<h:panelGroup styleClass="black10px">
+					
+					<a4j:commandButton execute="@form" render="@none" limitRender="true" value=" "  styleClass="saveasButtonImage" oncomplete="#{rich:component('saveYourSearch')}.show();"
+						onclick="return validateForm(document.getElementById('adv_search_form'),0,#{msg['validation.search.section']},'#{userBean.nationalUser}'); " >
+						<f:param value="1" name="flag" />
+					</a4j:commandButton>&nbsp;
+					
+					<h:commandButton
+						onclick="return validateForm(document.getElementById('adv_search_form'),0,#{msg['validation.search.state']},'#{userBean.nationalUser}');"
+						action="#{savedSearchController.saveSearchAction(request)}"
+						value=" " styleClass="updateButtonImage">
+						<f:param name="src" value="edit" />
+					</h:commandButton>&nbsp;
+						
+					<a4j:commandButton type="reset" value=" " styleClass="resetButtonImage" onclick="getSubIndustry(0)" />
+											</h:panelGroup>
+										</h:panelGrid>
+										<!-- SHOW ALL AND BUTTONS ENDS -->
+									</h:panelGrid>
+									<!-- TABLE 1.1 ENDS-->
+								</h:panelGrid>
+								<!-- TABLE 1 ENDS-->
+								<script>
+ function getAllSubIndustry()
+ {
+ 	var i=0;
+ 	<ui:repeat value="#{userBean.industrySubIdNameList}" var="listItem">
+ 		subIndustryIdValue[i] = "#{listItem.subIndustryIdName}";
+		subIndustryParentIdValue[i]= "#{listItem.subIndustryParentIdName}";
+		subIndustryName[i]="#{listItem.subIndustryName}";
+		i++;
+	</ui:repeat>
+}
+
+ function selectSubIndustry(){
+	 var i=0;
+<ui:repeat value="#{searchBean.subIndustryList}" var="item">
+	selectSubIndustries[i] = "#{item}";
+	i++;
+</ui:repeat>
+ }
+ multipleCountyVal = '#{applicationConfig.MULTIPLE_COUNTY}';
+ function selectCounty() {
+	 var i=0;
+	 <ui:repeat value="#{searchBean.countyList}" var="item">
+	 	selectCounties[i] = "#{item}";
+	 	i++;
+	 </ui:repeat>
+}
+ 
+
+</script>
+								<c:if
+									test="#{userBean.nationalUser == 'Y' or not empty userBean.subIndustryList or not empty userBean.catIndustryList}">
+									<input type="hidden"
+										value="#{userBean.catIndustryList}"
+										id="Ind_Type_List" name="Ind_Type_List" />
+									<input type="hidden"
+										value="#{userBean.subIndustryList}"
+										id="Sub_Ind_Type_List" name="Sub_Ind_Type_List" />
+								</c:if>
+								<!--<o:resourceInclude path="/online_product/sessionVariables.jsp" />-->
+							</h:form>
+							<rich:popupPanel id="saveYourSearch" modal="true" autosized="true" moveable="true" onbeforeshow="openSaveSearch();" onhide="hideSYStooltips();">
+								<f:facet name="header">
+									<h:outputText value="Save Your Search" />
+								</f:facet>
+								<f:facet name="controls">
+									<h:commandButton value=" " type="button" styleClass="popupCloseImage" onclick="#{rich:component('saveYourSearch')}.hide(); return false;"/>
+								</f:facet>
+								<ui:include src="/online_product/saved_search/save_search.xhtml" />
+							</rich:popupPanel>
+						</h:panelGrid>
+					</div>
+				</h:panelGroup>
+			</h:panelGrid>
+		</h:panelGroup>
+		<script>
+//to show counties for selected states
+getCountyLists();
+UnCheck(document.getElementsByName('adv_search_form:section'),document.getElementById('adv_search_form:section_selectall'));
+UnCheck(document.getElementsByName('adv_search_form:stage'),document.getElementById('adv_search_form:stage_selectall'));
+
+//to show selected sub industries to edit the search criteria of a Saved Search
+getSubIndustry(0);
+getSelectAllDeselect(document.getElementById('adv_search_form:county'));
+getSelectAllDeselect(document.getElementById('adv_search_form:subIndustry'));
+</script>
+	</ui:define>
+	<!-- END OF CONTENT -->
+</ui:composition>

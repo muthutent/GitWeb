@@ -1,0 +1,371 @@
+<!--
+
+   Copyright 2001-15 Creatus Inc.,
+   2328 Walsh Avenue, Suite G, Santa Clara, CA 95051, U.S.A.
+   All rights reserved.
+
+   This software is the confidential and proprietary information
+   of Creatus Inc. ("Confidential Information").  You shall not disclose
+   such Confidential Information and shall use it only in accordance
+   the terms of the license agreement you entered into with
+   Creatus Inc.
+
+   Company        : Creatus Inc.
+   Author         : Creatus
+   Date Created   : 03/10/2015
+   Last Modified  : 03/10/2015
+   Modifier       : Selva
+   Description    : Displays the contactSearch Results
+   					After the Lead Manager Migration from coldfusion to JBoss
+-->	
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j" 
+	xmlns:o="http://omnifaces.org/ui"
+	template="/WEB-INF/templates/cdc_template.xhtml">
+
+<ui:define name="content">
+
+<h:outputStylesheet library="css" name="sheet.css" />
+<h:outputStylesheet library="css" name="contact_search/contact_search_results.css" />
+<h:outputStylesheet library="css" name="buttons.css" />
+
+<a4j:outputPanel>
+<h:panelGrid width="760" border="0" cellpadding="1" cellspacing="1" >
+<h:panelGroup>
+<h:panelGrid width="500" border="0" cellpadding="1" cellspacing="1">
+<h:panelGroup>
+<div id="loading" style="position:absolute; width:100%; text-align:left; top:100px;margin-left:250px;">
+<h:graphicImage name="loading/animated_loading_text_new.gif" library="images" width="310" height="57" border="0" />
+<br /><h:graphicImage name="loading/animated_loading.gif" library="images" border="0" /></div>
+ 
+<c:choose>
+<c:when test="#{contactBean.contactFound == false}">
+<h:panelGrid cellspacing="2" cellpadding="2" border="0" styleClass="panelGridCenter">
+<h:panelGroup>
+<h:outputText value="No Contacts found" style="width:500px;background-color:#F0F5FB;align:center;font-weight:bold; font-size: 11px; color: #333333; font-family: Arial, Verdana, Helvetica, sans-serif;" />
+</h:panelGroup>
+</h:panelGrid>
+</c:when>
+<c:otherwise>
+
+<c:set value="100" var="chunk" />
+<c:set var="N" value="#{(fn:length(contactBean.contacts))/chunk}" />
+<c:set var="end" value="#{N+(1-(N%1))%1}" />
+<c:set value="" var="str" />
+<c:forEach begin="1" end="#{end}" var="P_Counter">
+<c:if test="#{empty str}">
+<c:set value="#{P_Counter}" var="str" />
+</c:if>
+<c:if test="#{not empty str and str ne P_Counter}">
+<c:set value="#{str},#{P_Counter}" var="str" />
+</c:if>
+</c:forEach>
+
+<h:panelGrid cellspacing="2" cellpadding="2" border="0" styleClass="panelGridCenter">
+<h:panelGroup>
+<c:choose>
+<c:when test="#{contactBean.totaljobs le 500}">
+<h:outputText value="#{contactBean.totaljobs} Contact(s) found" style="width:500px;background-color:#F0F5FB;align:center;font-weight:bold; font-size: 11px; color: #333333; font-family: Arial, Verdana, Helvetica, sans-serif;" />
+</c:when>
+<c:otherwise>
+<h:outputText value="Displaying 500 Contacts of #{contactBean.totaljobs}" style="width:500px;background-color:#F0F5FB;align:center;font-weight:bold; font-size: 11px; color: #333333; font-family: Arial, Verdana, Helvetica, sans-serif;" />
+</c:otherwise>
+</c:choose>
+</h:panelGroup>
+
+<h:panelGroup>
+<h:outputLink value="#{request.contextPath}/online-product/contact-search?flag=1"><h:graphicImage name="buttons/button_back.gif" library="images" alt="Back Button"/></h:outputLink>
+</h:panelGroup>
+</h:panelGrid>
+
+<h:form id="contactSearchResultForm">
+
+<h:panelGrid cellpadding="0" cellspacing="0" border="0" width="785">
+<h:panelGroup>
+
+<!--  next / previous buttons -->
+<h:panelGrid id="next-prev" cellpadding="2" cellspacing="2" border="0" width="100%">
+<h:panelGroup styleClass="textAlignRight" >
+
+<h:outputText value="Page #{contactBean.startPage} of " styleClass="lightblue11px fontWeightBold" />
+<h:outputText value="#{end}" styleClass="lightblue11px fontWeightBold">
+   <f:convertNumber minFractionDigits="0" maxFractionDigits="0" />
+</h:outputText>&nbsp;&nbsp;
+            
+<c:if test="#{contactBean.startPage gt 1}">
+<a4j:commandLink value=" " render="table pagination next-prev pagination2 next-prev2" limitRender="true" styleClass="textDecorationNone">
+<f:setPropertyActionListener target="#{contactBean.startPage}" value="#{contactBean.startPage - 1}" />
+<h:graphicImage name="buttons/button_previous.gif" library="images" alt="Previous Button" styleClass="verticalAlignBottom"/>
+</a4j:commandLink>&nbsp;&nbsp;
+</c:if>
+
+<c:if test="#{contactBean.startPage lt end}">
+<a4j:commandLink value=" " render="table pagination next-prev pagination2 next-prev2" limitRender="true" styleClass="textDecorationNone">
+<f:setPropertyActionListener target="#{contactBean.startPage}" value="#{contactBean.startPage + 1}" />
+<h:graphicImage name="buttons/button_next.gif" library="images" alt="Next Button" styleClass="verticalAlignBottom"/>
+</a4j:commandLink>
+</c:if>
+</h:panelGroup>
+</h:panelGrid>
+
+</h:panelGroup>
+
+<h:panelGroup>
+
+<h:panelGrid id="pagination" cellpadding="2" cellspacing="2" border="0" width="785">
+<h:panelGroup styleClass="textAlignLeft">
+<ui:repeat value="#{fn:split(str,',')}" var="pg">
+<h:outputText value="#{pg}" styleClass="lightblue11px fontWeightBold" rendered="#{contactBean.startPage eq pg}" />
+<a4j:commandLink value="#{pg}" render="table pagination next-prev pagination2 next-prev2" limitRender="true" rendered="#{contactBean.startPage ne pg}">
+<f:setPropertyActionListener target="#{contactBean.startPage}" value="#{pg}"  />
+</a4j:commandLink>&nbsp;
+</ui:repeat>
+</h:panelGroup>
+</h:panelGrid>
+
+</h:panelGroup>
+
+</h:panelGrid>
+
+<h:panelGrid width="785" border="0" cellpadding="0" cellspacing="0">
+<h:panelGroup>
+<h:outputText value="Contact Search Results" styleClass="black11px" style="background-color:white; height:25; align:center; font-weight:bold; font-size: 11px; color: #333333; font-family: Arial, Verdana, Helvetica, sans-serif;" />
+</h:panelGroup>
+<h:panelGroup style="background-color:#6699FF">
+
+<rich:dataTable value="#{contactBean.subList}" rowKeyVar="index" style="width: 785px;" var="item" id="table" rows="100" styleClass="panelGridCenter" rowClasses="row,row1">
+			<rich:column id="companyName" headerClass="headerHeight">
+                <f:facet name="header">
+                     <h:outputText value="Company Name" />
+                </f:facet>
+                <h:outputText value="#{item.companyName}" styleClass="displayBlock" style="width: 200px;" />
+            </rich:column>
+            <rich:column id="contactType">
+                <f:facet name="header">
+                    <h:outputText value="Contact" /><br/><h:outputText value="Type" />
+                </f:facet>
+                <h:outputText value="#{item.contactType}" styleClass="displayBlock" style="width: 80px;" />
+            </rich:column>
+            <rich:column id="contactSubType">
+                <f:facet name="header">
+                    <h:outputText value="Contact" /><br/><h:outputText value="SubType" />
+                </f:facet>
+                <h:outputText value="#{item.contactSubType}" />
+            </rich:column>
+            <rich:column id="city">
+                <f:facet name="header">
+                    <h:outputText value="City" />
+                </f:facet>
+                <h:outputText value="#{item.city}" />
+            </rich:column>
+			<rich:column id="countyName">
+                <f:facet name="header">
+                    <h:outputText value="County" />
+                </f:facet>
+                <h:outputText value="#{item.countyName}" />
+            </rich:column>
+            <rich:column id="stateAbb" headerClass="borderRight" styleClass="borderRight" style="text-align:center">
+                <f:facet name="header">
+                    <h:outputText value="State" />
+                </f:facet>
+                <h:outputText value="#{item.stateAbb}" />
+            </rich:column>
+            
+            <!-- view profile -->
+			<rich:column id="profile" style="text-align:center">
+                <f:facet name="header">
+                   <h:outputText value="Profile" />
+                </f:facet>
+                
+				<a4j:commandLink value=" " render="contact_profile_render" limitRender="true" oncomplete="#{rich:component('viewConProfile')}.show();">
+				<f:setPropertyActionListener target="#{contactBean.contactId}" value="#{item.contactId}"/>
+				<f:setPropertyActionListener target="#{contactBean.jsp}" value="false"/>
+				<h:graphicImage styleClass="cursorPointer" name="buttons/button_view_icn.gif" library="images" style="border:0px" alt="View Profile"/>
+				</a4j:commandLink>
+				
+            </rich:column>
+            
+           <!--  Add to Address Book -->
+			<rich:column id="addToAddr" style="text-align:center">
+                <f:facet name="header">
+                    <h:outputText value="Address" /><br/><h:outputText value="Book" />
+                </f:facet>
+				<h:graphicImage rendered="${not fn:containsIgnoreCase(userBean.userFeatures,'Address Book')}" onclick="javascript:popup_features();" name="address_book/button_addressbook_add.gif" library="images" style="border:0px" alt="Add to Address Book" styleClass="cursorPointer"/>
+				
+				<a4j:commandLink id="addABButton" styleClass="cursorPointer" render="addToABRender" limitRender="true" oncomplete="#{rich:component('addToAB')}.show();" rendered="${fn:containsIgnoreCase(userBean.userFeatures,'Address Book') and empty fn:trim(item.addressBookId)}">
+				<f:setPropertyActionListener target="#{contactBean.contactId}" value="#{item.contactId}"/>
+				<f:setPropertyActionListener target="#{contactBean.addressBookAction}" value="show"/>
+				<f:setPropertyActionListener target="#{contactBean.jsp}" value="false"/>
+				<f:setPropertyActionListener target="#{contactBean.contactIndexPosition}" value="#{index}"/>
+				<h:graphicImage styleClass="add_#{item.contactId}" name="address_book/button_addressbook_add.gif" library="images" style="border:0px" alt="Add to Address Book"/>
+				</a4j:commandLink>
+				
+				<h:graphicImage rendered="${not empty item.addressBookId}" name="address_book/button_addressbook_added.gif" library="images" style="border:0px" alt="Already added to Address Book"/>
+            </rich:column>
+            
+           <!--  Contact Tracker -->
+			<rich:column id="contactTrack" style="text-align:center">
+                <f:facet name="header">
+					<h:outputText value="Contact" /><br/><h:outputText value="Tracker" />
+                </f:facet>
+				<a4j:commandLink rendered="#{not fn:containsIgnoreCase(userBean.userFeatures,'Contact Tracker')}">
+					<h:graphicImage   name="contact_tracker/button_ct_track.gif" library="images" style="border:0px" alt="Add to Contact Tracker" styleClass="cursorPointer"/>
+					<rich:componentControl target="contactTracker" event="click" operation="show"/>  
+				</a4j:commandLink>
+				<a4j:commandLink render="contactTrackerRender" styleClass="cursorPointer" limitRender="true" oncomplete="openContactTracker();#{rich:component('contactTracker')}.show();" rendered="#{fn:containsIgnoreCase(userBean.userFeatures,'Contact Tracker') and empty item.contactTrackerId}">
+					<f:setPropertyActionListener target="#{contactBean.contactId}" value="#{item.contactId}"/>
+					<f:setPropertyActionListener target="#{contactBean.action}" value="show"/>
+					<f:setPropertyActionListener target="#{contactBean.jsp}" value="false"/>
+					<f:setPropertyActionListener target="#{contactBean.contactIndexPosition}" value="#{index}"/>
+					<h:graphicImage styleClass="track_#{item.contactId}" name="contact_tracker/button_ct_track.gif" library="images" style="border:0px" alt="Add to Contact Tracker"/>
+				</a4j:commandLink>
+				<h:graphicImage name="contact_tracker/button_ct_tracked.gif" library="images" style="border:0px" alt="View Contact Tracker" rendered="#{not empty item.contactTrackerId}"/>
+            </rich:column>
+            
+            <!-- View Projects -->
+			<rich:column id="projects" style="text-align:center">
+                <f:facet name="header">
+					<h:outputText value="View" /><br/><h:outputText value="Projects" />
+                </f:facet>
+				<a4j:commandLink id="viewProjectsButton" render="contactProjectsList" limitRender="true" oncomplete="#{rich:component('viewProjects')}.show();">
+				<f:setPropertyActionListener target="#{contactBean.contactId}" value="#{item.contactId}"/>
+				<f:setPropertyActionListener target="#{contactBean.jsp}" value="false"/>
+				<f:param name="winVal" value="noback" />
+				<h:graphicImage name="buttons/button_view_icn.gif" library="images" styleClass="cursorPointer" style="border:0px" alt="View Projects"/>
+				</a4j:commandLink>
+            </rich:column>
+            
+        </rich:dataTable>
+ 
+</h:panelGroup>
+</h:panelGrid>
+
+<!--  next / previous buttons -->
+<h:panelGrid id="next-prev2" cellpadding="2" cellspacing="2" border="0" width="100%">
+<h:panelGroup styleClass="textAlignRight">
+
+<h:outputText value="Page #{contactBean.startPage} of " styleClass="lightblue11px fontWeightBold" />
+<h:outputText value="#{end}" styleClass="lightblue11px fontWeightBold">
+   <f:convertNumber minFractionDigits="0" maxFractionDigits="0" />
+</h:outputText>&nbsp;&nbsp;
+
+<c:if test="#{contactBean.startPage gt 1}">
+<a4j:commandLink value=" " render="table pagination next-prev pagination2 next-prev2" limitRender="true" styleClass="textDecorationNone">
+<f:setPropertyActionListener target="#{contactBean.startPage}" value="#{contactBean.startPage - 1}" />
+<h:graphicImage name="buttons/button_previous.gif" library="images" alt="Previous Button" styleClass="verticalAlignBottom" />
+</a4j:commandLink>&nbsp;&nbsp;
+</c:if>
+
+<c:if test="#{contactBean.startPage lt end}">
+<a4j:commandLink value=" " render="table pagination next-prev pagination2 next-prev2" limitRender="true" styleClass="textDecorationNone">
+<f:setPropertyActionListener target="#{contactBean.startPage}" value="#{contactBean.startPage + 1}" />
+<h:graphicImage name="buttons/button_next.gif" library="images" alt="Next Button" styleClass="verticalAlignBottom"/>
+</a4j:commandLink>
+</c:if>
+</h:panelGroup>
+</h:panelGrid>
+
+<h:panelGrid id="pagination2" cellpadding="2" cellspacing="2" border="0" width="785" styleClass="textAlignLeft">
+<h:panelGroup>
+<ui:repeat value="#{fn:split(str,',')}" var="pg">
+<h:outputText value="#{pg}" styleClass="lightblue11px fontWeightBold" rendered="#{contactBean.startPage eq pg}" />
+<a4j:commandLink value="#{pg}" render="table pagination next-prev pagination2 next-prev2" limitRender="true" rendered="#{contactBean.startPage ne pg}">
+<f:setPropertyActionListener target="#{contactBean.startPage}" value="#{pg}"  />
+</a4j:commandLink>&nbsp;
+</ui:repeat>
+</h:panelGroup>
+</h:panelGrid>
+
+<input type="hidden" name="load" value="yes" />
+
+</h:form>
+</c:otherwise>
+</c:choose>
+
+<h:panelGrid cellpadding="2" cellspacing="2" border="0" styleClass="panelGridCenter">
+<h:panelGroup>
+<h:outputLink value="#{request.contextPath}/online-product/contact-search?flag=1">
+<h:graphicImage name="buttons/button_back.gif" library="images" alt="Back Button" style="border:0px" />
+</h:outputLink>
+</h:panelGroup>
+</h:panelGrid>
+
+</h:panelGroup>
+</h:panelGrid>
+
+</h:panelGroup>
+</h:panelGrid>
+</a4j:outputPanel>
+<h:outputScript library="jquery-ui-1.8.16.custom" name="jquery-1.11.3.min.js" />
+<h:outputScript library="js" name="contact_search/contact_search_results.js?v=1.1" />
+<script type="text/javascript">
+
+resolution_align = '#{userBean.resolutionAlign}';
+contextPath = '#{request.contextPath}';
+loadInitCP();
+
+</script>
+
+<!-- view profile popup panel -->
+<rich:popupPanel id="viewConProfile" autosized="true">		  
+ <f:facet name="header">
+			<h:outputText value="View Profile" styleClass="black12px"/>
+ </f:facet>
+<f:facet name="controls"> 
+	<h:commandButton value=" " type="button" styleClass="popupCloseImage" onclick="#{rich:component('viewConProfile')}.hide(); return false;"/>
+</f:facet>
+
+	<!-- <ui:include src="/online_product/contact_search/contact_profile.xhtml"/> -->
+	<ui:include src="#{csController.contactProfile(request)}" />
+
+</rich:popupPanel>
+
+<!-- add to address book popup -->
+<rich:popupPanel id="addToAB"  autosized="true" minWidth="400" minHeight="400">		  
+ <f:facet name="header">
+			<h:outputText value="Add to Address Book" styleClass="black12px"/>
+ </f:facet>
+<f:facet name="controls"> 
+	<h:commandButton value=" " type="button" styleClass="popupCloseImage" onclick="#{rich:component('addToAB')}.hide(); return false;"/>
+</f:facet>
+
+	<!-- <ui:include src="/online_product/contact_search/contact_addtoab.xhtml"/> -->
+	<ui:include src="#{csController.contactAddToAB(request)}"/>
+
+</rich:popupPanel>
+ 
+<!-- contact tracker -->
+<rich:popupPanel id="contactTracker" autosized="true">		  
+ <f:facet name="header">
+			<h:outputText value="Tracker" styleClass="black12px"/>
+ </f:facet>
+<f:facet name="controls"> 
+	<h:commandButton value=" " type="button" styleClass="popupCloseImage" onclick="#{rich:component('contactTracker')}.hide(); return false;"/>
+</f:facet>
+	<ui:include src="/online_product/contact_tracker/contacts_tracker_addTo.xhtml"/>
+</rich:popupPanel>
+	
+<!-- view projects -->
+<rich:popupPanel id="viewProjects" autosized="true" minWidth="400" minHeight="400">		  
+ <f:facet name="header">
+			<h:outputText value="View Projects" styleClass="black12px"/>
+ </f:facet>
+<f:facet name="controls"> 
+	<h:commandButton value=" " type="button" styleClass="popupCloseImage" onclick="#{rich:component('viewProjects')}.hide(); return false;"/>
+</f:facet>
+
+	<!-- <ui:include src="/online_product/contact_search/contact_projects_list.xhtml"/> -->
+	<ui:include src="#{csController.contactProjectsList(request)}"/>
+
+</rich:popupPanel>
+
+</ui:define>
+
+</ui:composition>

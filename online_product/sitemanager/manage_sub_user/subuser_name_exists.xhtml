@@ -1,0 +1,21 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      template="/WEB-INF/templates/cdc_template.xhtml">
+
+<ui:define name="content">
+<h:outputStylesheet name="sheet.css" library="css" />
+<h:panelGrid width="760">
+<h:panelGroup>
+<h:outputText styleClass="red11px fontWeightBold" value="The Login ID of #{subUserBean.loginId} you entered is already present in the system. You need to use a different Login ID." />
+</h:panelGroup>
+<h:panelGroup styleClass="red11px fontWeightBold">
+<h:outputText value="Please click " />
+<h:outputLink value="javascript:history.back();">here</h:outputLink>
+<h:outputText value=" to go back to change the Login ID." />
+</h:panelGroup>
+</h:panelGrid>
+</ui:define>
+</ui:composition>

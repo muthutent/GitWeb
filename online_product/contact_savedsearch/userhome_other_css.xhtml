@@ -1,0 +1,98 @@
+<!--
+
+   Copyright 2001-15 Creatus Inc.,
+   2328 Walsh Avenue, Suite G, Santa Clara, CA 95051, U.S.A.
+   All rights reserved.
+
+   This software is the confidential and proprietary information
+   of Creatus Inc. ("Confidential Information").  You shall not disclose
+   such Confidential Information and shall use it only in accordance
+   the terms of the license agreement you entered into with
+   Creatus Inc.
+
+   Company        : Creatus Inc.
+   Author         : Creatus
+   Date Created   : 02/25/2015
+   Last Modified  : 03/10/2015
+   Modifier       : Selva
+   Description    : list of Saved Contact Searches
+   					After the Lead Manager Migration from coldfusion to JBoss
+-->	
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:a4j="http://richfaces.org/a4j">
+
+<h:outputStylesheet name="sheet.css" library="css" />
+<h:outputStylesheet name="contact_savedsearch/userhome_other_css.css" library="css" />
+<h:outputScript name="contact_savedsearch/userhome_other_css.js" library="js"/>
+
+<h:panelGrid  width="360" border="0" cellspacing="0" cellpadding="0" align="center" bgcolor="white" styleClass="otherSps tableStyle row">
+<h:panelGroup>
+
+<c:choose>
+<c:when test="${fn:length(requestScope.cssNames) == 0}">
+
+<h:panelGroup>
+<h:outputText value="This area stores your saved contact searches, click " styleClass="black10px"  />
+<h:outputLink value="#{request.contextPath}/online-product/contact-search?navother=cs">here</h:outputLink>
+<h:outputText value=" to create new contact search." styleClass="black10px"  />
+</h:panelGroup>
+
+</c:when>
+<c:otherwise>
+
+<h:panelGroup>
+<h:outputText value="Listed below are your Contact Saved Searches. Click Edit to view/edit the criteria of a search. Click Saved Search button to run a saved search. Click Delete to remove a saved search." styleClass="black10px"  />
+</h:panelGroup>
+
+<h:form>
+<h:panelGrid columns="4" style="width:100%" rowClasses="row,row1">
+<h:outputText value="Contact Search Name" styleClass="black10px fontWeightBold" />
+<h:outputText value="Run Saved Search" styleClass="black10px fontWeightBold textAlignCenter" />
+<h:outputText value="Edit" styleClass="black10px fontWeightBold textAlignCenter" />
+<h:outputText value="Del" styleClass="black10px fontWeightBold textAlignCenter" />
+
+<!-- Iterating throught the list of contact saved searches -->
+<c:forEach items="${requestScope.cssNames}" var="ssName" varStatus="count">
+
+<h:panelGroup>
+<h:outputText value="#{ssName}" styleClass="black10px" />
+</h:panelGroup>
+
+<h:panelGroup styleClass="textAlignCenter">
+<h:commandLink action="#{cssController.cssDecide(request)}">
+<f:setPropertyActionListener target="#{contactBean.contactSearchName}" value="#{ssName}" />
+<f:param name="action" value="run"/>
+<h:graphicImage name="buttons/button_runsavedsearch.gif" library="images" alt="Run Saved Search"/>
+</h:commandLink>
+</h:panelGroup>
+
+<h:panelGroup styleClass="textAlignCenter">
+<h:commandLink action="#{cssController.cssDecide(request)}">
+<f:setPropertyActionListener target="#{contactBean.contactSearchName}" value="#{ssName}" />
+<f:param name="action" value="edit"/>
+<h:graphicImage name="buttons/button_edit_icn.gif" library="images" alt="Edit Saved Search"/>
+</h:commandLink>
+</h:panelGroup>
+
+<h:panelGroup styleClass="textAlignCenter">
+<h:commandLink action="#{cssController.deleteCSS(request)}" onclick="return delCss()">
+<f:setPropertyActionListener target="#{contactBean.contactSearchName}" value="#{ssName}" />
+<h:graphicImage name="buttons/button_delete_icn.gif" library="images" alt="Delete Saved Search"/>
+</h:commandLink>
+</h:panelGroup>
+
+</c:forEach>
+</h:panelGrid>
+</h:form>
+
+</c:otherwise>
+</c:choose>
+</h:panelGroup>
+</h:panelGrid>
+</ui:composition>

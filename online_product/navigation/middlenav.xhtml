@@ -1,0 +1,707 @@
+<!--
+
+   Copyright 2001-15 Creatus Inc.,
+   2328 Walsh Avenue, Suite G, Santa Clara, CA 95051, U.S.A.
+   All rights reserved.
+
+   This software is the confidential and proprietary information
+   of Creatus Inc. ("Confidential Information").  You shall not disclose
+   such Confidential Information and shall use it only in accordance
+   the terms of the license agreement you entered into with
+   Creatus Inc.
+
+   Company        : Creatus Inc.
+   Author         : Creatus
+   Date Created   : 03/10/2015
+   Last Modified  : 03/10/2015
+   Modifier       : Selva
+   Description    : Displays the Sub Menu for all the Main Menu
+   					After the Lead Manager Migration from coldfusion to JBoss
+--> 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+	<h:panelGroup layout="block">
+		<ui:include src="/online_product/check_session_curfolder.xhtml" />
+		<ui:include src="/online_product/check_session_itb.xhtml" />
+		<ui:include src="/online_product/session_itb_update.xhtml" />
+		<ui:include src="/online_product/bb_sessiondelete.xhtml" />
+		
+		<h:outputStylesheet name="navigation/middlenav.css" library="css" />
+		<h:outputScript library="js" name="navigation/middlenav.js?v=1.5" />
+		<script>
+		//setting contextPath to use in js file
+		contextPath = '#{request.contextPath}';
+		</script>
+		
+		<div bgcolor="#FFFFFF" LEFTMARGIN="0" TOPMARGIN="0" MARGINWIDTH="0"
+			MARGINHEIGHT="0"
+			onload="MM_preloadImages('#{request.contextPath}/images/navigation/nav_home_on.gif','#{request.contextPath}/images/navigation/nav_pt_on.gif')">
+
+			<!-- Sub menu: Search -->
+			<div id="searchsub"
+				style="position: absolute; width: 295px; height: 21px; z-index: 1; top: 34px; left: 0px; visibility: hidden"
+				onmouseover="MM_showHideLayers('searchsub','','show','Layer2','','show')"
+				onmouseout="">
+				<layer id="Layer2"
+					onmouseover="MM_showHideLayers('searchsub','','show','Layer2','','show');MM_changeProp('navNews','','src','#{request.contextPath}/images/navigation/nav_search_on.gif','IMG')"
+					onmouseout="">
+				<table width="295" border="0" cellspacing="0" cellpadding="0">
+					<tr>
+						<td width="67"><a
+							href="#{request.contextPath}/online-product/quick-search"
+							onmouseover="MM_nbGroup('over','qsNews','#{request.contextPath}/images/navigation/subs_qs_on.gif','','navNews','#{request.contextPath}/images/navigation/nav_search_on.gif','',1)"
+							onmouseout="MM_nbGroup('out')"><img
+								src="#{request.contextPath}/images/navigation/subs_qs_off.gif"
+								name="qsNews" border="0" onload=""
+								alt="Run a simple search w/o saving" /></a></td>
+						<td><img
+							src="#{request.contextPath}/images/navigation/sub_spacer.gif"
+							alt="" border="0" /></td>
+						<td width="80"><c:if
+								test="${not fn:containsIgnoreCase(userBean.userFeatures, 'Adv Searches')}">
+								<a href="javascript:popup_features()"
+									onmouseover="MM_nbGroup('over','asNews','#{request.contextPath}/images/navigation/subs_as_on.gif','','navNews','#{request.contextPath}/images/navigation/nav_search_on.gif','',1)"
+									onmouseout="MM_nbGroup('out')"><img
+									src="#{request.contextPath}/images/navigation/subs_as_off.gif"
+									name="asNews" border="0" onload=""
+									alt="Creat and/or Save Advanced Search" /></a>
+							</c:if> <c:if
+								test="${fn:containsIgnoreCase(userBean.userFeatures, 'Adv Searches')}">
+								<a
+									href="#{request.contextPath}/online-product/adv-search"
+									onmouseover="MM_nbGroup('over','asNews','#{request.contextPath}/images/navigation/subs_as_on.gif','','navNews','#{request.contextPath}/images/navigation/nav_search_on.gif','',1)"
+									onmouseout="MM_nbGroup('out')"><img
+									src="#{request.contextPath}/images/navigation/subs_as_off.gif"
+									name="asNews" border="0" onload=""
+									alt="Creat and/or Save Advanced Search" /></a>
+							</c:if></td>
+						<td><img
+							src="#{request.contextPath}/images/navigation/sub_spacer.gif"
+							alt="" border="0" /></td>
+						<td width="73"><c:if
+								test="${not fn:containsIgnoreCase(userBean.userFeatures, 'Save Search')}">
+								<a href="javascript:popup_features()"
+									onmouseover="MM_nbGroup('over','ssNews','#{request.contextPath}/images/navigation/subs_ss_on.gif','','navNews','#{request.contextPath}/images/navigation/nav_search_on.gif','',1)"
+									onmouseout="MM_nbGroup('out')"><img
+									src="#{request.contextPath}/images/navigation/subs_ss_off.gif"
+									name="ssNews" border="0" onload=""
+									alt="Run Email Hotlists, Run/Edit Saved Searches" /></a>
+							</c:if> <c:if
+								test="${fn:containsIgnoreCase(userBean.userFeatures, 'Save Search')}">
+								<a
+									href="#{request.contextPath}/online-product/saved-search"
+									onmouseover="MM_nbGroup('over','ssNews','#{request.contextPath}/images/navigation/subs_ss_on.gif','','navNews','#{request.contextPath}/images/navigation/nav_search_on.gif','',1)"
+									onmouseout="MM_nbGroup('out')"><img
+									src="#{request.contextPath}/images/navigation/subs_ss_off.gif"
+									name="ssNews" border="0" onload=""
+									alt="Run Email Hotlists, Run/Edit Saved Searches" /></a>
+							</c:if></td>
+						<td><img
+							src="#{request.contextPath}/images/navigation/sub_spacer.gif"
+							alt="" border="0" /></td>
+						<td width="75"><c:if
+								test="${not fn:containsIgnoreCase(userBean.userFeatures,'Contact Save Search')}">
+								<a href="javascript:popup_features()"
+									onmouseover="MM_nbGroup('over','scNews','#{request.contextPath}/images/navigation/subs_sc_on.gif','','navNews','#{request.contextPath}/images/navigation/nav_search_on.gif','',1)"
+									onmouseout="MM_nbGroup('out')"><img
+									src="#{request.contextPath}/images/navigation/subs_sc_off.gif"
+									name="scNews" border="0" onload="" /></a>
+							</c:if> <c:if
+								test="${fn:containsIgnoreCase(userBean.userFeatures,'Contact Save Search')}">
+								<a
+									href="#{request.contextPath}/online-product/contact-search?navother=cs&amp;jobs=all"
+									onmouseover="MM_nbGroup('over','scNews','#{request.contextPath}/images/navigation/subs_sc_on.gif','','navNews','#{request.contextPath}/images/navigation/nav_search_on.gif','',1)"
+									onmouseout="MM_nbGroup('out')"><img
+									src="#{request.contextPath}/images/navigation/subs_sc_off.gif"
+									name="scNews" border="0" onload="" /></a>
+							</c:if></td>
+					</tr>
+				</table>
+				</layer>
+			</div>
+
+			<!-- Sub menu: Track  -->
+
+			<div id="tracksub"
+				style="position: absolute; width: 475px; height: 21px; z-index: 1; top: 34px; left: 0px; visibility: hidden"
+				onmouseover="MM_showHideLayers('tracksub','','show','Layer4','','show')"
+				onmouseout="">
+				<layer id="Layer4"
+					onmouseover="MM_showHideLayers('tracksub','','show','Layer4','','show');MM_changeProp('navTrack','','src','#{request.contextPath}/images/navigation/nav_track_on.gif','IMG')"
+					onmouseout="">
+				<table border="0" cellspacing="0" cellpadding="0">
+					<!-- width="475" -->
+					<tr>
+
+						<c:if
+							test="${fn:containsIgnoreCase(userBean.userFeatures,'Project Tracker') or 
+						(fn:containsIgnoreCase(userBean.userCategory,'eProjects') and 
+						not fn:containsIgnoreCase(userBean.userCategory,'DataFax'))}">
+							<td width="70"><c:if
+									test="${not fn:containsIgnoreCase(userBean.userFeatures,'Project Tracker')}">
+									<a href="javascript:popup_features()"
+										onmouseover="MM_nbGroup('over','spPT','#{request.contextPath}/images/navigation/subs_sp_on.gif','','navTrack','#{request.contextPath}/images/navigation/nav_track_on.gif','',1)"
+										onmouseout="MM_nbGroup('out')"><img
+										src="#{request.contextPath}/images/navigation/subs_sp_off.gif"
+										name="spPT" border="0" onload="" /></a>
+								</c:if> 
+								 
+								<c:if
+									test="${fn:containsIgnoreCase(userBean.userFeatures,'Project Tracker')}">
+
+									<a href="#{request.contextPath}/online-product/project-tracker/saved-projects"
+										onmouseover="MM_nbGroup('over','spPT','#{request.contextPath}/images/navigation/subs_sp_on.gif','','navTrack','#{request.contextPath}/images/navigation/nav_track_on.gif','',1)"
+										onmouseout="MM_nbGroup('out')"><img
+										src="#{request.contextPath}/images/navigation/subs_sp_off.gif"
+										name="spPT" border="0" onload="" /></a>
+								</c:if></td>
+							<td><img
+								src="#{request.contextPath}/images/navigation/sub_spacer.gif"
+								alt="" border="0" /></td>
+							<td width="80"><c:if
+									test="${not fn:containsIgnoreCase(userBean.userFeatures,'Project Tracker')}">
+									<a href="javascript:popup_features()"
+										onmouseover="MM_nbGroup('over','upPT','#{request.contextPath}/images/navigation/subs_up_on.gif','','navTrack','#{request.contextPath}/images/navigation/nav_track_on.gif','',1)"
+										onmouseout="MM_nbGroup('out')"><img
+										src="#{request.contextPath}/images/navigation/subs_up_off.gif"
+										name="upPT" border="0" onload="" /></a>
+								</c:if> <c:if
+									test="${fn:containsIgnoreCase(userBean.userFeatures,'Project Tracker')}">
+									<a href="#{request.contextPath}/online-product/project-tracker/updated-projects"
+										onmouseover="MM_nbGroup('over','upPT','#{request.contextPath}/images/navigation/subs_up_on.gif','','navTrack','#{request.contextPath}/images/navigation/nav_track_on.gif','',1)"
+										onmouseout="MM_nbGroup('out')"><img
+										src="#{request.contextPath}/images/navigation/subs_up_off.gif"
+										name="upPT" border="0" onload="" /></a>
+								</c:if></td>
+							<td><img
+								src="#{request.contextPath}/images/navigation/sub_spacer.gif"
+								alt="" border="0" /></td>
+							<td width="68"><c:if
+									test="${not fn:containsIgnoreCase(userBean.userFeatures,'Project Tracker')}">
+									<a href="javascript:popup_features()"
+										onmouseover="MM_nbGroup('over','trackPT','#{request.contextPath}/images/navigation/subs_pt_on.gif','','navTrack','#{request.contextPath}/images/navigation/nav_track_on.gif','',1)"
+										onmouseout="MM_nbGroup('out')"><img
+										src="#{request.contextPath}/images/navigation/subs_pt_off.gif"
+										name="trackPT" border="0" onload="" /></a>
+								</c:if> <c:if
+									test="${fn:containsIgnoreCase(userBean.userFeatures,'Project Tracker')}">
+									<a href="#{request.contextPath}/online-product/project-tracker/saved-projects"
+										onmouseover="MM_nbGroup('over','trackPT','#{request.contextPath}/images/navigation/subs_pt_on.gif','','navTrack','#{request.contextPath}/images/navigation/nav_track_on.gif','',1)"
+										onmouseout="MM_nbGroup('out')"><img
+										src="#{request.contextPath}/images/navigation/subs_pt_off.gif"
+										name="trackPT" border="0" onload="" /></a>
+								</c:if></td>
+							<td><img
+								src="#{request.contextPath}/images/navigation/sub_spacer.gif"
+								alt="" border="0" /></td>
+						</c:if>
+
+
+						<c:if
+							test="${fn:containsIgnoreCase(userBean.userFeatures,'Contact Tracker') or 
+						(fn:containsIgnoreCase(userBean.userCategory,'eProjects') and 
+						not fn:containsIgnoreCase(userBean.userCategory,'DataFax'))}">
+							<td width="71"><c:if
+									test="${not fn:containsIgnoreCase(userBean.userFeatures,'Contact Tracker')}">
+									<a href="javascript:popup_features()"
+										onmouseover="MM_nbGroup('over','trackCT','#{request.contextPath}/images/navigation/subs_ct_on.gif','','navTrack','#{request.contextPath}/images/navigation/nav_track_on.gif','',1)"
+										onmouseout="MM_nbGroup('out')"><img
+										src="#{request.contextPath}/images/navigation/subs_ct_off.gif"
+										name="trackCT" border="0" onload="" /></a>
+								</c:if> <c:if
+									test="${fn:containsIgnoreCase(userBean.userFeatures,'Contact Tracker')}">
+									<a
+										href="#{request.contextPath}/online-product/contact-search?navother=ct"
+										onmouseover="MM_nbGroup('over','trackCT','#{request.contextPath}/images/navigation/subs_ct_on.gif','','navTrack','#{request.contextPath}/images/navigation/nav_track_on.gif','',1)"
+										onmouseout="MM_nbGroup('out')"><img
+										src="#{request.contextPath}/images/navigation/subs_ct_off.gif"
+										name="trackCT" border="0" onload="" /></a>
+								</c:if></td>
+							<td><img
+								src="#{request.contextPath}/images/navigation/sub_spacer.gif"
+								alt="" border="0" /></td>
+							<td width="80"><c:if
+									test="${not fn:containsIgnoreCase(userBean.userFeatures,'Contact Tracker')}">
+									<a href="#{request.contextPath}/online-product/contact-search?navother=uc"
+										onmouseover="MM_nbGroup('over','trackUC','#{request.contextPath}/images/navigation/subs_uc_on.gif','','navTrack','#{request.contextPath}/images/navigation/nav_track_on.gif','',1)"
+										onmouseout="MM_nbGroup('out')"><img
+										src="#{request.contextPath}/images/navigation/subs_uc_off.gif"
+										name="trackUC" border="0" onload="" /></a>
+								</c:if> <c:if
+									test="${fn:containsIgnoreCase(userBean.userFeatures,'Contact Tracker')}">
+									<a
+										href="#{request.contextPath}/online-product/contact-search?navother=uc"
+										onmouseover="MM_nbGroup('over','trackUC','#{request.contextPath}/images/navigation/subs_uc_on.gif','','navTrack','#{request.contextPath}/images/navigation/nav_track_on.gif','',1)"
+										onmouseout="MM_nbGroup('out')"><img
+										src="#{request.contextPath}/images/navigation/subs_uc_off.gif"
+										name="trackUC" border="0" onload="" /></a>
+								</c:if></td>
+							<td><img
+								src="#{request.contextPath}/images/navigation/sub_spacer.gif"
+								alt="" border="0" /></td>
+						</c:if>
+
+
+						<c:if
+							test="${fn:containsIgnoreCase(userBean.userFeatures,'Contact Save Search') or 
+						(fn:containsIgnoreCase(userBean.userCategory,'eProjects') and 
+						not fn:containsIgnoreCase(userBean.userCategory,'DataFax'))}">
+							<td width="106"><c:if
+									test="${not fn:containsIgnoreCase(userBean.userFeatures,'Contact Save Search')}">
+									<a href="javascript:popup_features()"
+										onmouseover="MM_nbGroup('over','csCT','#{request.contextPath}/images/navigation/subs_cs_on.gif','','navTrack','#{request.contextPath}/images/navigation/nav_track_on.gif','',1)"
+										onmouseout="MM_nbGroup('out')"><img
+										src="#{request.contextPath}/images/navigation/subs_cs_off.gif"
+										name="csCT" border="0" onload="" /></a>
+								</c:if> <c:if
+									test="${fn:containsIgnoreCase(userBean.userFeatures,'Contact Save Search')}">
+									<a
+										href="#{request.contextPath}/online-product/contact-search?navother=css"
+										onmouseover="MM_nbGroup('over','csCT','#{request.contextPath}/images/navigation/subs_cs_on.gif','','navTrack','#{request.contextPath}/images/navigation/nav_track_on.gif','',1)"
+										onmouseout="MM_nbGroup('out')"><img
+										src="#{request.contextPath}/images/navigation/subs_cs_off.gif"
+										name="csCT" border="0" onload="" /></a>
+								</c:if></td>
+						</c:if>
+
+
+					</tr>
+				</table>
+				</layer>
+			</div>
+
+			<table id="menu" border="0" cellspacing="0" cellpadding="0">
+				<tr>					
+
+					<!-- Main menu: Home -->
+					<c:choose>
+						<c:when
+							test="${not empty userBean.menuHighlighter  and userBean.menuHighlighter eq 'home'}">
+							<td valign="top"><a
+								href="#{request.contextPath}/online-product/home?home=yes"
+								onmouseout="MM_swapImgRestore()"
+								onmouseover="MM_showHideLayers('searchsub','','hide','Layer2','','hide','tracksub','','hide','Layer4','','hide','resourcesub','','hide','Layer6','','hide'); MM_swapImage('nav_home','','#{request.contextPath}/images/navigation/nav_home_on.gif',1)"><img
+									src="#{request.contextPath}/images/navigation/nav_home_on.gif"
+									alt="" border="0" name="nav_home" /></a></td>
+						</c:when>
+						<c:otherwise>
+							<td valign="top"><a
+								href="#{request.contextPath}/online-product/home?home=yes"
+								onmouseout="MM_swapImgRestore()"
+								onmouseover="MM_showHideLayers('searchsub','','hide','Layer2','','hide','tracksub','','hide','Layer4','','hide','resourcesub','','hide','Layer6','','hide'); MM_swapImage('nav_home','','#{request.contextPath}/images/navigation/nav_home_on.gif',1)"><img
+									src="#{request.contextPath}/images/navigation/nav_home_off.gif"
+									alt="" border="0" name="nav_home" /></a></td>
+						</c:otherwise>
+					</c:choose>
+
+					<!-- Search -->
+					<c:choose>
+						<c:when
+							test="${not empty userBean.menuHighlighter  and userBean.menuHighlighter eq 'search'}">
+							<td valign="top"><a href="#"
+								onmouseover="MM_showHideLayers('searchsub','','show','Layer2','','show', 'tracksub','','hide','Layer4','','hide','resourcesub','','hide','Layer6','','hide'); MM_swapImage('navNews','','#{request.contextPath}/images/navigation/nav_search_on.gif',1)"
+								onmouseout="MM_swapImgRestore()"><img
+									src="#{request.contextPath}/images/navigation/nav_search_on.gif"
+									alt="" border="0" name="navNews" /></a></td>
+						</c:when>
+						<c:otherwise>
+							<td valign="top"><a href="#"
+								onmouseover="MM_showHideLayers('searchsub','','show','Layer2','','show', 'tracksub','','hide','Layer4','','hide','resourcesub','','hide','Layer6','','hide'); MM_swapImage('navNews','','#{request.contextPath}/images/navigation/nav_search_on.gif',1)"
+								onmouseout="MM_swapImgRestore()"><img
+									src="#{request.contextPath}/images/navigation/nav_search_off.gif"
+									alt="" border="0" name="navNews" /></a></td>
+						</c:otherwise>
+					</c:choose>
+
+					<!-- Added script to Hide unsubscribed features for DataFax users as requested by Terry on 01/10/14 -->
+					<!-- Main menu: Track -->
+					<c:if
+						test="${(fn:containsIgnoreCase(userBean.userCategory,'eProjects') and 
+						not fn:containsIgnoreCase(userBean.userCategory,'DataFax')) or 
+						(fn:containsIgnoreCase(userBean.userFeatures,'Project Tracker') or 
+						fn:containsIgnoreCase(userBean.userFeatures,'Contact Tracker'))}">
+						<c:choose>
+							<c:when
+								test="${not empty userBean.menuHighlighter  and userBean.menuHighlighter eq 'track'}">
+								<td valign="top"><a href="#"
+									onmouseout="MM_swapImgRestore()"
+									onmouseover="MM_showHideLayers('searchsub','','hide','Layer2','','hide','tracksub','','show','Layer4','','show','resourcesub','','hide','Layer6','','hide'); MM_swapImage('navTrack','','#{request.contextPath}/images/navigation/nav_track_on.gif',1)"><img
+										src="#{request.contextPath}/images/navigation/nav_track_on.gif"
+										alt="" border="0" name="navTrack" /></a></td>
+							</c:when>
+							<c:otherwise>
+								<td valign="top"><a href="#"
+									onmouseout="MM_swapImgRestore()"
+									onmouseover="MM_showHideLayers('searchsub','','hide','Layer2','','hide','tracksub','','show','Layer4','','show','resourcesub','','hide','Layer6','','hide'); MM_swapImage('navTrack','','#{request.contextPath}/images/navigation/nav_track_on.gif',1)"><img
+										src="#{request.contextPath}/images/navigation/nav_track_off.gif"
+										alt="" border="0" name="navTrack" /></a></td>
+							</c:otherwise>
+						</c:choose>
+					</c:if>
+
+					<!-- Main menu: Calendar -->
+
+					<c:if
+						test="${fn:containsIgnoreCase(userBean.userFeatures,'Calendar') or 
+						(fn:containsIgnoreCase(userBean.userCategory,'eProjects') and 
+						not fn:containsIgnoreCase(userBean.userCategory,'DataFax'))}">
+						<c:choose>
+							<c:when
+								test="${not empty userBean.menuHighlighter  and userBean.menuHighlighter eq 'calendar'}">
+								<td valign="top"><c:if
+										test="${not fn:containsIgnoreCase(userBean.userFeatures,'Calendar')}">
+										<a href="#{request.contextPath}/online-product/calendar"
+											onmouseout="MM_swapImgRestore()"
+											onmouseover="MM_showHideLayers('searchsub','','hide','Layer2','','hide','tracksub','','hide','Layer4','','hide','resourcesub','','hide','Layer6','','hide'); MM_swapImage('navCalendar','','#{request.contextPath}/images/navigation/nav_calendar_on.gif',1)"><img
+											src="#{request.contextPath}/images/navigation/nav_calendar_on.gif"
+											alt="" border="0" name="navCalendar" /></a>
+									</c:if> <c:if
+										test="${fn:containsIgnoreCase(userBean.userFeatures,'Calendar')}">
+										<a href="#{request.contextPath}/online-product/calendar" onmouseout="MM_swapImgRestore()"
+											onmouseover="MM_showHideLayers('searchsub','','hide','Layer2','','hide','tracksub','','hide','Layer4','','hide','resourcesub','','hide','Layer6','','hide'); MM_swapImage('navCalendar','','#{request.contextPath}/images/navigation/nav_calendar_on.gif',1)"><img
+											src="#{request.contextPath}/images/navigation/nav_calendar_on.gif"
+											alt="" border="0" name="navCalendar" /></a>
+									</c:if></td>
+							</c:when>
+							<c:otherwise>
+								<td valign="top"><c:if
+										test="${not fn:containsIgnoreCase(userBean.userFeatures,'Calendar')}">
+										<a href="#{request.contextPath}/online-product/calendar"
+											onmouseout="MM_swapImgRestore()"
+											onmouseover="MM_showHideLayers('searchsub','','hide','Layer2','','hide','tracksub','','hide','Layer4','','hide','resourcesub','','hide','Layer6','','hide'); MM_swapImage('navCalendar','','#{request.contextPath}/images/navigation/nav_calendar_on.gif',1)"><img
+											src="#{request.contextPath}/images/navigation/nav_calendar_off.gif"
+											alt="" border="0" name="navCalendar" /></a>
+									</c:if> <c:if
+										test="${fn:containsIgnoreCase(userBean.userFeatures,'Calendar')}">
+										<a href="#{request.contextPath}/online-product/calendar" onmouseout="MM_swapImgRestore()"
+											onmouseover="MM_showHideLayers('searchsub','','hide','Layer2','','hide','tracksub','','hide','Layer4','','hide','resourcesub','','hide','Layer6','','hide'); MM_swapImage('navCalendar','','#{request.contextPath}/images/navigation/nav_calendar_on.gif',1)"><img
+											src="#{request.contextPath}/images/navigation/nav_calendar_off.gif"
+											alt="" border="0" name="navCalendar" /></a>
+									</c:if></td>
+							</c:otherwise>
+						</c:choose>
+					</c:if>
+
+
+					<!-- Main menu: Address Book -->
+					<c:if
+						test="${fn:containsIgnoreCase(userBean.userFeatures,'Address Book') or 
+						(fn:containsIgnoreCase(userBean.userCategory,'eProjects') and 
+						not fn:containsIgnoreCase(userBean.userCategory,'DataFax'))}">
+						<td valign="top"><c:if
+								test="${not fn:containsIgnoreCase(userBean.userFeatures,'Address Book')}">
+								<a href="javascript:popup_features()"
+									onmouseout="MM_swapImgRestore()"
+									onmouseover="MM_showHideLayers('searchsub','','hide','Layer2','','hide','tracksub','','hide','Layer4','','hide','resourcesub','','hide','Layer6','','hide'); MM_swapImage('addressbook','','#{request.contextPath}/images/navigation/nav_addressbook_on.gif',1)"><img
+									src="#{request.contextPath}/images/navigation/nav_addressbook_off.gif"
+									alt="" border="0" name="addressbook" /></a>
+							</c:if> <c:if
+								test="${fn:containsIgnoreCase(userBean.userFeatures,'Address Book')}">
+								<a href="#" onmouseout="MM_swapImgRestore()"
+									onmouseover="MM_showHideLayers('searchsub','','hide','Layer2','','hide','tracksub','','hide','Layer4','','hide','resourcesub','','hide','Layer6','','hide'); MM_swapImage('addressbook','','#{request.contextPath}/images/navigation/nav_addressbook_on.gif',1)"><img
+									src="#{request.contextPath}/images/navigation/nav_addressbook_off.gif"
+									alt="" border="0" name="addressbook"
+									onclick="javascript:window.open('#{request.contextPath}/invitetobid/addressbook/manage.aspx?loginID=${userBean.loginId}');" /></a>
+							</c:if></td>
+
+					</c:if>
+
+					<!-- Main menu: Manage -->
+					<c:if
+						test="${fn:containsIgnoreCase(userBean.userFeatures,'Site Manager') or 
+						(fn:containsIgnoreCase(userBean.userCategory,'eProjects') and 
+						not fn:containsIgnoreCase(userBean.userCategory,'DataFax'))}">
+						<c:choose>
+							<c:when
+								test="${not empty userBean.menuHighlighter  and userBean.menuHighlighter eq 'manage'}">
+								<td valign="top"><c:if
+										test="${not fn:containsIgnoreCase(userBean.userFeatures,'Site Manager')}">
+										<a href="javascript:popup_features()"
+											onmouseout="MM_swapImgRestore()"
+											onmouseover="MM_showHideLayers('searchsub','','hide','Layer2','','hide','tracksub','','hide','Layer4','','hide','resourcesub','','hide','Layer6','','hide'); MM_swapImage('navSetting','','#{request.contextPath}/images/navigation/nav_manage_on.gif',1)"><img
+											src="#{request.contextPath}/images/navigation/nav_manage_on.gif"
+											alt="" border="0" name="navSetting" /></a>
+									</c:if> <c:if
+										test="${fn:containsIgnoreCase(userBean.userFeatures,'Site Manager')}">
+										<a href="#{request.contextPath}/online-product/manage-user-settings"
+											onmouseout="MM_swapImgRestore()"
+											onmouseover="MM_showHideLayers('searchsub','','hide','Layer2','','hide','tracksub','','hide','Layer4','','hide','resourcesub','','hide','Layer6','','hide'); MM_swapImage('navSetting','','#{request.contextPath}/images/navigation/nav_manage_on.gif',1)"><img
+											src="#{request.contextPath}/images/navigation/nav_manage_on.gif"
+											alt="" border="0" name="navSetting" /></a>
+									</c:if></td>
+							</c:when>
+							<c:otherwise>
+								<td valign="top"><c:if
+										test="${not fn:containsIgnoreCase(userBean.userFeatures,'Site Manager')}">
+										<a href="javascript:popup_features()"
+											onmouseout="MM_swapImgRestore()"
+											onmouseover="MM_showHideLayers('searchsub','','hide','Layer2','','hide','tracksub','','hide','Layer4','','hide','resourcesub','','hide','Layer6','','hide'); MM_swapImage('navSetting','','#{request.contextPath}/images/navigation/nav_manage_on.gif',1)"><img
+											src="#{request.contextPath}/images/navigation/nav_manage_off.gif"
+											alt="" border="0" name="navSetting" /></a>
+									</c:if> <c:if
+										test="${fn:containsIgnoreCase(userBean.userFeatures,'Site Manager')}">
+										<a href="#{request.contextPath}/online-product/manage-user-settings"
+											onmouseout="MM_swapImgRestore()"
+											onmouseover="MM_showHideLayers('searchsub','','hide','Layer2','','hide','tracksub','','hide','Layer4','','hide','resourcesub','','hide','Layer6','','hide'); MM_swapImage('navSetting','','#{request.contextPath}/images/navigation/nav_manage_on.gif',1)"><img
+											src="#{request.contextPath}/images/navigation/nav_manage_off.gif"
+											alt="" border="0" name="navSetting" /></a>
+									</c:if></td>
+							</c:otherwise>
+						</c:choose>
+					</c:if>
+
+
+					<!-- Main menu: Invitation-To-Bid Updated to ITB on 01/31/2012-->
+					<c:if
+						test="${fn:containsIgnoreCase(userBean.userFeatures,'ITB') or 
+						(fn:containsIgnoreCase(userBean.userCategory,'eProjects') and 
+						not fn:containsIgnoreCase(userBean.userCategory,'DataFax'))}">
+						<td valign="top"><c:if
+								test="${not fn:containsIgnoreCase(userBean.userFeatures,'ITB')}">
+								<a href="javascript:popup_features()"
+									onmouseout="MM_swapImgRestore()"
+									onmouseover="MM_showHideLayers('searchsub','','hide','Layer2','','hide','tracksub','','hide','Layer4','','hide','resourcesub','','hide','Layer6','','hide'); MM_swapImage('navITB','','#{request.contextPath}/images/navigation/ITB_short_on.gif',1)"><img
+									src="#{request.contextPath}/images/navigation/ITB_short_off.gif"
+									alt="Invitation To Bid Pro&#8482;" border="0" name="navITB"
+									title="Invitation To Bid Pro&#8482;" /></a>
+
+							</c:if> <c:if
+								test="${fn:containsIgnoreCase(userBean.userFeatures,'ITB')}">
+								<c:if test="${userBean.isIPhone == 'N'}">
+									<a href="#" onmouseout="MM_swapImgRestore()"
+										onmouseover="MM_showHideLayers('searchsub','','hide','Layer2','','hide','tracksub','','hide','Layer4','','hide','resourcesub','','hide','Layer6','','hide'); MM_swapImage('navITB','','#{request.contextPath}/images/navigation/ITB_short_on.gif',1)"><img
+										src="#{request.contextPath}/images/navigation/ITB_short_off.gif"
+										alt="Invitation To Bid Pro&#8482;" border="0" name="navITB"
+										title="Invitation To Bid Pro&#8482;"
+										onclick="javascript:popup_itbClick();" /></a>
+								</c:if>
+								<c:if test="${userBean.isIPhone != 'N'}">
+									<a
+										href="window.open('#{request.contextPath}/invitetobid/default.aspx?loginID=${userBean.loginId}');"
+										onmouseout="MM_swapImgRestore()"
+										onmouseover="MM_showHideLayers('searchsub','','hide','Layer2','','hide','tracksub','','hide','Layer4','','hide','resourcesub','','hide','Layer6','','hide'); MM_swapImage('navITB','','#{request.contextPath}/images/navigation/ITB_short_on.gif',1)"><img
+										src="#{request.contextPath}/images/navigation/ITB_short_off.gif"
+										alt="Invitation To Bid Pro&#8482;" border="0" name="navITB"
+										title="Invitation To Bid Pro&#8482;" /></a>
+								</c:if>
+							</c:if></td>
+					</c:if>
+
+					<!-- Main menu: CCMI - Commercial Construction Market Intelligence on 11/02/2012-->
+					<c:if
+						test="${fn:containsIgnoreCase(userBean.userFeatures,'Bidding Intelligence') or 
+						(fn:containsIgnoreCase(userBean.userCategory,'eProjects') and 
+						not fn:containsIgnoreCase(userBean.userCategory,'DataFax'))}">
+						<c:choose>
+							<c:when
+								test="${not empty userBean.menuHighlighter  and userBean.menuHighlighter eq 'ccmi'}">
+								<td valign="top"><c:if
+										test="${not fn:containsIgnoreCase(userBean.userFeatures,'Bidding Intelligence')}">
+										<a href="javascript:popup_features()"
+											onmouseout="MM_swapImgRestore()"
+											onmouseover="MM_showHideLayers('searchsub','','hide','Layer2','','hide','tracksub','','hide','Layer4','','hide','resourcesub','','hide','Layer6','','hide'); MM_swapImage('navCMMI','','#{request.contextPath}/images/navigation/CCMI_on.gif',1)"><img
+											src="#{request.contextPath}/images/navigation/CCMI_on.gif"
+											alt="" border="0" name="navCMMI"
+											title="Commercial Construction Market Intelligence™" /></a>
+									</c:if> <c:if
+										test="${fn:containsIgnoreCase(userBean.userFeatures,'Bidding Intelligence')}">
+										<a
+											href="#{request.contextPath}/online-product/ccmi/geographies"
+											onmouseout="MM_swapImgRestore()"
+											onmouseover="MM_showHideLayers('searchsub','','hide','Layer2','','hide','tracksub','','hide','Layer4','','hide','resourcesub','','hide','Layer6','','hide'); MM_swapImage('navCMMI','','#{request.contextPath}/images/navigation/CCMI_on.gif',1)"><img
+											src="#{request.contextPath}/images/navigation/CCMI_on.gif"
+											alt="" border="0" name="navCMMI"
+											title="Commercial Construction Market Intelligence™" /></a>
+									</c:if></td>
+							</c:when>
+							<c:otherwise>
+								<td valign="top"><c:if
+										test="${not fn:containsIgnoreCase(userBean.userFeatures,'Bidding Intelligence')}">
+										<a href="javascript:popup_features()"
+											onmouseout="MM_swapImgRestore()"
+											onmouseover="MM_showHideLayers('searchsub','','hide','Layer2','','hide','tracksub','','hide','Layer4','','hide','resourcesub','','hide','Layer6','','hide'); MM_swapImage('navCMMI','','#{request.contextPath}/images/navigation/CCMI_on.gif',1)"><img
+											src="#{request.contextPath}/images/navigation/CCMI_off.gif"
+											alt="" border="0" name="navCMMI"
+											title="Commercial Construction Market Intelligence™" /></a>
+									</c:if> <c:if
+										test="${fn:containsIgnoreCase(userBean.userFeatures,'Bidding Intelligence')}">
+										<a
+											href="#{request.contextPath}/online-product/ccmi/geographies"
+											onmouseout="MM_swapImgRestore()"
+											onmouseover="MM_showHideLayers('searchsub','','hide','Layer2','','hide','tracksub','','hide','Layer4','','hide','resourcesub','','hide','Layer6','','hide'); MM_swapImage('navCMMI','','#{request.contextPath}/images/navigation/CCMI_on.gif',1)"><img
+											src="#{request.contextPath}/images/navigation/CCMI_off.gif"
+											alt="" border="0" name="navCMMI"
+											title="Commercial Construction Market Intelligence™" /></a>
+									</c:if></td>
+							</c:otherwise>
+						</c:choose>
+					</c:if>
+
+
+					<!-- Main menu: Recource Center 03/22/2012 17/ATE, 18/Rewards, 19,20/Bidding Intelligence / Added Blog menu on 03/18/2013 by Johnson for new Blog release-->
+					<c:choose>
+						<c:when
+							test="${not empty userBean.menuHighlighter  and userBean.menuHighlighter eq 'blog'}">
+							<td valign="top"><a
+								href="http://constructiondatacompany.com?utm_source=CDCNews&amp;utm_medium=Lead+Manager&amp;utm_content=Main+Navigation"
+								onmouseover="MM_showHideLayers('resourcesub','','show','Layer6','','show', 'searchsub','','hide','Layer2','','hide', 'tracksub','','hide','Layer4','','hide'); MM_swapImage('navResource','','#{request.contextPath}/images/navigation/Blog_Plain_On.gif',1)"
+								onmouseout="MM_swapImgRestore()" target="_blank"><img
+									src="#{request.contextPath}/images/navigation/Blog_Plain_On.gif"
+									alt="" border="0" name="navResource" /></a></td>
+						</c:when>
+						<c:otherwise>
+							<td valign="top"><a
+								href="http://constructiondatacompany.com?utm_source=CDCNews&amp;utm_medium=Lead+Manager&amp;utm_content=Main+Navigation"
+								onmouseover="MM_showHideLayers('resourcesub','','show','Layer6','','show', 'searchsub','','hide','Layer2','','hide', 'tracksub','','hide','Layer4','','hide'); MM_swapImage('navResource','','#{request.contextPath}/images/navigation/Blog_Plain_On.gif',1)"
+								onmouseout="MM_swapImgRestore()" target="_blank"><img
+									src="#{request.contextPath}/images/navigation/Blog_Plain_Off.gif"
+									alt="" border="0" name="navResource" /></a></td>
+						</c:otherwise>
+					</c:choose>
+
+					<!-- Main menu: MY ACCOUNT MANAGER -->
+
+					<c:if
+						test="${fn:toUpperCase(userBean.subscriberType) == 'NORMAL' and 
+					(fn:toUpperCase(userBean.masterSub) eq 'M' or userBean.masterSub == '')}">
+						<c:set var="navMAM" value="true" />
+						<c:choose>
+							<c:when
+								test="${not empty userBean.menuHighlighter  and userBean.menuHighlighter eq 'myaccountmanager'}">
+								<td valign="top"><a href="#" onclick="javascript:open_MAM('#{fn:toUpperCase(userBean.subscriberType)}', '#{fn:toUpperCase(userBean.masterSub)}', '#{requestScope.ship_to}', '#{userBean.loginId}')"
+									onmouseout="MM_swapImgRestore()"
+									onmouseover="MM_showHideLayers('searchsub','','hide','Layer2','','hide','tracksub','','hide','Layer4','','hide','resourcesub','','hide','Layer6','','hide'); MM_swapImage('navMAM','','#{request.contextPath}/images/navigation/My_Account_Manager_On.gif',1)">
+										<img
+										src="#{request.contextPath}/images/navigation/My_Account_Manager_On.gif"
+										alt="" border="0" name="navMAM" title="My Account Manager" />
+								</a></td>
+							</c:when>
+							<c:otherwise>
+								<td valign="top"><a href="#" onclick="javascript:open_MAM('#{fn:toUpperCase(userBean.subscriberType)}', '#{fn:toUpperCase(userBean.masterSub)}', '#{requestScope.ship_to}', '#{userBean.loginId}')"
+									onmouseout="MM_swapImgRestore()"
+									onmouseover="MM_showHideLayers('searchsub','','hide','Layer2','','hide','tracksub','','hide','Layer4','','hide','resourcesub','','hide','Layer6','','hide'); MM_swapImage('navMAM','','#{request.contextPath}/images/navigation/My_Account_Manager_On.gif',1)">
+										<img
+										src="#{request.contextPath}/images/navigation/My_Account_Manager_Off.gif"
+										alt="" border="0" name="navMAM" title="My Account Manager" />
+								</a></td>
+							</c:otherwise>
+						</c:choose>
+					</c:if>
+
+					<c:if
+						test="${(not fn:containsIgnoreCase(userBean.userFeatures,'Project Tracker') or
+					not fn:containsIgnoreCase(userBean.userFeatures,'Contact Tracker')) and
+					(fn:containsIgnoreCase(userBean.userCategory,'DataFax') and 
+						not fn:containsIgnoreCase(userBean.userCategory,'eProjects'))}">
+						<td valign="top"><img id="noBorder"
+							src="#{request.contextPath}/images/navigation/nav_spacer2.gif"
+							width="48" height="34" alt="" border="0" /></td>
+					</c:if>
+
+					<c:if
+						test="${not fn:containsIgnoreCase(userBean.userFeatures,'Calendar') and
+					fn:containsIgnoreCase(userBean.userCategory,'DataFax')}">
+						<td valign="top"><img id="noBorder"
+							src="#{request.contextPath}/images/navigation/nav_spacer2.gif"
+							width="57" height="34" alt="" border="0" /></td>
+					</c:if>
+
+					<c:if
+						test="${not fn:containsIgnoreCase(userBean.userFeatures,'Address Book') and
+					fn:containsIgnoreCase(userBean.userCategory,'DataFax')}">
+						<td valign="top"><img id="noBorder"
+							src="#{request.contextPath}/images/navigation/nav_spacer2.gif"
+							width="76" height="34" alt="" border="0" /></td>
+					</c:if>
+
+					<c:if
+						test="${not fn:containsIgnoreCase(userBean.userFeatures,'Site Manager') and
+					fn:containsIgnoreCase(userBean.userCategory,'DataFax')}">
+						<td valign="top"><img id="noBorder"
+							src="#{request.contextPath}/images/navigation/nav_spacer2.gif"
+							width="56" height="34" alt="" border="0" /></td>
+					</c:if>
+
+					<c:if test="${empty navMAM}">
+						<td valign="top"><img id="noBorder"
+							src="#{request.contextPath}/images/navigation/nav_spacer2.gif"
+							width="167" height="34" alt="" border="0" /></td>
+					</c:if>
+
+					<c:choose>
+						<c:when
+							test="${fn:containsIgnoreCase(userBean.userFeatures,'ITB') or 
+							(fn:containsIgnoreCase(userBean.userCategory,'eProjects') and 
+						not fn:containsIgnoreCase(userBean.userCategory,'DataFax'))}">
+							<td valign="top"><img id="noBorder"
+								src="#{request.contextPath}/images/navigation/nav_spacer2.gif"
+								width="97" height="34" alt="" border="0" /></td>
+						</c:when>
+						<c:otherwise>
+							<td valign="top"><img id="noBorder"
+								src="#{request.contextPath}/images/navigation/nav_spacer2.gif"
+								width="151" height="34" alt="" border="0" /></td>
+						</c:otherwise>
+					</c:choose> 
+					<c:choose>
+						<c:when
+							test="${fn:containsIgnoreCase(userBean.userFeatures,'Bidding Intelligence') or
+						(fn:containsIgnoreCase(userBean.userCategory,'eProjects') and 
+						not fn:containsIgnoreCase(userBean.userCategory,'DataFax'))}">
+						</c:when>
+						<c:otherwise>
+							<td valign="top"><img id="noBorder"
+								src="#{request.contextPath}/images/navigation/nav_spacer2.gif"
+								width="55" height="34" border="0" /></td>
+						</c:otherwise>
+					</c:choose>
+
+					<td align="center" valign="top"><img id="noBorder"
+						src="#{request.contextPath}/images/navigation/nav_right_new.gif"
+						alt="" border="0" usemap="#rightNav" /></td>
+					<!--<A HREF="LM-New Enhancement How-To-Guide.pdf" target="_blank"><img src="images/nav/nav_HowToGuide.gif"alt="" border="0"></A></TD>
+			<CFIF featureBidIntel is not ""><A HREF="javascript:redirection(20)"><img src="images/nav/NewBidIntel.gif" border="0"></A></CFIF>-->
+				</tr>
+			</table>
+			<map name="rightNav">
+				<area alt="" coords="15,14,66,34" href="javascript:popup('#{sessionScope.regis_contact}');" />
+				<area alt="" coords="80,14,110,34" href="javascript:open_help();" />
+				<area alt="" coords="120,14,185,30"	href="javascript:open_contact();" />
+				<area alt="" coords="195,14,286,30" href="javascript:open_agree();" />
+			</map>
+		</div>
+	</h:panelGroup>
+	
+	<!--tracking website by google, updated on 10/23/2013-->
+	<script>
+	  var _gaq = _gaq || [];
+	  _gaq.push(['_setAccount', 'UA-1494568-1']);
+	  _gaq.push(['_setDomainName', '.cdcnews.com']);
+	  _gaq.push(['_setAllowLinker', true]);
+	  _gaq.push(['_trackPageview']);
+	
+	  (function() {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';
+		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	  })();
+	 
+	<!-- Google doesn't support the attribute _blank. So you have to find a way around. Added on 02/05/14 by Muthu --> 
+	function _gaLink(a) {
+		url = a.href
+		_gaq.push(function() {
+			if (a.target == '_blank') {
+			console.log(_gat._getTrackers()[0]);
+				window.open(_gat._getTrackers()[0]._getLinkerUrl(url));
+			} else {
+				_gaq.push(['_link', url]);
+			}
+		});
+		return false;
+	}
+	</script>
+</ui:composition>

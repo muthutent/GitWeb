@@ -1,0 +1,103 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:o="http://omnifaces.org/ui">
+<h:head>
+	<title>Construction Leads | Construction News | Construction Bid Services | Construction Data</title>
+	<meta name="Description" content="Let a trusted construction bid service help you find new construction leads. Filter leads by state or construction lead type. Check us out today." />
+	<meta name="Keywords" content="construction leads, construction lead, new construction leads." />
+
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="0" />
+	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+	<meta name="msvalidate.01" content="6849DC9B0C4F8D128EE873F68FD0E081" />
+	<link rel="icon" href="http://lm.cdcnews.com/favicon.ico" type="image/ico" />
+	<link rel="shortcut icon" href="http://lm.cdcnews.com/favicon.ico" type="image/ico" />
+	<link rel="canonical" href="http://www.lm.cdcnews.com" />
+	
+	<h:outputStylesheet name="sheet.css" library="css" />
+	<h:outputStylesheet name="mainsite.css" library="css" />
+	<h:outputStylesheet name="interstitial.css" library="css" />
+	<h:outputStylesheet name="js-image-slider.css" library="css" />
+
+	<!-- LM Mobile redirection 12/18/14 -->
+ 	<h:outputScript name="JSScripts/mobiledetection.min.js" library="js" target="body"/>
+	<h:outputScript name="JSScripts/Javascript_template.js"	library="js" />
+	<h:outputScript name="JSScripts/mouseovertabs.js" library="js" />
+	<h:outputScript name="JSScripts/js-image-slider.js"	library="js" target="body"/>	
+	
+</h:head>
+<h:body>	
+
+<!--
+<script src="newsitemessage/interstitial.js" type="text/javascript">
+
+/***********************************************
+* Interstitial Content Box- � Dynamic Drive DHTML code library (www.dynamicdrive.com)
+* This notice MUST stay intact for legal use
+* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
+***********************************************/
+
+</script>-->
+
+<script type="text/javascript">
+<!--
+//(typeof(navigator.appVersion) != "undefined") ? alert(navigator.appVersion) : alert("Property not supported or blank!");
+if (navigator.appName == "Microsoft Internet Explorer"){
+	var version=/MSIE \d+.\d+/;
+	var ieversion = navigator.appVersion.match(version);
+	//if (ieversion < "MSIE 5.0")
+		//alert("You are using "+navigator.appName+" "+ieversion+ ". Version 5.0 and up are recommended, please upgrade.")
+	}
+else if (navigator.appName == "Netscape"){
+	var version=/\d+.\d+/;
+	//alert("You are using1  "+navigator.userAgent)
+	//alert("You are using1  "+navigator.userAgent.match(version));
+	var nsversion = navigator.appVersion.match(version);
+	if (nsversion < 4.7)
+		alert("You are using "+navigator.appName+" "+nsversion+ ". Version 4.7 and up are recommended, please upgrade.")
+	}
+// -->
+function call_details(contentid)
+	    	{
+
+
+
+	     		//centerlize the window
+	    		var screenW = screen.width;
+	    		var screenH = screen.height;
+	    		var popupW = 520;
+	    		var popupH = 460;
+	    		var positionX = (screenW-popupW)/2;
+	    		var positionY = (screenH-popupH)/2;
+				var mywin = window.open("http://lm.cdcnews.com/jsp/ITB/SampleProjectListPopup.jsp?pid="+contentid,'detailswin', 'location=no,personalbar=no,toolbar=no,status=no,scrollbars=yes,resizable=yes,menubar=no,alwaysRaised=yes,width='+popupW+',height='+popupH+',top='+positionY+',left='+positionX+'');
+	    		//document.viewForm.target="detailswin";
+	    		mywin.focus();
+	     		//mywin.moveTo(positionX,positionY);
+
+
+	    	}
+</script>
+
+<a href="https://plus.google.com/117457781144717009220" rel="publisher"></a>
+
+<div id="pageContainer">
+<!-- <div id="mainContainer"> -->
+<ui:include src="/header_logoPanel.htm" />
+<ui:include src="/header_menuPanel_others.htm" />
+<ui:include src="/header_submenuPanel.htm" />
+<ui:include src="/header_loginPanel.xhtml" />
+<ui:include src="/dynamic_content.htm" />
+<ui:include src="/header_uptodate_leads.htm" />
+<ui:include src="/header_our_customers.htm" />
+<ui:include src="/header_coverageBox.htm" />
+<ui:include src="/header_sample_projects_listing.htm" />
+<ui:include src="/header_adflash_rotator.htm" />
+<ui:include src="/footer.htm" />
+<!-- </div> --> <!-- main -->
+</div> <!-- bg -->
+
+</h:body>
+</ui:composition>

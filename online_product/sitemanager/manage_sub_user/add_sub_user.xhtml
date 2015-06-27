@@ -1,0 +1,170 @@
+<!--
+
+   Copyright 2001-15 Creatus Inc.,
+   2328 Walsh Avenue, Suite G, Santa Clara, CA 95051, U.S.A.
+   All rights reserved.
+
+   This software is the confidential and proprietary information
+   of Creatus Inc. ("Confidential Information").  You shall not disclose
+   such Confidential Information and shall use it only in accordance
+   the terms of the license agreement you entered into with
+   Creatus Inc.
+
+   Company        : Creatus Inc.
+   Author         : Creatus
+   Date Created   : 03/11/2015
+   Last Modified  : 04/20/2015
+   Modifier       : Selva
+   Description    : Displays the Sub User Login Report
+   					After the Lead Manager Migration from coldfusion to JBoss
+-->	
+<!DOCTYPE html PUBLIC "-//W3C//Dtd XHTML 1.0 Transitional//EN" "http://www.w3.org/tr/xhtml1/Dtd/xhtml1-transitional.dtd"> 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	 xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions" 
+	  xmlns:a4j="http://richfaces.org/a4j" 
+	 xmlns:rich="http://richfaces.org/rich"
+	 template="/WEB-INF/templates/cdc_template.xhtml"> 
+	 
+	 <ui:define name="content"> 
+	 <h:outputStylesheet name="buttons.css" library="css" />
+	 <h:outputStylesheet library="css" name="sheet.css"  />
+	 <h:outputScript library="js" name="JSScripts/Javascript_template.js" />
+	<h:outputScript library="js" name="sitemanager/manage_sub_user/add_sub_user.js"/>
+	 <h:outputStylesheet library="css" name="sitemanager/manage_sub_user/sub_user.css"  />
+		 
+	<h:panelGrid width="700px" styleClass="marginLeft45">
+	<h:panelGroup>
+	<h:graphicImage name="sitemanager/manage_sub_user/header_newsubuser_bl.gif" library="images" styleClass="textAlignLeft"/>
+	<h:graphicImage name="pixel_blue.gif" library="images" width="700" height="2" styleClass="textAlignLeft" />
+	</h:panelGroup>
+			<h:form id="addSubUserForm">
+			 <a4j:outputPanel id="addsubuserrender">
+		   <h:panelGrid width="100%" border="0" columns="2" cellspacing="4" cellpadding="1" h5:algin="center" bgcolor="#FFFFFF" styleClass="subUserListTable black11px panelGridCenter textAlignLeft marginTop10">
+		   		<h:column /><rich:message id="loginIdErr" for="loginId" />
+		   		<h:outputLabel value="Login Id:" styleClass="fontWeightBold" />
+				<h:inputText value="${subUserBean.loginId}" id="loginId" size="25" maxlength="50" h5:placeHolder="Enter New LoginId" autocomplete="off"/> 
+				
+				<!-- Chrome browser autocompletes the password field and the field before it even if autocomplete is set to off.
+				To over come that, following dummy input tag is added before the password field -->
+				<h:column /><input style="display:none" />
+				
+				<h:column /><rich:message id="passwordErr" for="pwd" />
+				<h:outputLabel value="Password:" styleClass="fontWeightBold" />
+				<h:inputSecret value="${subUserBean.password}" id="pwd" size="25" maxlength="30" h5:placeHolder="Enter New Password" autocomplete="off"/> 
+				 
+				<h:column /><rich:message id="fNameErr" for="fname" />
+				<h:outputLabel value="First Name:" styleClass="fontWeightBold" />
+				<h:inputText value="${subUserBean.firstName}" id="fname" size="25" maxlength="50" h5:placeHolder="Enter First Name"/> 
+				 
+				<h:column /><rich:message id="lNameErr" for="lname" />
+				<h:outputLabel value="Last Name:" styleClass="fontWeightBold" />
+				<h:inputText value="${subUserBean.lastName}" id="lname" size="25" maxlength="50" h5:placeHolder="Enter Last Name"/> 
+				 
+				<h:column /><rich:message id="emailErr" for="email" />
+				<h:outputLabel value="Email:" styleClass="fontWeightBold"/>
+				<h:inputText value="${subUserBean.email}" id="email" size="25" maxlength="200" h5:placeHolder="Enter the e-Mail ID"/> 
+				 
+				<c:if test="${fn:length(subUserBean.userPubDetails) gt 0}">
+					<h:column /><rich:message id="pubErr" for="pub" />
+					<h:outputLabel value="Publication:" styleClass="fontWeightBold"/> 
+					<h:selectManyListbox  value="#{subUserBean.pubList}" id="pub" immediate="true" style="width:175px" size="4" label="State">
+							 <f:selectItems itemLabel="#{pubList.pubName}" itemValue="#{pubList.pubId}" value="#{subUserBean.userPubDetails}" var="pubList"/>
+					</h:selectManyListbox>
+					 
+					<h:column/>				
+					<h:outputLabel value="Hold down &quot;Ctrl&quot; or &quot;Control&quot; key on your keyboard when selecting multiple publications for sub user."/>
+				</c:if>
+				<!-- GEO USER SUBSCRIPTION -->
+				<c:if test="${subUserBean.subscriptionGeoCount gt 0}">
+					<h:column /><rich:message id="stateGeoErr" for="state_geo" />
+					<h:outputLabel value="Geo Subscription:" styleClass="fontWeightBold"/>
+					 <h:panelGrid columns="3" >
+					 	<h:outputLabel value="State" styleClass="fontWeightBold"/>
+						<h:panelGroup>
+							<h:outputLabel value="County" styleClass="fontWeightBold"/> 
+							<h:outputLabel value="LocationSelected" style="padding-left:204px" styleClass="fontWeightBold"/>
+						</h:panelGroup>
+						 <h:column/>
+ 						<h:selectManyListbox   id="state_geo"     value="#{subUserBean.stateList}"  style="width:130px" size="6" label="State">
+								 <f:selectItems itemValue="#{list.stateId}"  value="#{subUserBean.userStateIdNameList}" var="list" itemLabel="#{list.stateName}" /> 
+								 <!-- this f:ajax populates the county list and location selected list --> 
+								  <f:ajax event="change" render="county_geo" listener="#{subUserController.stateValueChangeListener}" />
+						</h:selectManyListbox>  
+						 
+						<rich:pickList  id="county_geo" value="#{subUserBean.countyIdStateIdList}" listWidth="130px" listHeight="84px" >
+							<f:selectItems value="#{subUserBean.userCountyIdNameList}" var="county" itemLabel="#{county.countyName}" itemValue="#{county.countyId}"/>
+							<!-- this f:ajax is preserving the list of location selected -->
+							<f:ajax event="change" render="county_geo" listener="#{subUserController.stateValueChangeListener}" />
+						</rich:pickList> 
+						
+					 </h:panelGrid>
+					<h:column/>
+					<h:outputLabel value="Hold down &quot;Ctrl&quot; or &quot;Control&quot; key on your keyboard when selecting multiple States/Counties for sub user."/>
+					 
+				</c:if>
+				<!-- END OF GEO USER SUBSCRIPTION -->
+				
+				<h:outputLabel value="Plans:" styleClass="fontWeightBold"/>
+				<h:panelGroup>
+					<h:selectBooleanCheckbox id="plansonline" value="#{subUserBean.plansOnlineFlag}"/> 
+					<h:outputLabel for="plansonline" value="Check to enable plans for the sub user in the area subscribed"/>
+				</h:panelGroup> 
+				<!-- DATA EXPORT FEATURE FOR SUB USER -->
+				<c:if test="${fn:containsIgnoreCase(userBean.userFeatures,'Data Export')}">
+				<h:outputLabel value="Data Export Flag:" styleClass="fontWeightBold"/>
+				<h:panelGroup>
+					<h:selectBooleanCheckbox id="dataexport_flag" value="#{subUserBean.dataExportFlag}" /> 
+					<h:outputLabel for="dataexport_flag" value="Check to enable Data Export for the sub user"/>
+				</h:panelGroup>
+				</c:if>
+				<!-- E PROJECT FEATURE FOR SUB USER -->
+				<!-- <c:if test="${fn:containsIgnoreCase(userBean.userFeatures,'eProjects')}">
+				<h:outputLabel value="eProjects:" styleClass="fontWeightBold"/>
+				<h:panelGroup>
+					<h:selectBooleanCheckbox id="eProjectsFlag" value="#{subUserBean.eProjectsFlag}" /> 
+					<h:outputLabel for="eProjectsFlag"
+						value="Check to enable eProjects for the sub user" />
+				</h:panelGroup>
+				</c:if> -->
+				<h:column/> 
+				<h:panelGroup>
+					<!-- Save Button -->
+					<h:commandButton value=" " action="#{subUserController.addNewSubUser(request)}" styleClass="saveButtonImage"
+						style="margin-left:153px;margin-top:2px" onclick="return validatesubuser(document.addSubUserForm, 1)">
+						</h:commandButton>
+					
+					<!-- Back Button -->
+					<!-- window.history.go(-1) on onclick makes the change password link not working. Hence used 'value' attribute-->
+					<h:outputLink value="#{request.contextPath}/online-product/manage/manage-sub-users" style="margin-left:26px;">
+					<h:graphicImage name="buttons/button_back.gif" library="images" styleClass="verticalAlignBottom" alt="Back Button" style="border:0px" />
+					</h:outputLink>
+				</h:panelGroup>
+		   </h:panelGrid>
+		   </a4j:outputPanel>	
+		   </h:form>
+		   </h:panelGrid>
+	  
+	 <script>
+	 /////////////////////////////////Stores All the counties to the Javascript Array in "countyListName" \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+	 var pubuser=#{fn:length(subUserBean.userPubDetails)};
+	 var geouser=#{subUserBean.subscriptionGeoCount};
+	//Gets All the Counties From the List Component When Form is Loaded
+	//And Sets the Value to the countyListName which is used through out the function
+ 	 var y=0;
+ 	<ui:repeat value="#{userBean.userCountyIdNameList}" var="listItem">
+ 		countyListId[y] = "#{listItem.countyId}";
+		countyListName[y]= "#{listItem.countyName}"; 
+		y++;
+	</ui:repeat>
+
+	document.getElementById("addSubUserForm:loginId").value = '';
+	document.getElementById("addSubUserForm:pwd").value = '';
+ </script>
+ 
+ </ui:define>
+</ui:composition>

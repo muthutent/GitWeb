@@ -1,0 +1,113 @@
+<!--
+
+   Copyright 2001-15 Creatus Inc.,
+   2328 Walsh Avenue, Suite G, Santa Clara, CA 95051, U.S.A.
+   All rights reserved.
+
+   This software is the confidential and proprietary information
+   of Creatus Inc. ("Confidential Information").  You shall not disclose
+   such Confidential Information and shall use it only in accordance
+   the terms of the license agreement you entered into with
+   Creatus Inc.
+
+   Company        : Creatus Inc.
+   Author         : Creatus
+   Date Created   : 02/16/2015
+   Last Modified  : 03/10/2015
+   Modifier       : Selva
+   Description    : Adding a contact to Address book Group
+   					After the Lead Manager Migration from coldfusion to JBoss
+-->	
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:ui="http://java.sun.com/jsf/facelets"
+     xmlns:c="http://java.sun.com/jsp/jstl/core"
+	 xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	 xmlns:a4j="http://richfaces.org/a4j"
+	 xmlns:rich="http://richfaces.org/rich">
+	 
+	 <h:head>
+	 <h:outputScript library="js" name="JSScripts/Javascript_template.js" />
+	 <h:outputScript library="js" name="contact_search/contact_addtoab.js" />
+	 <h:outputStylesheet name="sheet.css" library="css" />
+	 <h:outputStylesheet name="buttons.css" library="css" />
+	 </h:head>
+	 
+     <h:form id="addToABForm">
+     <a4j:outputPanel id="addToABRender" ajaxRendered="true">
+     <h:panelGrid width="290" border="0" cellpadding="2" cellspacing="2" rendered="#{contactBean.contactExists == false}">
+     
+     <rich:message id="addToABErr" />
+     
+     <h:panelGroup styleClass="black12px textAlignCenter">
+     <h:outputText value="Add to Address Book" styleClass="fontWeightBold" />
+     </h:panelGroup>
+     
+     <c:choose>
+     <c:when test="${requestScope.submitFlag == 0}">
+     <h:panelGroup styleClass="black12px textAlignLeft">
+      <h:outputText value="Please create an address book group to add to address book." />
+     </h:panelGroup>
+     </c:when>
+     <c:otherwise>
+      <h:panelGroup styleClass="black12px textAlignLeft">
+      <h:outputText value="Please select one address book group or create new one. " />
+     </h:panelGroup>
+     <h:panelGroup styleClass="black12px textAlignLeft">
+     <h:selectOneRadio id="abGroupID" layout="pageDirection" value="#{contactBean.addressBookGroupId}">
+     <c:forEach items="${contactBean.addressBookGroupList}" var="abg">
+     <f:selectItem itemValue="${abg.addressbookgroupid}"  itemLabel="${abg.name}"/>
+     </c:forEach>
+     </h:selectOneRadio>
+     </h:panelGroup>
+     </c:otherwise>
+     </c:choose>
+     
+     <h:panelGroup styleClass="black12px textAlignLeft">
+      <h:outputText value="New Address Book Group Name:" />
+      <h:inputText id="abGroupIDNew" value="#{contactBean.addressBookNewGroupName}" onclick="javascript:clearComponent('addToABForm','abGroupID');" maxlength="50" size="20" />
+     </h:panelGroup>
+     
+     <h:panelGroup>
+     <!-- Below a4j:commandButton will be shown in rich:popup --> 
+     <!-- used f:param instead of f:setpropertyactionlistener because f:setpropertyactionlistener didnot work with a4j:commandbutton -->
+     <a4j:commandButton value=" " render="contact_profile_render" limitRender="true" onclick="return validateAddToABForm(document.addToABForm, #{requestScope.submitFlag}, #{contactBean.contactId});"
+         oncomplete="addToAB();#{rich:component('viewConProfile')}.show();changeABImage('#{contactBean.contactId}');#{rich:component('addToAB')}.hide();" styleClass="saveButtonImage" rendered="#{contactBean.jsp == false}">
+    <f:param value="add" name="addressBook" />
+     </a4j:commandButton>
+     
+     <!-- Below h:commandButton will be shown in window popup -->
+     <h:commandButton value=" " action="#{csController.contactAddToAB(request)}" onclick="return validateAddToABForm(document.addToABForm, #{requestScope.submitFlag}, #{contactBean.contactId});" styleClass="saveButtonImage" rendered="#{contactBean.jsp == true}">
+     <f:setPropertyActionListener target="#{contactBean.addressBookAction}" value="add" />
+     </h:commandButton>
+     
+     </h:panelGroup>
+     
+     </h:panelGrid>
+     
+     </a4j:outputPanel>
+     </h:form>
+     
+     <c:if test="${contactBean.contactExists == true}">
+     <h:panelGrid  width="290" border="0" cellpadding="2" cellspacing="2">
+     <h:panelGroup styleClass="black12px textAlignCenter">
+     <h:outputText value="Contact has been already added into Address Book." />
+     </h:panelGroup>
+     <h:panelGroup styleClass="black12px textAlignCenter">
+     <h:link value="Close Window" onclick="#{rich:component('addToAB')}.hide(); return false;" rendered="#{contactBean.jsp==false}"/>
+     <h:link value="Close Window" onclick="window.close(); return false;" rendered="#{contactBean.jsp==true}"/>
+     </h:panelGroup>
+     </h:panelGrid>
+     </c:if>
+     
+    <script>
+    //Added to get contextpath is js files
+    var contextPath = '#{request.contextPath}';
+    
+	</script>
+	<h:outputScript library="jquery-ui-1.8.16.custom" name="jquery-1.11.3.min.js" />
+	<h:outputScript library="js" name="JSScripts/global.js" />
+
+</ui:composition>

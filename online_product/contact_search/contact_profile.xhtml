@@ -1,0 +1,171 @@
+<!--
+
+   Copyright 2001-15 Creatus Inc.,
+   2328 Walsh Avenue, Suite G, Santa Clara, CA 95051, U.S.A.
+   All rights reserved.
+
+   This software is the confidential and proprietary information
+   of Creatus Inc. ("Confidential Information").  You shall not disclose
+   such Confidential Information and shall use it only in accordance
+   the terms of the license agreement you entered into with
+   Creatus Inc.
+
+   Company        : Creatus Inc.
+   Author         : Creatus
+   Date Created   : 03/10/2015
+   Last Modified  : 03/10/2015
+   Modifier       : Selva
+   Description    : Displays the contacts profile 
+   					After the Lead Manager Migration from coldfusion to JBoss
+-->	
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+ 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	 xmlns:c="http://java.sun.com/jsp/jstl/core"
+	 xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	 xmlns:a4j="http://richfaces.org/a4j"
+	 xmlns:rich="http://richfaces.org/rich">
+	
+	<h:head>
+	<h:outputStylesheet library="css" name="sheet.css" />
+	<h:outputScript library="js" name="JSScripts/Javascript_template.js" />
+	<h:outputScript library="js" name="contact_search/contact_profile.js?v=1.0" />
+	</h:head>
+	
+	<h:form id="conProfileForm">
+	<a4j:outputPanel id="contact_profile_render">
+	
+	<h:panelGrid width="390" border="0" cellpadding="2" cellspacing="2">
+	<h:panelGroup styleClass="textAlignCenter">
+	
+	<!-- company name -->
+	<h:outputText value="#{contactBean.contactProfile.companyName}" styleClass="black12px fontWeightBold"/>
+	<c:if test="${fn:length(contactBean.contactProfile.companyName) ge 50}">
+	<br />
+	</c:if>&nbsp;&nbsp;&nbsp;&nbsp;
+	
+	
+	<c:if test="${requestScope.cca ne 'yes'}">
+	
+	<!-- Address Book button -->
+	<c:choose>
+<c:when test="${not fn:containsIgnoreCase(userBean.userFeatures,'Address Book')}">
+<h:graphicImage onclick="javascript:popup_features();" styleClass="cursorPointer" name="address_book/button_addressbook_add.gif" library="images" style="border:0px" alt="Add to Address Book"/>
+</c:when>
+<c:when test="${empty contactBean.contactProfile.addressBookId}">
+<!-- shown in rich:popup -->
+<a4j:commandLink render="addToAddrBook" styleClass="cursorPointer" limitRender="true" oncomplete="#{rich:component('addToAB')}.show();" rendered="#{contactBean.jsp == false}">
+<f:setPropertyActionListener target="#{contactBean.addressBookAction}" value="show"/>
+<f:setPropertyActionListener target="#{contactBean.jsp}" value="false"/>
+<h:graphicImage styleClass="add_#{contactBean.contactProfile.contactId}" name="address_book/button_addressbook_add.gif" library="images" style="border:0px" alt="Add to Address Book"/>
+</a4j:commandLink>
+
+<!-- shown in javascript popup -->
+<h:graphicImage onclick="call_profile('#{contactBean.contactProfile.contactId}', 1, '#{contactBean.contactProfile.companyName}')" rendered="#{contactBean.jsp == true}" styleClass="add_#{contactBean.contactProfile.contactId} cursorPointer" name="address_book/button_addressbook_add.gif" library="images" style="border:0px" alt="Add to Address Book"/>
+</c:when>
+</c:choose>
+<c:if test="${not empty contactBean.contactProfile.addressBookId}">
+<h:graphicImage name="address_book/button_addressbook_added.gif" library="images" style="border:0px" alt="Already added to Address Book"/>
+</c:if>&nbsp;&nbsp;&nbsp;&nbsp;
+
+<!-- Contact tracker button -->
+<c:if test="${contactBean.jsp==true}">
+<c:choose>
+<c:when test="${not fn:containsIgnoreCase(userBean.userFeatures,'Contact Tracker')}">
+<h:graphicImage onclick="javascript:popup_features();" styleClass="cursorPointer" name="contact_tracker/button_ct_track.gif" library="images" style="border:0px" alt="Add to Contact Tracker"/>
+</c:when>
+<c:when test="${empty contactBean.contactProfile.contactTrackerId}">
+<h:graphicImage onclick="javascript:call_profile('#{contactBean.contactProfile.contactId}', 2, '#{contactBean.contactProfile.companyName}')" styleClass="cursorPointer" name="contact_tracker/button_ct_track.gif" library="images" style="border:0px" alt="Add to Contact Tracker"/>
+</c:when>
+</c:choose>
+<c:if test="${not empty contactBean.contactProfile.contactTrackerId}">
+<h:graphicImage name="contact_tracker/button_ct_tracked.gif" library="images" style="border:0px" alt="View Contact Tracker"/>
+</c:if>
+</c:if>
+
+<c:if test="${contactBean.jsp==false}">
+<a4j:commandLink rendered="#{not fn:containsIgnoreCase(userBean.userFeatures,'Contact Tracker')}">
+	<h:graphicImage   name="contact_tracker/button_ct_track.gif" library="images" style="border:0px" alt="Add to Contact Tracker" styleClass="cursorPointer"/>
+	<rich:componentControl target="contactTracker" event="click" operation="show"/>  
+</a4j:commandLink>
+<a4j:commandLink render="contactTracker" styleClass="cursorPointer" limitRender="true" oncomplete="openContactTracker();#{rich:component('contactTracker')}.show();" rendered="#{fn:containsIgnoreCase(userBean.userFeatures,'Contact Tracker') and empty contactBean.contactProfile.contactTrackerId}">
+	<f:setPropertyActionListener target="#{contactBean.action}" value="show"/>
+	<f:setPropertyActionListener target="#{contactBean.jsp}" value="false"/>
+	<h:graphicImage styleClass="track_#{contactBean.contactProfile.contactId}" name="contact_tracker/button_ct_track.gif" library="images" style="border:0px" alt="Add to Contact Tracker"/>
+</a4j:commandLink>
+<h:graphicImage name="contact_tracker/button_ct_tracked.gif" library="images" style="border:0px" alt="View Contact Tracker" rendered="#{not empty contactBean.contactProfile.contactTrackerId}"/>
+</c:if>
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+<!-- view projects -->
+
+<!-- Below a4j:commandLink is shown in rich:popup -->
+<a4j:commandLink  render="contactProjectsList" limitRender="true" oncomplete="#{rich:component('viewProDetails')}.hide();#{rich:component('viewProjects')}.show();" rendered="#{contactBean.jsp==false}">
+<f:setPropertyActionListener target="#{contactBean.jsp}" value="false"/>
+<f:param name="winVal" value="noback" />
+<h:graphicImage name="buttons/button_view_icn.gif" library="images" styleClass="cursorPointer" style="border:0px" alt="View Projects"/>
+</a4j:commandLink>
+	
+	<!-- Below image is shown in window popup -->
+	<h:graphicImage name="buttons/button_view_icn.gif" library="images" styleClass="cursorPointer" onclick="javascript:call_profile('#{contactBean.contactProfile.contactId}', 0, '#{contactBean.contactProfile.companyName}')" rendered="#{contactBean.jsp==true}" style="border:0px" alt="View Projects"/>
+		
+	</c:if>
+
+	</h:panelGroup>	
+	</h:panelGrid>
+	
+	<h:panelGrid id="contactProfile"  width="390" border="0" cellpadding="2" cellspacing="2" columns="2" styleClass="textAlignLeft">
+	<h:panelGroup><h:outputText value="Address:" styleClass="black12px"/></h:panelGroup>
+	<h:panelGroup><h:outputText value="#{contactBean.contactProfile.address1} #{contactBean.contactProfile.address2}" styleClass="black12px"/></h:panelGroup>
+	
+	<h:panelGroup><h:outputText value="City:" styleClass="black12px"/></h:panelGroup>
+	<h:panelGroup><h:outputText value="#{contactBean.contactProfile.city}" styleClass="black12px"/></h:panelGroup>
+	
+	<h:panelGroup><h:outputText value="County:" styleClass="black12px"/></h:panelGroup>
+	<h:panelGroup><h:outputText value="#{contactBean.contactProfile.countyName}" styleClass="black12px"/></h:panelGroup>
+	
+	<h:panelGroup><h:outputText value="State:" styleClass="black12px"/></h:panelGroup>
+	<h:panelGroup><h:outputText value="#{contactBean.contactProfile.stateName}" styleClass="black12px"/></h:panelGroup>
+
+	<h:panelGroup><h:outputText value="Zip:" styleClass="black12px"/></h:panelGroup>
+	<h:panelGroup><h:outputText value="#{contactBean.contactProfile.zipCode}" styleClass="black12px"/></h:panelGroup>
+	
+	<h:panelGroup><h:outputText value="Phone:" styleClass="black12px"/></h:panelGroup>
+	<h:panelGroup><h:outputText value="#{contactBean.contactProfile.telephone1}" styleClass="black12px"/></h:panelGroup>
+	
+	<c:if test="${requestScope.cca ne 'yes'}">
+	<c:if test="${not empty contactBean.contactProfile.fax1}">
+	<h:panelGroup><h:outputText value="Fax:" styleClass="black12px"/></h:panelGroup>
+	<h:panelGroup><h:outputText value="#{contactBean.contactProfile.fax1}" styleClass="black12px"/></h:panelGroup>
+	</c:if>
+	
+	<c:if test="${not empty contactBean.contactProfile.email2}">
+	<h:panelGroup><h:outputText value="Website:" styleClass="black12px"/></h:panelGroup>
+	<c:choose>
+	<c:when test="${fn:startsWith(contactBean.contactProfile.email2, 'http://')}">
+	<h:panelGroup><h:outputLink value="${contactBean.contactProfile.email2}" target="_blank">${contactBean.contactProfile.email2}</h:outputLink></h:panelGroup>
+	</c:when>
+	<c:otherwise>
+	<h:panelGroup><h:outputLink value="http://${contactBean.contactProfile.email2}" target="_blank">${contactBean.contactProfile.email2}</h:outputLink></h:panelGroup>
+	</c:otherwise>
+	</c:choose>
+	</c:if>
+	
+	<h:panelGroup><h:outputText value="Contact Type:" styleClass="black12px"/></h:panelGroup>
+	<h:panelGroup><h:outputText value="${contactBean.contactProfile.contactType}" styleClass="black12px"/></h:panelGroup>
+	
+	<h:panelGroup><h:outputText value="Contact SubType:" styleClass="black12px"/></h:panelGroup>
+	<h:panelGroup><h:outputText value="${contactBean.contactProfile.contactSubType}" styleClass="black12px"/></h:panelGroup>
+	</c:if> <!-- end of IF for checking CCA flag -->
+	
+	</h:panelGrid>
+	</a4j:outputPanel>
+	</h:form>
+	
+<script>
+contextPath = '#{request.contextPath}';
+</script>
+</ui:composition>

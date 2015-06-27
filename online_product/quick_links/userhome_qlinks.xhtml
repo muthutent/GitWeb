@@ -1,0 +1,141 @@
+<!--
+
+   Copyright 2001-15 Creatus Inc.,
+   2328 Walsh Avenue, Suite G, Santa Clara, CA 95051, U.S.A.
+   All rights reserved.
+
+   This software is the confidential and proprietary information
+   of Creatus Inc. ("Confidential Information").  You shall not disclose
+   such Confidential Information and shall use it only in accordance
+   the terms of the license agreement you entered into with
+   Creatus Inc.
+
+   Company        : Creatus Inc.
+   Author         : Creatus
+   Date Created   : 03/10/2015
+   Last Modified  : 03/10/2015
+   Modifier       : Selva
+   Description    : Displays the Quick Links
+   					After the Lead Manager Migration from coldfusion to JBoss
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:o="http://omnifaces.org/ui">
+
+<h:outputStylesheet library="css" target="body" name="quick_links/quicklinks.css" />
+<h:outputScript library="js" name="quick_links/quicklinks.js" target="body"/>
+
+<!--<o:resourceInclude path="/online_product/sessionVariables.jsp" />-->
+	<c:set var="bidStages" value="GB,ST,HH,SW" />
+	<c:set var="bidStages" value="${fn:split(bidStages, ',')}" />
+	
+	<h:panelGrid styleClass="tab" width="361" border="0" cellspacing="0" cellpadding="0" rowClasses="black11px" columnClasses="black11px"
+			align="center" bgcolor="white"
+		style="border-bottom: 1px solid #3579bd; border-left: 1px solid #3579bd; border-right: 1px solid #3579bd; padding-bottom: 5px; text-align:center;">
+			<h:panelGroup>
+				<h:panelGroup colspan="3">
+				<c:forEach begin="0"
+					end="${fn:length(bidStages)-1}" var="i">
+						<c:choose>
+							<c:when
+								test="${userBean.icnOnlineHomeQlinks == bidStages[i]}">
+								<h:graphicImage name="tabs/navbar_#{fn:toLowerCase(bidStages[i])}_on.gif" library="images" id="nav_#{bidStages[i]}" alt="#{bidStages[i]}" border="0" />
+							</c:when>
+							<c:otherwise>
+								<c:choose>
+									<c:when test="${not empty requestScope.newSectionList}">
+										<c:set var="contains" value="false" />
+										<c:forEach var="item" items="${requestScope.newSectionList}">
+											<c:if test="${item == bidStages[i]}">
+												<c:set var="contains" value="true" />
+											</c:if>
+										</c:forEach>
+										<c:choose>
+											<c:when test="${contains == 'false'}">
+												<a href="javascript:popup_features()"
+													onmouseover="MM_swapImage('nav_#{fn:toLowerCase(bidStages[i])}','','#{request.contextPath}/resources/images/tabs/navbar_#{fn:toLowerCase(bidStages[i])}_on.gif',1)"
+													onmouseout="MM_swapImgRestore()">
+													
+													<h:graphicImage name="tabs/navbar_#{fn:toLowerCase(bidStages[i])}_off.gif" library="images" id="nav_#{fn:toLowerCase(bidStages[i])}" alt="#{fn:toLowerCase(bidStages[i])}" border="0" />
+													
+													</a>
+											</c:when>
+											<c:otherwise>
+												<a href="#{request.contextPath}/online-product/home?navbs=#{bidStages[i]}&amp;home=yes"
+													onmouseover="MM_swapImage('nav_#{fn:toLowerCase(bidStages[i])}','','#{request.contextPath}/resources/images/tabs/navbar_#{fn:toLowerCase(bidStages[i])}_on.gif',1)"
+													onmouseout="MM_swapImgRestore()">
+													
+													<h:graphicImage name="tabs/navbar_#{fn:toLowerCase(bidStages[i])}_off.gif" library="images" id="nav_#{fn:toLowerCase(bidStages[i])}" alt="#{fn:toLowerCase(bidStages[i])}" border="0" />
+													</a>
+											</c:otherwise>
+										</c:choose>
+									</c:when>
+									<c:otherwise>
+										<a href="#{request.contextPath}/online-product/home?navbs=#{bidStages[i]}&amp;home=yes"
+											onmouseover="MM_swapImage('nav_#{fn:toLowerCase(bidStages[i])}','','#{request.contextPath}/resources/images/tabs/navbar_#{fn:toLowerCase(bidStages[i])}_on.gif',1)"
+											onmouseout="MM_swapImgRestore()">
+											
+											<h:graphicImage name="tabs/navbar_#{fn:toLowerCase(bidStages[i])}_off.gif" library="images" id="nav_#{fn:toLowerCase(bidStages[i])}" alt="#{fn:toLowerCase(bidStages[i])}" border="0" />
+											</a>
+									</c:otherwise>
+								</c:choose>
+
+							</c:otherwise>
+						</c:choose>
+						<c:if test="${i lt fn:length(bidStages)-1}">
+							<h:graphicImage name="pixel_trans.gif" library="images" alt="" width="1" height="1" border="0" />
+						</c:if>
+					</c:forEach>
+				</h:panelGroup>
+			</h:panelGroup>
+
+
+
+		<h:form id="Mainform">
+			<h:panelGroup styleClass="black11px qlinks1">
+				<h:outputText
+					value="Select one of the auto searches below for more information." />
+			</h:panelGroup>
+			<h:panelGroup>
+				<h:panelGrid columns="2" cellspacing="3" cellpadding="4" border="0"
+					styleClass="qlinks" columnClasses="style1,style2">
+
+					<c:forEach items="${userBean.quickLinks}" var="qlink">
+
+						<!-- <h:commandLink action="#{qLinksController.quickLinks(request)}" value="#{qlink.subsec_name}" style="color:blue">
+							<f:param var="sec" value="#{requestScope.BSName_Id[userBean.icnOnlineHomeQlinks]}" />
+							<f:param var="subsec" value="#{qlink.subsec_abb}" />
+							</h:commandLink> -->
+
+						<!--<h:link value="#{qlink.subsec_name}"  
+							onclick="
+							('#{requestScope.BSName_Id[userBean.icnOnlineHomeQlinks]}','#{qlink.subsec_abb}');return false;" style="color:blue"/>-->
+						
+						<h:commandLink action="#{qLinksController.searchResults(request)}" value="#{qlink.subsec_name}">
+							<f:param name="BSName_Id" value="#{requestScope.BSName_Id[userBean.icnOnlineHomeQlinks]}" />
+							<f:param name="subsec_abb" value="#{qlink.subsec_abb}" />										
+						</h:commandLink>
+					</c:forEach>
+
+				</h:panelGrid>
+			</h:panelGroup>
+			<h:panelGroup styleClass="black11px">
+				<strong>Show All</strong>
+				(removes 1000 limit) 
+				 <h:selectBooleanCheckbox id="allRecords1"
+					value="#{searchBean.showAll}" />
+			</h:panelGroup>
+		</h:form>
+
+
+	</h:panelGrid>
+	
+	<script>
+	contextPath = '#{request.contextPath}';
+	</script>
+</ui:composition>

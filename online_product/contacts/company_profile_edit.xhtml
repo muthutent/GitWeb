@@ -1,0 +1,296 @@
+ <!--
+
+   Copyright 2001-15 Creatus Inc.,
+   2328 Walsh Avenue, Suite G, Santa Clara, CA 95051, U.S.A.
+   All rights reserved.
+
+   This software is the confidential and proprietary information
+   of Creatus Inc. ("Confidential Information").  You shall not disclose
+   such Confidential Information and shall use it only in accordance
+   the terms of the license agreement you entered into with
+   Creatus Inc.
+
+   Company        : Creatus Inc.
+   Author         :	Creatus
+   Date Created   :	03/19/2015
+   Last Modified  : 03/19/2015
+   Modifier       : Sathish
+   Description    :	Displays the UI to Edit the Contact Company Profile Details
+ 					After the Lead Manager Migration from coldfusion to JBoss
+-->
+<!DOCTYPE html PUBLIC "-//W3C//Dtd XHTML 1.0 Transitional//EN" "http://www.w3.org/tr/xhtml1/Dtd/xhtml1-transitional.dtd">
+<!-- THE PAGE USES THE JSF 2.0 TEMPLATE -->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	 xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	 template="/WEB-INF/templates/cdc_template.xhtml"
+	  xmlns:a4j="http://richfaces.org/a4j" 
+	 xmlns:rich="http://richfaces.org/rich">
+ 
+		 
+		<!-- AND THE CONTENTS OF THE PAGE -->	
+		<ui:define name="content">
+			<rich:panel styleClass="editCompanyBorder">
+				<h:outputStylesheet library="css" name="contacts/company_profile_edit.css" />  
+				<h:outputStylesheet library="css" name="buttons.css" /> 
+				<h:outputScript library="js" name="contacts/company_edit.js" />
+				<h:outputScript library="js" name="JSScripts/Javascript_template.js" />
+				<h:form id="compnyProfile">
+					<h:panelGrid columns="4" width="390" border="0" cellspacing="4" cellpadding="3"  bgcolor="white" styleClass="black12px" columnClasses="columnOne,columnTwo,columnThree,columnTwo">
+						<h:column/>
+						<h:outputText value="#{contactBean.companyName}" styleClass="textBold"/>
+						<h:column/>
+						<h:column/>
+						
+						<h:column/>
+						<rich:message id="comapnyErr" for="companyName"/>
+						<h:column/>
+						<h:column/>
+				
+						<h:panelGroup>				
+							<h:outputLabel value="Company Name " styleClass="textBold"/>
+							<h:outputLabel value="*" styleClass="red10px textBold"/><strong>:</strong>
+						</h:panelGroup>
+						<h:inputText id="companyName" value="#{contactBean.companyName}" size="30" />
+						<h:column/>
+						<h:column/>
+						
+						<h:outputLabel value="Address1 :" styleClass="textBold"/>
+						<h:inputText id="address1" value="#{contactBean.address1}" size="30" />
+						<h:column/>
+						<h:column/>
+						
+						<h:outputLabel value="Address2 :" styleClass="textBold"/>
+						<h:inputText id="address2" value="#{contactBean.address2}" size="30" />
+						<h:column/>
+						<h:column/>
+						
+						<h:outputLabel value="City :" styleClass="textBold"/>
+						<h:inputText id="city" value="#{contactBean.city}" size="30" />
+						<h:column/>
+						<h:column/>
+						
+						<h:outputLabel value="State :" styleClass="textBold"/>
+						<h:selectOneMenu  h5:id="state" onchange="getCountyLists('single')" value="#{contactBean.stateId}">
+						 	<f:selectItems itemValue="#{state.stateId}" var="state" value="#{contactBean.stateIdNameList}" itemLabel="#{state.stateName}" />	 
+						</h:selectOneMenu> 
+						<h:column/>
+						<h:column/>
+						
+						<h:outputLabel value="County :" styleClass="textBold"/>
+						<h:selectOneMenu  h5:id="county" value="#{contactBean.countyName}">
+						 	<f:selectItems var="county" value="#{contactBean.countyIdNameList}" itemValue="#{county.stateId}-#{county.countyId}-#{county.countyName}"  itemLabel="#{county.countyName}" />	 
+						</h:selectOneMenu> 
+						<h:column/>
+						<h:column/>
+						
+						<h:outputLabel value="Zip :" styleClass="textBold"/>
+						<h:inputText id="zip" value="#{contactBean.zipCode}" size="30" />
+						<h:column/>
+						<h:column/>
+						
+						<h:column/>
+						<h:outputLabel value="(##'s Only - No Symbols or Dashes)" styleClass="red10px"/>
+						<h:column/>
+						<h:column/>
+						
+						<h:outputLabel value="Telephone1 :" styleClass="textBold"/>
+						<h:inputText id="telephone1" value="#{contactBean.telephone1}" size="30" />
+						<h:column/>
+						<h:column/>
+						
+						<h:column/>
+						<h:outputLabel value="(##'s Only - No Symbols or Dashes)" styleClass="red10px"/>
+						<h:column/>
+						<h:column/>
+						
+						<h:outputLabel value="Telephone2 :" styleClass="textBold"/>
+						<h:inputText id="telephone2" value="#{contactBean.telephone2}" size="30" />
+						<h:column/>
+						<h:column/>
+						
+						<h:column/>
+						<h:outputLabel value="(##'s Only - No Symbols or Dashes)" styleClass="red10px"/>
+						<h:column/>
+						<h:column/>
+						
+						<h:outputLabel value="Fax1 :" styleClass="textBold"/>
+						<h:inputText id="fax1" value="#{contactBean.fax1}" size="30" />
+						<h:column/>
+						<h:column/>
+						
+						<h:column/>
+						<h:outputLabel value="(##'s Only - No Symbols or Dashes)" styleClass="red10px"/>
+						<h:column/>
+						<h:column/>
+						 
+						<h:outputLabel value="Email :" styleClass="textBold"/>
+						<h:inputText id="email1" value="#{contactBean.email1}" size="30" />
+						<h:column/>
+						<h:column/>
+						
+						<h:outputLabel value="Website :" styleClass="textBold"/>
+						<h:inputText id="email2" value="#{contactBean.email2}" size="30" />
+						<h:column/>
+						<h:column/>
+						
+						<h:column/>
+						<rich:message id="contactTypeErr" for="contactType"/>
+						<h:column/>
+						<h:column/>
+						
+						<h:panelGroup>
+							<h:outputLabel value="Contact Type " styleClass="textBold"/>
+							<h:outputLabel value="*" styleClass="red10px textBold"/><strong>:</strong>
+						</h:panelGroup>
+						 
+						<h:selectManyListbox  h5:id="contactType" immediate="true" size = "5" onchange="getSubContactTypes()" value="#{contactBean.selectedContactTypeList}">
+						 	<f:selectItems  itemValue="#{contact.contactTypeId}"  var="contact" value="#{contactBean.contactTypeNameIdList}" itemLabel="#{contact.contactTypeName}" />				 		</h:selectManyListbox>
+						<h:column/>
+						<h:column/>
+						
+						<h:column/>
+						<rich:message id="contactSubTypeErr" for="contactSubType"/>
+						<h:column/>
+						<h:column>
+						<h:outputLabel value="Construction Trade / Divisions 2004:" styleClass="textBold"/>
+						</h:column>
+						
+						<h:panelGroup>
+							<h:outputLabel value="Contact Sub Type " styleClass="textBold"/>
+							<h:outputLabel value="*" styleClass="red10px textBold"/><strong>:</strong>
+						</h:panelGroup> 
+						<h:selectManyListbox  h5:id="contactSubType" value="#{contactBean.selectedContactSubType}"  immediate="true" size = "5" style="width: 250px;">
+						 	<f:selectItems  var="contactSub" value="#{contactBean.contactSubTypeIdNameList}" itemValue="#{contactSub.contactTypeId}-#{contactSub.contactSubTypeId}"   itemLabel="#{contactSub.contactTypeName}" />	 
+						</h:selectManyListbox>
+						<a4j:commandButton value="Trade" action="#{userSettingController.contactSubTypeChangeListener(e)}" render="comapnyProfile:tradeRender"/>
+						<a4j:outputPanel id="tradeRender" ajaxRendered="true">  
+							<h:selectManyListbox  id="tradeDivisions" size="5" style="width: 250px;" value="#{contactBean.selectedTradeDivision}">
+								<f:selectItems var="tDivision" value="#{contactBean.tradeDivisionIdNameList}" itemValue="#{tDivision.tradeDivisionId}"  itemLabel="#{tDivision.tradeDivisionName}" />	 
+							</h:selectManyListbox> 
+						</a4j:outputPanel>
+						
+						<h:column/>
+						<h:outputText value="Contact Profile Update" styleClass="textBold"/>
+						<h:column/>
+						<rich:message id="companyGroupErr" for="companyGroup"/>
+						
+						<h:outputLabel value="Union Type :" styleClass="textBold"/>
+						<h:selectOneMenu  id="unionType" value="#{contactBean.unionTypeId}">
+						 	<f:selectItems var="union" value="#{contactBean.unionTypeIdNameList}" itemValue="#{union.unionTypeId}"  itemLabel="#{union.unionTypeName}" />	 
+						</h:selectOneMenu>  
+					 	<h:panelGroup>
+							<h:outputLabel value="Company Group " styleClass="textBold"/>
+							<h:outputLabel value="*" styleClass="red10px textBold"/><strong>:</strong>
+						</h:panelGroup>
+						<h:selectOneListbox  h5:id="companyGroup" immediate="true" size = "5" style="width: 250px;" value="#{contactBean.companyGroupId}">
+						 	<f:selectItems  var="company" value="#{contactBean.companyGroupNameIdList}" itemValue="#{company.companyGroupId}"   itemLabel="#{company.companyGroupName}" />	 
+						</h:selectOneListbox>
+						
+						<h:outputLabel value="Project Classifications :" styleClass="textBold"/>
+						<h:selectManyListbox  id="projectClassification" size="5" style="width: 250px;" value="#{contactBean.selectedProjectClassifications}">
+						 	<f:selectItems var="project" value="#{contactBean.projectClassificationIdNameList}" itemValue="#{project.projectClassificationId}"  itemLabel="#{project.projectClassificationName}" />	 
+						</h:selectManyListbox> 
+						<h:column/>
+						<h:column/>
+						
+						<h:outputLabel value="Government Certifications :" styleClass="textBold"/>
+						<h:selectManyListbox  id="governmentCertification" size="5" style="width: 250px;" value="#{contactBean.selectedGovtCertification}">
+						 	<f:selectItems var="government" value="#{contactBean.governmentCertificationIdNameList}" itemValue="#{government.governmentCertificationId}"  itemLabel="#{government.governmentCertificationName}" />	 
+						</h:selectManyListbox> 
+						<h:outputLabel value="Products Installed :" styleClass="textBold"/>
+						<h:inputTextarea  id="productsInstalled" value="#{contactBean.productsInstalled}"/>
+						
+						<h:outputLabel value="Professional Certifications :" styleClass="textBold"/>
+						<h:selectManyListbox  id="specialCertification" size="5" style="width: 250px;" value="#{contactBean.selectedSpecialCertification}">
+						 	<f:selectItems var="special" value="#{contactBean.specialCertificationIdNameList}" itemValue="#{special.specialCertificationId}"  itemLabel="#{special.specialCertificationName}" />	 
+						</h:selectManyListbox> 
+						<h:outputLabel value="Trade Association :" styleClass="textBold"/>
+						<h:selectManyListbox  id="tradeAssociation" size="5" style="width: 250px;" value="#{contactBean.selectedTradeAssocation}">
+						 	<f:selectItems var="tAssociation" value="#{contactBean.tradeAssociationIdNameList}" itemValue="#{tAssociation.contactId}"  itemLabel="#{tAssociation.companyName}" />	 
+						</h:selectManyListbox>  
+						
+						<h:outputLabel value="Year Established :" styleClass="textBold"/>
+						<h:inputText id="year_established" value="#{contactBean.yearEstablished}" size="30" />
+						<h:column/>
+						<h:column/>
+						
+						<h:outputLabel value="Geographic Areas Services :" styleClass="textBold"/>
+						<h:panelGroup>
+							<a4j:commandButton value="County" oncomplete="getCountyLists('multiple')" render="companyProfile:pubRender" >
+								<f:setPropertyActionListener target="#{contactBean.geoGraphicAreas}" value="county"/>
+							</a4j:commandButton>&nbsp;
+							<a4j:commandButton value="Publication" execute="@form" render="companyProfile:pubRender" action="#{userSettingController.publicationForState(request)}"/>&nbsp;
+						</h:panelGroup>
+						<h:column/>
+						<h:column/>
+						
+						<h:column/>
+						<rich:message id="stateErr" for="contactState"/>
+						<h:column/>
+						<h:column/>
+						
+						<h:panelGroup>
+							<h:outputLabel value="State" styleClass="textBold"/>
+							<h:outputLabel value="*" styleClass="red10px textBold"/><strong>:</strong> 
+							<h:selectManyListbox  h5:id="contactState" size="5" style="width:161px;" value="#{contactBean.selectedContactStateList}" onchange="getCountyLists('multiple')">
+						 		<f:selectItems itemValue="#{state.stateId}-#{state.stateAbb}" var="state" value="#{contactBean.stateIdNameList}" itemLabel="#{state.stateName}" />	
+							</h:selectManyListbox> 
+						</h:panelGroup> 
+						<a4j:outputPanel id="pubRender" ajaxRendered="true">  
+							<h:selectManyListbox  h5:id="contactCounty" size="5" style="width:161px;" value="#{contactBean.selectedContactCountyList}">
+								<c:choose>
+									<c:when test="${contactBean.geoGraphicAreas eq 'publication'}">
+										<f:selectItems var="publication" value="#{contactBean.publicationIdNameList}" itemValue="#{publication.publicationId}"  itemLabel="#{publication.stateAbb}-#{publication.publicationName}" />	
+									</c:when> 
+									<c:otherwise>
+										<f:selectItems var="county" value="#{contactBean.countyIdNameList}" itemValue="#{county.stateId}-#{county.countyId}-#{county.countyName}"  itemLabel="#{county.stateAbb}-#{county.countyName}" />
+									</c:otherwise>
+								</c:choose>
+							</h:selectManyListbox>
+						</a4j:outputPanel>
+						<h:column/>
+						<h:column/>						
+						<h:column/>
+						<h:panelGroup> 
+							<a4j:commandButton id="formAction"  value=" " styleClass="updateButtonImage" action="#{userSettingController.updateMyCompanyProfileDetails(request)}" onclick="return validateForm();" execute="@form"/>
+							<a4j:commandButton value=" " styleClass="resetButtonImage" type="reset"  />
+						</h:panelGroup>
+						<h:column/>
+						<h:column/>
+					</h:panelGrid>
+				</h:form>
+				<rich:popupPanel id="statusCompany" modal="true"  moveable="true">
+						<f:facet name="header">
+							<h:outputText value="Updated Your Company Profile" />
+						</f:facet>
+						<f:facet name="controls">
+							<h:commandButton value=" " type="button" styleClass="popupCloseImage" onclick="#{rich:component('statusCompany')}.hide(); return false;"/>
+						</f:facet> 
+						<a4j:outputPanel id="msgRender" ajaxRendered="true"> 
+							  <c:if test="${contactBean.companyUpdateStatus eq 1}">
+							  	 <strong><span class="blue12px">#{contactBean.companyName}</span> profile has been sent for approval to CDC.</strong><br/><br/>
+								 <h:outputLabel value="Click Back button to return to My Company Profile" styleClass="black12px"/><br/><br/>
+								 <h:commandButton onclick="window.location.pathname='#{request.contextPath}/update-my-company-profile';" value=" " styleClass="backButtonImage"/>
+							  </c:if>
+						</a4j:outputPanel>
+					</rich:popupPanel>
+			</rich:panel>
+		<script> 
+	      
+		 function getAllContactSubType()
+		 {
+			var y=0;
+			<ui:repeat value="#{contactBean.contactSubTypeIdNameList}" var="listItem">
+				subContactIdSubId[y] = "#{listItem.contactTypeId}-#{listItem.contactSubTypeId}";
+				subContactName[y]= "#{listItem.contactTypeName}"; 
+				y++;
+			</ui:repeat> 
+		}
+		</script>
+		</ui:define>
+</ui:composition>

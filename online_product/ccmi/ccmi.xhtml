@@ -1,0 +1,158 @@
+<!--
+
+   Copyright 2001-15 Creatus Inc.,
+   2328 Walsh Avenue, Suite G, Santa Clara, CA 95051, U.S.A.
+   All rights reserved.
+
+   This software is the confidential and proprietary information
+   of Creatus Inc. ("Confidential Information").  You shall not disclose
+   such Confidential Information and shall use it only in accordance
+   the terms of the license agreement you entered into with
+   Creatus Inc.
+
+   Company        : Creatus Inc.
+   Author         : Creatus
+   Date Created   : 03/19/2015
+   Last Modified  : 03/19/2015
+   Modifier       : Selva
+   Description    : CCMI Geographies Search Form			
+					After the Lead Manager Migration from coldfusion to JBoss		
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:a4j="http://richfaces.org/a4j" 
+	  xmlns:c="http://java.sun.com/jsp/jstl/core"
+	  xmlns:rich="http://richfaces.org/rich"
+	  xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:o="http://omnifaces.org/ui"
+	  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+      template="/WEB-INF/templates/cdc_template.xhtml">
+      
+	 
+      <ui:define name="content"> 
+      
+      <h:outputStylesheet library="css" name="adv_search/searchADV.css" />
+     <h:outputStylesheet library="css" name="buttons.css" />
+	  <h:outputStylesheet library="css" name="ccmi/demo.css" />
+	   <h:outputStylesheet library="css" name="sheet.css" />
+	 <h:outputStylesheet library="css" name="ccmi/ccmi.css" />
+	  <h:outputStylesheet library="jquery-ui-1.8.16.custom" name="css/redmond/jquery-ui-1.8.16.custom.css" />
+	  <h:outputStylesheet library="DataTables-1.9.0" name="media/css/demo_page.css" />
+	  <h:outputStylesheet library="DataTables-1.9.0" name="media/css/demo_table.css" />
+	
+      <h:outputScript target="head" library="DataTables-1.9.0" name="media/js/jquery.js" />
+      <h:outputScript target="head" library="js" name="JSScripts/Javascript_template.js" />
+       <h:outputScript target="head" library="jquery-ui-1.8.16.custom" name="js/jquery-ui-1.8.16.custom.min.js" />
+	 <h:outputScript target="head" library="DataTables-1.9.0" name="media/js/jquery.dataTables.js" />
+	 
+      <h:form id="ccmi_form">
+      <h:panelGrid width="960" cellpadding="0" cellspacing="0" border="0" styleClass="textAlignLeft paddingLeft10">
+      
+      <!-- CCMI image -->
+      <h:panelGroup>
+      <h:graphicImage name="ccmi/CCMI.png" library="images" width="400" alt="ccmi" height="80" />
+      </h:panelGroup>
+     
+      <!-- Bidding Intelligence Description -->
+      <table class="border1px_3579bd" style="margin-left:7px" width="960">
+      <tr><td id="toggle-ccmi" class="fontWeightBold black12px cursorPointer" bgcolor="#BAD1E9"><span id="toggle-ccmi-hide" class="blue12px">Hide</span> CCMI Description</td></tr>
+      <tr><td>
+      <div id="bi-description">
+	  </div>
+      </td></tr>
+      </table>
+      
+      <div class="ccmi-scroll">
+      <rich:tabPanel switchType="server" id="panelId" activeItem="geographies" itemChangeListener="#{ccmiController.clearSearchBean}">
+      <rich:tab id="companies" h5:name="companies" header=" " headerClass="companiesImage" headerActiveClass="companiesActiveImage" onheaderclick="swapClasses('companies');">
+      <f:subview id="companiesView"><ui:include src="/online_product/ccmi/ccmi_form.xhtml"/></f:subview>
+      </rich:tab>
+      <rich:tab id="geographies" h5:name="geographies" header="" headerClass="geographiesImage" headerActiveClass="geographiesActiveImage" onheaderclick="swapClasses('geographies');">
+      <f:subview id="geoView"><ui:include src="/online_product/ccmi/ccmi_form.xhtml"/></f:subview>
+      </rich:tab>
+      </rich:tabPanel>
+     </div>
+      </h:panelGrid>
+      
+
+<table cellpadding="0" cellspacing="0" width="100%" border="0" class="display" id="ProResults" style="display:none; margin-left:0px;">
+<thead  style="width:100%;">
+<tr>
+
+ <th title="State">State</th>
+ <th title="Total Projects Bid">Total Projects Bid</th>
+ <th title="Average Project Value">Avg Project Value</th>
+ <th title="Public">Public</th>
+ <th title="Private">Private</th>
+ <th title="General Building">GB</th>
+ <th title="Average General Building Value">Avg GB Value</th>
+ <th title="Engineering">Eng</th>
+ <th title="Average Engineering Value">Avg Eng Value</th>
+ <th title="Speciality Trades">ST</th>
+ <th title="Average Speciality Trades Value">Avg ST Value</th>
+ <th title="New Construction">New Const</th>
+ <th title="New Construction Average Value">New Const Avg Value</th>
+ <th title="Addition">Add</th>
+ <th title="Addition Average Value">Add Avg Value</th>
+ <th title="Renovation/Alteration">Ren/Alt</th>
+ <th title="Renovation/Alteration Average Value">Ren/Alt Avg Value</th>
+
+</tr>
+
+</thead>
+
+</table>
+
+<table cellpadding="0" cellspacing="0" width="100%" border="0" class="display" id="ConResults" style="display:none; margin-left:0px;">
+<thead  style="width:100%;">
+<tr>
+
+ <th title="State">State</th>
+ <th title="Company Name">Company Name</th>
+ <th title="Contact Id">Contact Id</th>
+ <th title="Times 1-3 Low Bidder">Times 1-3 LB</th>
+ <th title="Total Projects Bid">Total Projects Bid</th>
+ <th title="Average Project Value">Avg Project Value</th>
+ <th title="Private">Private</th>
+ <th title="Public">Public</th>
+ <th title="General Building">GB</th>
+ <th title="Average General Building Value">Avg GB Value</th>
+ <th title="Engineering">Eng</th>
+ <th title="Average Engineering Value">Avg Eng Value</th>
+ <th title="Speciality Trades">ST</th>
+ <th title="Average Speciality Trades Value">Avg ST Value</th>
+ <th title="New Construction">New Const</th>
+ <th title="New Construction Average Value">New Const Avg Value</th>
+ <th title="Addition">Add</th>
+ <th title="Addition Average Value">Add Avg Value</th>
+ <th title="Renovation/Alteration">Ren/Alt</th>
+ <th title="Renovation/Alteration Average Value">Ren/Alt Avg Value</th>
+
+</tr>
+
+</thead>
+
+</table>
+
+</h:form>
+
+<h:panelGrid>
+<h:panelGroup styleClass="black12px">
+<!-- div to load search results -->
+<div id="result"></div>
+</h:panelGroup>      
+</h:panelGrid>
+
+<h:outputScript library="js" name="ccmi/ccmi.js?v=1.0" />
+<script>
+multipleCountyVal = '#{applicationConfig.MULTIPLE_COUNTY}';
+contextPath = '#{request.contextPath}';
+swapClasses(document.getElementById('ccmi_form:panelId-value').value);
+</script>
+
+</ui:define>
+</ui:composition>

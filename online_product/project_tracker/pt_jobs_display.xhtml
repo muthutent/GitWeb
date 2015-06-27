@@ -1,0 +1,682 @@
+<!--
+
+   Copyright 2001-15 Creatus Inc.,
+   2328 Walsh Avenue, Suite G, Santa Clara, CA 95051, U.S.A.
+   All rights reserved.
+
+   This software is the confidential and proprietary information
+   of Creatus Inc. ("Confidential Information").  You shall not disclose
+   such Confidential Information and shall use it only in accordance
+   the terms of the license agreement you entered into with
+   Creatus Inc.
+
+   Company        : Creatus Inc.
+   Author         : Creatus
+   Date Created   : 01/22/2015
+   Last Modified  : 04/24/2015
+   Modifier       : Sathish 
+   Description    : Displays both the saved project and updated projects list
+   					After the Lead Manager Migration from coldfusion to JBoss
+-->
+<!DOCTYPE html PUBLIC "-//W3C//Dtd XHTML 1.0 Transitional//EN" "http://www.w3.org/tr/xhtml1/Dtd/xhtml1-transitional.dtd">
+<!-- THE PAGE USES THE JSF 2.0 TEMPLATE -->
+ 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	 xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	 template="/WEB-INF/templates/cdc_template.xhtml"
+	  xmlns:a4j="http://richfaces.org/a4j" 
+	  xmlns:o="http://omnifaces.org/ui"
+	 xmlns:rich="http://richfaces.org/rich">
+ 	  
+	<meta name="robots" content="noindex, nofollow"/>
+	<!-- AND THE CONTENTS OF THE PAGE -->	
+		<ui:define name="content"> 
+			
+			<h:outputStylesheet name="sheet.css" library="css" target="body"/>
+			<h:outputStylesheet library="css" name="buttons.css" target="body"/>
+			<h:outputStylesheet library="css" name="project_tracker/pt_jobs_display.css" target="body"/> 
+		     <h:outputScript library="js" name="project_tracker/saveJob.js?v=1.0" target="body"/>
+			<h:outputScript library="js" name="project_tracker/pt_jobs_display.js?v=5.9" /> 
+			<h:outputScript library="jquery-ui-1.8.16.custom" name="jquery-1.11.3.min.js?v=4.1" target="body"/>
+			<h:outputScript library="js" name="JSScripts/jstorage.js?v=1.0" target="body"/>
+			<h:outputScript library="js" name="JSScripts/Javascript_template.js?v=1.0" target="body"/>
+			<h:outputScript library="js" name="JSScripts/global.js?v=1.0" target="body"/>
+			<h:panelGrid colums="2"  styleClass="folderTreeTable">
+			
+				<rich:column>
+					<h:form id="PTFolder"  styleClass="black12px"><a4j:jsFunction name="callToSS" action="#{pTController.ptListByFolder(request)}" render="SP_UP_holder:first,SP_UP_holder:jobsName,createSelectedFolder" limitRender="true"/>
+					  <h:panelGrid styleClass="textAlignLeft treeStyle"> 
+					   <h:panelGroup><h:graphicImage name="project_tracker/menu-images/menu_new_root.gif" library="images" ALT="" border="0" />My Project Tracker </h:panelGroup>
+					    <h:panelGroup style="float:left;padding-bottom:277px">
+							
+							<rich:tree id="treeFolder"  toggleType="client" selectionType="ajax" var="root" selectionChangeListener="#{pTController.selectionChanged}" 
+							oncomplete="callToSS()">
+								<rich:treeModelRecursiveAdaptor roots="#{treeBean.rootNodes}" nodes="#{root.subFolders}" >
+									<rich:treeNode iconExpanded="#{request.contextPath}/resources/images/project_tracker/menu-images/menu_folder_open.gif" iconCollapsed="#{request.contextPath}/resources/images/project_tracker/menu-images/menu_folder_closed.gif" expanded="#{root.treeMode}" styleClass="treeStyle">
+										#{root.name} 
+									</rich:treeNode> 
+								</rich:treeModelRecursiveAdaptor> 
+							</rich:tree>
+						 </h:panelGroup>
+						 </h:panelGrid>
+						 <h:panelGroup style="float:left;line-height:27px;text-align:left"> 
+							<a4j:outputPanel ajaxRendered="true" id="selectedFolder"> 
+								<strong>SelectedFolder:</strong><h:outputText id="showFolder" value="#{treeBean.filePath}" styleClass="black11px color3579bd"/>
+							<br/>
+							<c:if test="#{userBean.folderRestriction}">
+								<h:outputLabel value="No more new folder can be created beyond this level." styleClass="fontBold orange11px black11px" rendered="#{userBean.folderRestriction}"/> <br/>
+							</c:if>
+							<c:if test="#{!userBean.folderRestriction}">
+								<a4j:commandButton styleClass="buttonCreateNewFolderImage2" value=" " style="float:left;" 
+								onclick="#{rich:component('folderCreate')}.show(); return false;" render="createSelectedFolder" limitRender="true" execute="@none" rendered="#{!userBean.folderRestriction}"/>
+									 <br/>
+							</c:if>
+							</a4j:outputPanel>
+							<a4j:commandButton value=" " onclick="return checkTree(2)" styleClass="buttonDeleteFolderImage2" style="float:left;" 
+							 execute="@none" event="click" render="selectedFolder4" limitRender="true">
+								<rich:componentControl target="folderDelete"   event="click" operation="show"/> 
+							</a4j:commandButton><br/>
+							<a4j:commandButton value=" " onclick="return checkTree(3)" styleClass="buttonEditFolderNameImage2" style="float:left;" execute="@none" event="click" render="editSelectedFolder" limitRender="true"> 
+								<rich:componentControl target="folderEdit"   event="click" operation="show"/>
+							</a4j:commandButton>		
+						</h:panelGroup>
+					</h:form>
+					<rich:popupPanel width="350" height="130" id="folderCreate" modal="true"  autosized="false" onbeforeshow="clearText('create:newName');">
+						<f:facet name="header">
+							CreateFolder
+						</f:facet>
+						<f:facet name="controls">  
+						 	<h:commandButton value=" " type="button" styleClass="popupCloseImage" onclick="#{rich:component('folderCreate')}.hide(); return false;"/>  
+						</f:facet>
+						<rich:hotKey key="Esc">
+							<rich:componentControl target="folderCreate" operation="hide"/>
+						</rich:hotKey>
+						 
+							<h:form id="create">
+								 
+							   <h:panelGrid columns="2">
+							   		<rich:message for="newName" id="newNameErr" />
+							   		<h:column />
+									<h:outputLabel value="SelectedFolder:" style="font-weight:bold"/>
+									 <a4j:outputPanel id="createSelectedFolder" ajaxRendered="true">
+										<h:outputText value="#{treeBean.selectedFolderName}" styleClass="orange11px"/>
+									 </a4j:outputPanel>
+									<h:outputLabel value="Name Your New Folder:" style="font-weight:bold"/>
+									<h:inputText id="newName"  value="#{treeBean.folderName}"/>
+									<a4j:commandButton value=" " styleClass="saveNewFolderImage" action="#{pTController.createTree(request)}" onclick="return check_folder1(document.create);">																		                                       
+										<f:ajax execute="@form" render="PTFolder:treeFolder"/>
+									</a4j:commandButton>
+									<a4j:commandButton value=" " styleClass="cancelButtonImage" onclick="#{rich:component('folderCreate')}.hide(); return false"/>
+								</h:panelGrid>
+							</h:form>
+						 
+				</rich:popupPanel>
+				<rich:popupPanel id="folderDelete" modal="true"   autosized="true">
+						<c:set var="defaultFolder" value="My Jobs"/> 
+						<f:facet name="header">
+									DeleteFolder
+						</f:facet>
+						<f:facet name="controls">
+							 <h:commandButton value=" " type="button" styleClass="popupCloseImage" onclick="#{rich:component('folderDelete')}.hide(); return false;"/>  
+						</f:facet>
+						<rich:hotKey key="Esc">
+							<rich:componentControl target="folderDelete" operation="hide"/>
+						</rich:hotKey>
+						<h:form id="delete">
+							<h:panelGrid>
+							   <h:panelGroup>
+									<h:outputLabel value="You have selected"/> &nbsp;
+										<a4j:outputPanel ajaxRendered="true" id="selectedFolder4">	
+											<h:outputText value="#{treeBean.selectedFolderName}" styleClass="orange11px"/>
+											&nbsp;
+										</a4j:outputPanel>
+									<h:outputLabel value="to Delete"/>
+								</h:panelGroup>
+								<h:outputText value="Are your sure you want this folder and all subfolders/projects inside it deleted?" style="color:red;" styleClass="black12px"/>
+							</h:panelGrid>
+							<h:panelGrid columns="2">
+								<a4j:commandButton value=" " styleClass="deleteButtonImage" action="#{pTController.deleteTree(request)}"  onclick="#{rich:component('folderDelete')}.hide();">
+									<f:ajax execute="delete" render="PTFolder:treeFolder" limitRender="true"/>
+								</a4j:commandButton>
+								<a4j:commandButton value=" " styleClass="cancelButtonImage" onclick="#{rich:component('folderDelete')}.hide(); return false;"/>
+							</h:panelGrid>
+						</h:form>
+				
+				</rich:popupPanel>
+				<rich:popupPanel id="folderEdit" modal="true"   autosized="true" onbeforeshow="clearText('edit:editName');">
+						<c:set var="defaultFolder" value="My Jobs"/>
+						<f:facet name="header">
+							Edit Folder
+						</f:facet>
+						<f:facet name="controls"> 
+							<h:commandButton value=" "  type="button" styleClass="popupCloseImage" onclick="#{rich:component('folderEdit')}.hide(); return false;"/>
+						</f:facet>
+						<rich:hotKey key="Esc">
+							<rich:componentControl target="folderDelete" operation="hide"/>
+						</rich:hotKey>
+						<h:form id="edit">
+							<h:panelGrid columns="2">
+								<h:outputLabel value="SelectedFolder:" style="font-weight:bold"/>
+									<a4j:outputPanel ajaxRendered="true" id="editSelectedFolder">	
+										<h:outputText value="#{treeBean.selectedFolderName}" styleClass="orange11px"/>
+									</a4j:outputPanel>
+								<h:outputLabel value="Rename Your Folder:" style="font-weight:bold"/>
+								<h:inputText id="editName" value="#{treeBean.folderName}"  />
+								<a4j:commandButton value=" " styleClass="editFolderNameImage" action="#{pTController.editTree(request)}"  onclick="#{rich:component('folderEdit')}.hide();">
+									<f:ajax execute="edit" render="PTFolder:treeFolder" limitRender="true"/>
+								</a4j:commandButton>
+								<a4j:commandButton value=" " styleClass="cancelButtonImage" onclick="#{rich:component('folderEdit')}.hide();return false;"/>
+							</h:panelGrid>
+						</h:form>
+				</rich:popupPanel>
+			   </rich:column>
+			</h:panelGrid>
+			
+			<h:panelGrid styleClass="SP_UP_table" > 
+			  <h:form id="SP_UP_holder">
+			  	<a4j:outputPanel id="jobsName" styleClass="jobsName" ajaxRendered="true">	
+					<h:outputText value="#{treeBean.filePath}" styleClass="black11px" style="font-weight:bold"/> - 
+					<h:outputText id="jobscount" value="#{fn:length(pTBean.allProjects)}"  styleClass="black11px" style="font-weight:bold"/><br/>
+					<h:outputText value="#{dataExportBean.ftpDataExportMsg}" styleClass="orange11px"/>
+			    </a4j:outputPanel>
+				<c:set var="firstMode" value="client"/>	
+				<c:set var="secondMode" value="ajax"/>	
+				<c:if test="#{pTBean.activeTab eq 'second'}">
+					<c:set var="firstMode" value="ajax"/>
+				</c:if> 
+				<rich:tabPanel switchType="client" id="panelId" activeItem="#{pTBean.activeTab}">
+					<a4j:jsFunction name="getUPProjects" action="#{pTController.updatedProjects(request)}" render="SP_UP_holder" limitrender="true"/>				
+					<rich:tab id="first" h5:name="first" header=" " headerClass="savedProjectImage" headerActiveClass="savedProjectImageActive" onheaderclick="swapClasses('');" switchType="#{firstMode}" action="#{pTController.savedProjects(request)}" > 
+						<h:outputScript> 
+								disable_enable(#{fn:length(pTBean.allProjects)});
+							</h:outputScript>
+						<h:panelGrid styleClass="black12px" width="415" border="0" cellspacing="0" cellpadding="0" rendered="#{empty pTBean.allProjects and fn:length(pTBean.allProjects) eq 0}"> 
+							<a4j:outputPanel ajaxRendered="true">	 
+								<h:outputText value="You have no saved projects in #{treeBean.filePath} folder!" style="margin-left:73px"/>
+							</a4j:outputPanel>
+						</h:panelGrid> 
+					   <c:if test="${not empty pTBean.allProjects and fn:length(pTBean.allProjects) gt 0}">
+						 <!-- //search box --> 
+						 <h:panelGrid  width="525" border="0" cellspacing="0" cellpadding="0" bgcolor="EFF4FA" styleClass="searchBox">
+							<h:outputText value="Enter a keyword below to refine your search. For example, entering 'Asbestos' will display all of the jobs with the word 'Asbestos' that are saved in the Saved Jobs (Project Tracker) section." styleClass="black10px"/>
+							<h:panelGrid columns="2" styleClass="black10px" width="100%" style="padding-top:16px">
+								<rich:message id="keywordErr" for="criteria" style="float:left"/>
+								<h:column/>
+								<h:panelGroup style="float:left"> 
+									 <h:outputText value="Keyword:" />
+									 <h:inputText id="criteria"  size="18" style="height:19px" value="#{pTBean.keyword}"/>
+								</h:panelGroup> 
+								<h:panelGroup > 
+								    <c:if test="${fn:containsIgnoreCase(userBean.subscriberType, 'icn_plans')}">
+										<h:outputText value="Search In" style="vertical-align:super"/>
+										<h:selectOneRadio id="searchField1" style="display:inline-table;vertical-align:sub">
+											<f:selectItem itemValue="N" value="#{pTBean.searchInPNB}" itemLabel="Notes" />
+										</h:selectOneRadio> 
+									</c:if>
+									<c:if test="${!(fn:containsIgnoreCase(userBean.subscriberType, 'icn_plans'))}">
+										<h:outputText value="Search In" style="vertical-align:super"/>
+										<h:selectOneRadio id="searchField1" value="#{pTBean.searchInPNB}" style="display:inline-table;vertical-align:sub">
+											<f:selectItem itemValue="P" itemLabel="Project" />
+											<f:selectItem itemValue="N" itemLabel="Notes" />
+											<f:selectItem itemValue="B" itemLabel="Both" />
+										</h:selectOneRadio>
+									</c:if>
+								</h:panelGroup> 
+								<h:column>
+								<h:outputScript>
+									document.getElementById('SP_UP_holder:criteria').value='';
+								</h:outputScript>
+									 <a4j:jsFunction name="search" render="SP_Data" execute="@none"  limitRender="true"/>
+									<h:commandButton value=" " styleClass="buttonGoImage" onclick="return jobs_action('keyword',' ');"  
+									action="#{pTController.keywordSearchResults(request)}">  
+										<a4j:ajax render="first,projectListRender" limitRender="true" execute="criteria,searchArea,searchField1" />
+									</h:commandButton>&nbsp;
+									<h:commandButton value=" " styleClass="buttonClearImage" type="button" onclick="refreshPage();document.getElementById('SP_UP_holder:criteria').value='';"/>&nbsp;
+									<a4j:commandLink onclick="#{rich:component('searchTips')}.show(); return false;" value="Search Tips" execute="@none" render="@none" limitRender="true"/>
+								</h:column>
+								<h:panelGroup> 	
+									<h:outputText value="Search In" style="vertical-align:super"/>
+									<h:selectOneRadio id="searchArea" value="#{pTBean.searchInCA}" styleClass="black10px" style="display:inline-table;vertical-align:sub">
+										<f:selectItem itemValue="C" itemLabel="Current folder" />
+										<f:selectItem itemValue="A" itemLabel="All folders" />
+									</h:selectOneRadio>
+								</h:panelGroup> 
+							</h:panelGrid>
+						 </h:panelGrid>
+						 <!-- //search box -->
+						 <!-- jobs options -->
+						 <h:panelGrid id="jobsDetails" width="525" border="0" cellspacing="0" cellpadding="0" bgcolor="white" columnClasses="one" styleClass="searchBox" rendered="true">
+							 <h:panelGroup>
+							 	 
+								<a4j:commandButton id="printButton" value=" " styleClass="buttonPrintJobsImage" onclick="jobs_action('print'); return false;" />&nbsp;&nbsp;
+								<a4j:commandButton id="deleteButton" value=" " styleClass="buttonDeleteJobsImage"   onclick="jobs_action('delete')" render="@none" />   &nbsp;&nbsp;
+								<h:commandButton id="clearButton" value=" " styleClass="buttonClearImage" type="button" onclick="refreshPage()"/>&nbsp;&nbsp;
+								<c:if test="${fn:containsIgnoreCase(userBean.userFeatures, 'Data Export')}">
+								<!--  To Enable Dataexport Feature for only Featured Users. Added on 27-July-2012 by Muthu-->
+									<a4j:jsFunction name="showDataExoport" render="myDataExport:dxRender" limitRender="true" oncomplete="#{rich:component('exportJobSelected')}.show();"/>
+									<a4j:commandButton value=" " styleClass="buttonDataExportImage" onclick="jobs_action('export');return false;"
+									  render="@none" limitRender="true" execute="@none"/>
+								</c:if> 
+							  </h:panelGroup>
+ 							   <h:panelGroup id="Err">
+							    	 
+								</h:panelGroup>
+							   <h:panelGroup>
+							 		<h:outputText value="Print Option:" style="vertical-align:super"/>
+									<h:selectOneRadio id="printOption" h5:name="printOption" style="display:inline-table;vertical-align:sub" value="#{pTBean.printOption}">
+										<f:selectItem itemValue="noNotes" itemLabel="Print project details" />
+										<f:selectItem itemValue="withNotes" itemLabel="Print project details with notes" />
+									</h:selectOneRadio>
+							   </h:panelGroup>
+						 </h:panelGrid>	
+						 <!-- jobs options -->
+						 <!-- jobs display --> 
+						 <a4j:outputPanel id="projectListRender" ajaxRendered="true">
+						 <h:panelGrid  width="525" border="0" cellspacing="0" cellpadding="0" bgcolor="white" 
+						 						 styleClass="searchBox">
+						 <a4j:region>
+						 	<rich:dataTable id="SP_Data" value="#{pTBean.jobsList}" var="project" sortMode="single" rowClasses="oddRowColor,evenRowColor" style="border:none !important;text-align:left;" rendered="#{not empty pTBean.jobsList and fn:length(pTBean.jobsList) gt 0}">
+								 <f:facet name="noData">
+									Nothing found
+								</f:facet>
+								<rich:column>
+									<f:facet name="header">
+									<h:outputLabel  for="printalljobs" value="All"/><br/>
+										<h:selectBooleanCheckbox id="printalljobs" itemValue="all" onclick="checkprintboxes(0)" value="#{pTBean.eventTitle}"/>
+											
+									</f:facet>
+									<h:selectBooleanCheckbox id="printJobs" h5:name="printjobs" h5:value="#{project.jobId}-#{project.contentId}-#{project.cdcId}"  value="#{pTBean.eventTitle}" onclick="checkprintboxes(1)" />
+								</rich:column>
+								 
+								<rich:column sortBy="#{project.bidDate}" style="width:5px;" >
+									
+									<!-- display bid date. For Bidding and sub bids: Date/ASAP/Postponed/Blank. For Low Bid: Date/Blank. For other: Date/Postponed/Blank-->
+									<!-- Postponed: has planning stages of
+														Project On Hold Pending Zoning Approval
+														Project On Hold Pending Permits
+														Project On Hold Pending Financing
+														Project On Hold Pending Funding
+														Project On Hold Pending Owner Review
+														Project On Hold Pending Tenant Review
+														Project On Hold Pending Referendum
+									-->
+									<!-- ASAP: bids_details contains "ASAP" or " As Soon As Possible"-->
+									<f:facet name="header">BidDate/<br/>Status</f:facet>
+									<h:outputText id="b_date" value="#{project.bidDate}" styleClass="black11px"> 
+										<f:convertDateTime pattern="MM-dd-yy" />
+									 </h:outputText>
+								</rich:column>
+								<rich:column sortBy="#{project.jobTitle}"> 
+									<c:set var="replaceQuote" value="'"/>
+									<f:facet name="header">Title</f:facet>  
+									<c:choose>
+										<c:when test="${not empty project.bidDate}">
+											<h:commandLink style="color:blue;" 
+											onclick="call_details_jsp('#{project.contentId}','1','#{pTBean.loginId}','#{project.jobId}','#{treeBean.selectedNodeId}','#{treeBean.selectedFolderName}','#{fn:replace(project.jobTitle,replaceQuote, '')}'	,'#{project.bidDate}','#{project.cdcId}');">						
+											 <h:graphicImage name="saved_search/Navigation_Blue_Up.gif" border="0" library="images" rendered="${fn:containsIgnoreCase(userBean.userFeatures, 'Data Export') and project.dataExportFlag eq 1}"/> 
+												    <h:outputText value="#{project.jobTitle}" styleClass="black10px" style="color:blue"/>
+											</h:commandLink> 
+										</c:when>
+										<c:otherwise>
+											<h:outputLink style="color:blue;" onclick="call_details_jsp('#{project.contentId}','1','#{pTBean.loginId}','#{project.jobId}','#{treeBean.selectedNodeId}','#{treeBean.selectedFolderName}','#{fn:replace(project.jobTitle,replaceQuote, '')} ',
+											'01-01-00','#{project.cdcId}'); return false;">
+											 <h:graphicImage name="saved_search/Navigation_Blue_Up.gif" border="0" rendered="${fn:containsIgnoreCase(userBean.userFeatures, 'Data Export') and project.dataExportFlag eq 1}" library="images"/> 
+											<h:outputText value="#{project.jobTitle}" styleClass="black10px" style="color:blue"/>
+											</h:outputLink> 
+										</c:otherwise>
+									</c:choose>
+								</rich:column>
+								<rich:column sortBy="#{project.amount}">
+									<f:facet name="header">Value</f:facet>
+									 <h:outputText value="#{project.amount}" styleClass="black11px"/>
+								</rich:column>
+								<rich:column sortBy="#{project.bidStage}">
+									<f:facet name="header">BidStage</f:facet>
+									<h:outputText value="#{project.bidStage}" styleClass="black10px"/>
+								</rich:column>
+								<rich:column sortBy="#{project.county}">
+									<f:facet name="header">County</f:facet>
+									<h:outputText value="#{project.county}" styleClass="black11px"/>
+								</rich:column>
+								<rich:column sortBy="#{project.plansAvailable}">
+									<f:facet name="header">e-Plan</f:facet>
+									<!--to check each county id exists in the polcoveragecountylist-added by Johnson-110810-->
+													<c:set var="polCoverageFlag" value="N"/>  
+													<c:if test="${not empty  userBean.polCountyIdList and fn:contains(userBean.polCountyIdList,project.countyId)}">
+														<c:set var="polCoverageFlag" value="Y"/>
+													</c:if>
+												<!--END-->
+												<!--BELOW LOGIC IS USED TO DISPLAY PLANS ICON IF AVAILABLE AND SUBSCRIBED BY USER-->
+												<c:set var="plansAvailable" value="#{project.plansAvailable}"/>
+												<c:set var="polCountyFlag" value="#{userBean.polCounties}"/>
+												<!--Iphone Browser session flag - 090711- to Hide POL icons-->
+												 <c:if test="${userBean.isIPhone == 'Y'}">
+												 	<c:set var="plansAvailable" value=""/>
+												 </c:if> 
+														<h:link value=" " onclick="javascript:call_plansOnline('A','#{project.countyId}','#{project.leadsEncryptedId}','1','#{project.leadsId}','#{project.stateId}')" rendered="#{plansAvailable eq 'A' and polCountyFlag eq 'Y' and polCoverageFlag eq 'Y'}">
+														<h:graphicImage name="pol/plans-available-new1.png" library="images"/>
+														</h:link> 
+														
+														<h:link value=" " onclick="javascript:call_plansOnline('A','#{project.countyId}','#{project.leadsEncryptedId}','1','#{project.leadsId}','#{project.stateId}')" rendered="${plansAvailable eq 'I' and polCountyFlag eq 'Y' and polCoverageFlag eq 'Y'}">
+														<h:graphicImage name="pol/plans-addendum-available-new.png" library="images" />
+														</h:link> 
+														
+														<h:link value=" " onclick="javascript:call_plansOnline('U','#{project.countyId}','#{project.leadsEncryptedId}','1','#{project.leadsId}','#{project.stateId}')" rendered="{plansAvailable eq 'U' and polCountyFlag eq 'Y' and polCoverageFlag eq 'Y'}">
+														<h:graphicImage name="pol/plansUnavailable.gif" library="images"/>
+														</h:link> 
+												 		
+														<h:link value=" " execute="@none" render="@none" limitRender="true" onclick="javascript:call_plansOnline('S','#{project.countyId}','#{project.leadsEncryptedId}','C','#{project.leadsId}','#{project.stateId}')" rendered="#{plansAvailable eq 'S' and polCountyFlag eq 'Y' and polCoverageFlag eq 'Y'}"> 
+														<h:graphicImage name="pol/click-for-plan-status.png" library="images"/>
+													 </h:link> 
+											 
+								</rich:column>
+							</rich:dataTable> 
+							<h:panelGroup rendered="#{empty pTBean.jobsList and fn:length(pTBean.jobsList) eq 0}">
+								<h:outputLabel value="Sorry No Records Found" styleClass="black12px"/>&nbsp;&nbsp;&nbsp;&nbsp;
+								<a4j:commandButton value=" " styleClass="backButtonImage" action="#{pTController.savedProjects(request)}" render="first" limitRender="true" execute="@this"/>
+							</h:panelGroup> 
+							<h:panelGroup rendered="#{(fn:length(pTBean.jobsList) ne fn:length(pTBean.allProjects)) and not empty pTBean.jobsList}"> 
+								<a4j:commandButton value=" " styleClass="backButtonImage" action="#{pTController.savedProjects(request)}" render="first" limitRender="true" execute="@this"/>
+							</h:panelGroup>
+							</a4j:region>
+							</h:panelGrid>
+							</a4j:outputPanel>
+							 <!-- End jobs display -->
+							 <!-- jobs options -->
+							 <h:panelGrid  width="525" border="0" cellspacing="0" cellpadding="0" bgcolor="white" columnClasses="one" styleClass="jobSelection">
+								 <h:panelGroup>
+								 	<a4j:commandButton id="printButton2" value=" " styleClass="buttonPrintJobsImage" onclick="jobs_action('print'); return false;" />&nbsp;&nbsp;
+									<a4j:commandButton id="deleteButton2" value=" " styleClass="buttonDeleteJobsImage"   onclick="jobs_action('delete')" render="@none" oncomplete="refreshTreeBean()"/>   &nbsp;&nbsp;
+									 
+									<h:commandButton value=" " styleClass="buttonClearImage" type="button" onclick="refreshPage()"/>&nbsp;&nbsp;
+									<c:if test="${fn:containsIgnoreCase(userBean.userFeatures, 'Data Export')}"><!--  To Enable Dataexport Feature for only Featured Users. Added on 27-July-2012 by Muthu-->
+										<a4j:commandButton value=" " styleClass="buttonDataExportImage" onclick="jobs_action('export')"
+									  render="myDataExport:dxRender" limitRender="true" execute="@none"/>
+									</c:if>
+								  </h:panelGroup>
+							 </h:panelGrid>	
+							  <!--End  jobs options -->
+							  <!-- //move jobs -->
+							 <h:panelGrid  width="525" border="0" cellspacing="0" cellpadding="0" columns="2" bgcolor="EFF4FA" styleClass="pickFolderArea">
+							 	<h:outputText value="Move Jobs to Folder" styleClass="moveJobLabel"/>
+								<h:panelGroup id="moveJob" ajaxRendered="true">
+									<h:inputText id="jobFolder" h5:name="movetoFolder" value="My Jobs" size="20" style="height:19px;float:left;" onfocus="javascript:this.blur()" />
+									 <h:commandButton styleClass="buttonPickFolderImage pickFolderStyle" value=" ">
+									 	<rich:componentControl target="pickFolderPopup" event="click" operation="show"/>
+									 </h:commandButton>
+									<h:inputHidden id="jobFolderId" h5:name="movetoId" value="0"/>
+								 </h:panelGroup>	 
+							</h:panelGrid>
+							 <h:panelGrid  width="525" border="0" cellspacing="0" cellpadding="0"   bgcolor="EFF4FA" styleClass="moveJobsFolder"> 
+								<rich:message id="moveErr" for="moveJob" styleClass="moveJobError"/> 
+								<a4j:commandButton value=" " styleClass="moveSelectedJobsImage"  onclick="return jobs_action('move');" render="copyResult:copyJobMessage" execute="@this" limitRender="true"> 
+								</a4j:commandButton >
+							 </h:panelGrid>
+							 <!-- //move jobs -->
+							<c:if test="#{not empty userBean.masterId and fn:length(userBean.subUserList) gt 1}">
+							 <h:panelGrid  width="525" border="0" cellspacing="0" cellpadding="0" bgcolor="white" columnClasses="one" styleClass="userCopyTo">
+							 	<rich:message id="copyMsg" for="copy"/>
+							 	<h:panelGroup>
+									<h:outputText id="copy" value="Copy Jobs to User:"/>
+									<h:selectOneMenu  id="user_copyto"  value="#{pTBean.selectedUserCopyto}">
+										 <c:forEach items="#{userBean.subUserList}" var="masterSub">
+										 <c:if test="${fn:replace(masterSub[0],'\'', '') ne userBean.masterId}">
+											<f:selectItem itemValue="#{fn:replace(masterSub[0],'\'', '')}" itemLabel="#{fn:replace(masterSub[0],'\'','')}" />
+										</c:if>
+										</c:forEach>
+									</h:selectOneMenu> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+									 
+									<a4j:commandButton value=" " styleClass="copySelectedJobsImage"   onclick="return jobs_action('copy');" render="copyJobMessage,copySelectedJobs" limitRender="true" execute="user_copyto" oncomplete="#{rich:component('copySelectedJobs')}.show()"/>   
+								</h:panelGroup>
+								<span class="black11px">Note: Please select only <STRONG>ONE</STRONG> job to copy each time. <BR/>It will copy job, notes and calendar. <BR/>Job will be saved into default folder of &quot;My Jobs&quot;.</span>
+							 </h:panelGrid>
+							</c:if>
+						</c:if>
+					</rich:tab>
+					<rich:popupPanel id="pickFolderPopup" modal="true" autosized="true" onbeforeshow="renderPickFolder()">
+						<f:facet name="controls"> 
+							<h:commandButton value=" " type="button" styleClass="popupCloseImage" onclick="#{rich:component('pickFolderPopup')}.hide(); return false;"/>   
+						</f:facet> 
+						<rich:hotKey key="Esc">
+							<rich:componentControl target="pickFolderPopup" operation="hide"/>
+						</rich:hotKey>
+						<a4j:jsFunction name="renderPickFolder" render="treeFolder2" limitRender="true" execute="@none"/>
+						<h:panelGrid>
+							<h:graphicImage name="project_tracker/header_pickfolder_bl.gif" library="images" styleClass="textAlignLeft"/> 
+							<h:panelGrid styleClass="searchBox textAlignLeft" width="300">
+								<h:panelGroup styleClass="treeStyle">
+										 <h:graphicImage name="project_tracker/menu-images/menu_new_root.gif" library="images" ALT="" align="left"/>My Project Tracker
+										<rich:tree id="treeFolder2" toggleType="client" selectionType="client" var="root" execute="@none"  render="@none">
+											<rich:treeModelRecursiveAdaptor roots="#{treeBean.rootNodes}" nodes="#{root.subFolders}" >
+												<rich:treeNode iconExpanded="#{request.contextPath}/resources/images/project_tracker/menu-images/menu_folder_open.gif" 
+															iconCollapsed="#{request.contextPath}/resources/images/project_tracker/menu-images/menu_folder_closed.gif" 
+															onclick="pickFolder('#{root.name}','#{root.nodeId}',false)" expanded="#{root.treeMode}" styleClass="treeStyle">
+															#{root.name}
+												</rich:treeNode>
+											</rich:treeModelRecursiveAdaptor>
+										</rich:tree>
+								 </h:panelGroup>
+								 <h:panelGrid styleClass="paddingTop"/>
+								 <h:panelGroup>
+									 <h:outputLabel value="Selected Folder: "/>
+									<h:outputLabel  id="moveSelectedJobName" value="My Jobs" size="20" styleClass="orange11px"/>
+								</h:panelGroup>
+								<h:commandButton value=" " styleClass="okSmallButtonImage floatRight" 
+								onclick="pickFolder('#{root.name}','#{root.nodeId}',true);#{rich:component('pickFolderPopup')}.hide();return false;" />  
+							</h:panelGrid>
+						</h:panelGrid>
+					</rich:popupPanel>
+					
+					<rich:tab id="second" header=" " h5:name="second" headerClass="updatedProjectImage" headerActiveClass="updatedProjectImageActive" onheaderclick="swapClasses('');"  oncomplete="$('.jobsName').hide();" rendered="true"   switchType="#{secondMode}" action="#{pTController.updatedProjects(request)}" execute="@this" render="updatedProjectList" limitRender="true">  									 
+							 
+							<a4j:outputPanel id="updatedProjectList" ajaxRendered="true">	
+								<h:panelGrid  width="525" border="0" cellspacing="0" cellpadding="0" bgcolor="EFF4FA" styleClass="searchBox">
+								<!-- discriptin box -->
+								 <c:if test="${not empty pTBean.updatedProjectsList and fn:length(pTBean.updatedProjectsList) gt 0}">
+									<h:outputText value="These are projects you saved to Project Tracker that have been updated since the last time you logged in." 
+									style="float:left;" styleClass="black10px"/>
+									<h:outputText value="" style="padding:86px;"/>
+									<h:outputText value="Click on the title to see the latest information." styleClass="black10px" style="float:left;"/>
+								  </c:if>
+								  <c:if test="${!(not empty pTBean.updatedProjectsList and fn:length(pTBean.updatedProjectsList) gt 0)}">
+									<h:outputText value="Updated Projects will list all your saved projects that have updated information." styleClass="black10px" style="float:left;"/>								<h:outputText value="" style="padding:86px;"/>
+									<h:outputText value="There are no updated projects currently." styleClass="black10px" style="float:left;"/>
+								  </c:if>
+							   <!-- //discriptin box -->
+							    </h:panelGrid> 
+						   		<c:if test="${not empty pTBean.updatedProjectsList and fn:length(pTBean.updatedProjectsList) gt 0}">
+									<!-- jobs options -->
+									 <h:panelGrid  width="525" border="0" cellspacing="0" cellpadding="0" bgcolor="white" columnClasses="one" styleClass="searchBox">
+										 <h:panelGroup>
+											<a4j:commandButton id="printButton3" value=" " styleClass="buttonPrintJobsImage" onclick="jobs_action('print'); return false;" />&nbsp;&nbsp;
+											<a4j:commandButton id="deleteButton3" value=" " styleClass="buttonDeleteJobsImage"   onclick="jobs_action('delete')" render="@none" oncomplete="refreshTreeBean()"/>   &nbsp;&nbsp;
+											<h:commandButton value=" " styleClass="buttonClearImage" type="button" onclick="refreshPage()"/>&nbsp;&nbsp;
+											<c:if test="${fn:containsIgnoreCase(userBean.userFeatures, 'Data Export')}"><!--  To Enable Dataexport Feature for only Featured Users. Added on 27-July-2012 by Muthu-->
+												<a4j:commandButton value=" " styleClass="buttonDataExportImage" onclick="jobs_action('export')"
+									  render="myDataExport" limitRender="true" execute="@this"/>
+											</c:if>
+										  </h:panelGroup>
+										   <h:panelGroup>
+												<h:outputText value="Print Option:" style="vertical-align:super"/>
+												<h:selectOneRadio id="UPprintOption" value="#{pTBean.printOption}" style="display:inline-table;vertical-align:sub">
+													<f:selectItem itemValue="noNotes" itemLabel="Print project details" />
+													<f:selectItem itemValue="withNotes" itemLabel="Print project details with notes" />
+												</h:selectOneRadio>
+										   </h:panelGroup>
+									 </h:panelGrid>	
+									 <!-- jobs options -->
+									 <!-- jobs display -->
+									 
+									 <h:panelGrid width="525" border="0" cellspacing="0" cellpadding="0" bgcolor="white" 
+															 styleClass="searchBox">
+										<rich:dataTable value="#{pTBean.updatedProjectsList}" var="project" sortMode="single" 
+										rowClasses="oddRowColor,evenRowColor" style="border:none !important;text-align:left;">
+											<rich:column>
+												<f:facet name="header"><h:selectBooleanCheckbox/>All</f:facet>
+												<h:selectBooleanCheckbox/>
+											</rich:column>
+											 
+											<rich:column sortBy="#{project.bidDate}" style="width:10px;">
+											<!-- display bid date. For Bidding and sub bids: Date/ASAP/Postponed/Blank. For Low Bid: Date/Blank. For other: Date/Postponed/Blank-->
+											<!-- Postponed: has planning stages of
+																Project On Hold Pending Zoning Approval
+																Project On Hold Pending Permits
+																Project On Hold Pending Financing
+																Project On Hold Pending Funding
+																Project On Hold Pending Owner Review
+																Project On Hold Pending Tenant Review
+																Project On Hold Pending Referendum
+											-->
+											<!-- ASAP: bids_details contains "ASAP" or " As Soon As Possible"-->
+											<f:facet name="header">BidDate/Status</f:facet>
+											<h:outputText value="#{bidDate}" stylClass="black11px">
+												<f:convertDateTime pattern="MM-dd-yy" />
+											</h:outputText>
+											</rich:column>
+											<rich:column sortBy="#{project.jobTitle}">
+												<f:facet name="header">Title</f:facet>
+												<c:choose>
+													<c:when test="${not empty project.bidDate and project.bidDate ne null}">
+														<a4j:commandLink style="color:blue;" 
+														onclick="javascript:call_details_jsp('#{project.contentId}','1','#{pTBean.loginId}','#{project.jobId}','#{treeBean.selectedNodeId}','#{treeBean.selectedFolderName}','#{project.jobTitle}','#{project.bidDate}')">												
+														<c:if test="${fn:containsIgnoreCase(userBean.userFeatures, 'Data Export') and project.dataExportFlag eq 1}">
+																<h:graphicImage url="#{request.contextPath}/images/Navigation_Blue_ Up.gif" border="0"/>
+														</c:if>
+															<h:outputText value="#{project.jobTitle}" styleClass="black10px" style="color:blue"/>
+														</a4j:commandLink> 
+													</c:when>
+													<c:otherwise>
+														<a4j:commandLink style="color:blue;" onclick="javascript:call_details_jsp('#{project.contentId}','1','#{pTBean.loginId}','#{project.jobId}','#{treeBean.selectedNodeId}','#{treeBean.selectedFolderName}','#{project.jobTitle}',
+														'01-01-00')">
+														<c:if test="${fn:containsIgnoreCase(userBean.userFeatures, 'Data Export') and project.dataExportFlag eq 1}">
+															<h:graphicImage url="#{request.contextPath}/images/Navigation_Blue_ Up.gif" border="0"/>
+														</c:if>
+														<h:outputText value="#{project.jobTitle}" styleClass="black10px" style="color:blue"/>
+														</a4j:commandLink> 
+													</c:otherwise>
+												</c:choose>
+											</rich:column>
+											<rich:column sortBy="#{project.amount}">
+												<f:facet name="header">Value</f:facet>
+												<h:outputText value="#{project.amount}" styleClass="black11px" />
+											</rich:column>
+											<rich:column sortBy="#{project.bidStage}">
+												<f:facet name="header">BidStage</f:facet>
+												<h:outputText value="#{project.bidStage}" styleClass="black10px"/>
+											</rich:column>
+											<rich:column sortBy="#{project.county}">
+												<f:facet name="header">County</f:facet>
+												<h:outputText value="#{project.county}" styleClass="black11px"/>
+											</rich:column>
+											<rich:column sortBy="#{project.plansAvailable}">
+												<f:facet name="header">e-Plan</f:facet>
+												<!--to check each county id exists in the polcoveragecountylist-added by Johnson-110810-->
+													<c:set var="polCoverageFlag" value="N"/>
+													<c:if test="${not empty  applicationScope.polCountyidlist and fn:length(applicationScope.polCountyidlist) gt 1}">
+														<c:set var="polCoverageFlag" value="Y"/>
+													</c:if>
+												<!--END-->
+												<!--BELOW LOGIC IS USED TO DISPLAY PLANS ICON IF AVAILABLE AND SUBSCRIBED BY USER-->
+												<c:set var="plansAvailable" value="#{project.plansAvailable}"/>
+												<c:set var="polCountyFlag" value="#{userBean.polCounties}"/>
+												<!--Iphone Browser session flag - 090711- to Hide POL icons-->
+												 <c:if test="${userBean.isIPhone == 'N'}">
+												 	<c:set var="plansAvailable" value=""/>
+												 </c:if> 
+												 <h:link value=" " onclick="javascript:call_plansOnline('A','#{project.countyId}','#{project.leadsEncryptedId}','1','#{project.leadsId}','#{project.stateId}')" rendered="#{plansAvailable eq 'A' and polCountyFlag eq 'Y' and polCoverageFlag eq 'Y'}">
+														<h:graphicImage name="pol/plans-available-new1.png" library="images"/>
+														</h:link> 
+														
+														<h:link value=" " onclick="javascript:call_plansOnline('A','#{project.countyId}','#{project.leadsEncryptedId}','1','#{project.leadsId}','#{project.stateId}')" rendered="${plansAvailable eq 'I' and polCountyFlag eq 'Y' and polCoverageFlag eq 'Y'}">
+														<h:graphicImage name="pol/plans-addendum-available-new.png" library="images" />
+														</h:link> 
+														
+														<h:link value=" " onclick="javascript:call_plansOnline('U','#{project.countyId}','#{project.leadsEncryptedId}','1','#{project.leadsId}','#{project.stateId}')" rendered="{plansAvailable eq 'U' and polCountyFlag eq 'Y' and polCoverageFlag eq 'Y'}">
+														<h:graphicImage name="pol/plansUnavailable.gif" library="images"/>
+														</h:link> 
+												 		
+														<h:link value=" " execute="@none" render="@none" limitRender="true" onclick="javascript:call_plansOnline('S','#{project.countyId}','#{project.leadsEncryptedId}','C','#{project.leadsId}','#{project.stateId}')" rendered="#{plansAvailable eq 'S' and polCountyFlag eq 'Y' and polCoverageFlag eq 'Y'}"> 
+														<h:graphicImage name="pol/click-for-plan-status.png" library="images"/>
+													 </h:link> 
+											</rich:column>
+										</rich:dataTable>
+								</h:panelGrid>
+								<!-- jobs options -->
+									 <h:panelGrid  width="525" border="0" cellspacing="0" cellpadding="0" bgcolor="white" columnClasses="one" styleClass="searchBox" style="padding-bottom:5px;">
+										 <h:panelGroup>
+											<a4j:commandButton id="printButton4" value=" " styleClass="buttonPrintJobsImage" onclick="jobs_action('print'); return false;" />&nbsp;&nbsp;
+											<a4j:commandButton id="deleteButton4" value=" " styleClass="buttonDeleteJobsImage"   onclick="jobs_action('delete')" render="@none" oncomplete="refreshTreeBean()"/>   &nbsp;&nbsp;
+											<h:commandButton value=" " styleClass="buttonClearImage" type="button" onclick="refreshPage()"/>&nbsp;&nbsp;
+											<c:if test="${fn:containsIgnoreCase(userBean.userFeatures, 'Data Export')}"><!--  To Enable Dataexport Feature for only Featured Users. Added on 27-July-2012 by Muthu-->
+												<a4j:commandButton value=" " styleClass="buttonDataExportImage" onclick="jobs_action('export')"
+									  render="myDataExport:dxRender" limitRender="true" execute="@none"/>
+											</c:if>
+										  </h:panelGroup>
+									 </h:panelGrid>	
+									 <!-- jobs options -->
+								</c:if>
+							 </a4j:outputPanel>
+						</rich:tab>
+					</rich:tabPanel>
+				 <!-- To hide the Folder Tree when the Updated Projects Tab becomes active Item-->
+					<c:if test="#{pTBean.activeTab eq 'second'}">
+						<h:outputScript>
+							swapClasses('first');
+							$('.jobsName').hide();
+						</h:outputScript>
+					</c:if>
+				</h:form>	
+				<rich:popupPanel id="copySelectedJobs" moveable="true" width="300" height="100" resizeable="false" onshow="renderCopy()">
+					 <f:facet name="header">
+					 	<h:outputText value=" "/>
+					 </f:facet>
+					 
+					<rich:panel>
+					<a4j:jsFunction name="renderCopy" render="copyJobMessage" limitRender="true"/> 
+					<h:form id="copyResult">
+						<a4j:outputPanel id="copyJobMessage" ajaxRendered="true">
+							<h:outputText value="#{pTBean.copyPTJobsMessage}"/> 
+						</a4j:outputPanel><br/>
+						<a4j:commandButton value=" " oncomplete="#{rich:component('copySelectedJobs')}.hide();return false" action="#{pTController.savedProjects(request)}" render="first,jobsName" limitRender="true" execute="@this" styleClass="okButtonImage"/> 
+					</h:form>
+					</rich:panel>
+				</rich:popupPanel>	
+				
+				<rich:popupPanel id="exportJobSelected" moveable="true" width="565" height="585" onbeforeshow="setPopup()">
+					 
+					<f:facet name="controls">
+						 <h:commandButton value=" " type="button" styleClass="popupCloseImage" onclick="#{rich:component('exportJobSelected')}.hide(); return false;"/>  
+					</f:facet>
+					<rich:hotKey key="Esc">
+							<rich:componentControl target="exportJobSelected" operation="hide"/>
+						</rich:hotKey>
+
+					<ui:include src="/online_product/dataexport/data_export.xhtml"/>
+				</rich:popupPanel>
+				
+				<rich:popupPanel id="searchTips" moveable="true" height="400" width="452">
+					 
+					<f:facet name="controls">
+						 <h:commandButton value=" " type="button" styleClass="popupCloseImage" onclick="#{rich:component('searchTips')}.hide(); return false;"/>  
+					</f:facet>
+					<rich:hotKey key="Esc">
+							<rich:componentControl target="searchTips" operation="hide"/>
+						</rich:hotKey>
+					<rich:panel id="searchTip" styleClass="searchTipsBg">
+						<ui:include src="/online_product/messages/search_tips.html"/>
+					</rich:panel>
+				</rich:popupPanel>
+				</h:panelGrid>
+				
+			
+				<script>
+					contextPath='#{request.contextPath}';
+					loginId='#{userBean.loginId}';					 
+			</script>
+		</ui:define>
+</ui:composition>

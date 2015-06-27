@@ -1,0 +1,206 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:a4j="http://richfaces.org/a4j" 
+	  xmlns:c="http://java.sun.com/jsp/jstl/core"
+	  xmlns:rich="http://richfaces.org/rich"
+	  xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:o="http://omnifaces.org/ui"
+	  xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+	
+      <!-- Geographies Search Form -->
+      
+      <h:panelGroup>
+      <h:panelGrid width="960" border="0" cellpadding="0" cellspacing="0" styleClass="textAlignLeft border1px_3579bd" bgcolor="#EFF4FA">
+      
+      <h:panelGroup styleClass="displayBlock marginLeft10 marginTop10">
+      <h:outputLink target="_blank"  value="#{request.contextPath}/online_product/LM-CCMI-Geographies-How-To-Guide-110112.pdf" styleClass="width120">Step by Step Instructions</h:outputLink>
+      </h:panelGroup>
+      
+      <h:panelGroup styleClass="row verticalAlignTop">
+      <h:panelGrid border="0" columns="4" style="padding-left:6px">
+      <!-- <h:panelGroup styleClass="verticalAlignTop"> -->
+      
+      <!-- State -->
+      
+       <h:panelGroup style="display:block;width:140px"><rich:message id="stateErr" for="state" />
+     <h:graphicImage name="adv_search/navheader_state_ca.png" library="images" alt="" /><br/> 
+      <h:selectManyListbox  styleClass="mylength2" id="state" immediate="true" style="width:80px" value="#{searchBean.stateList}"  onchange="getCountyLists()" size = "5" label="State">
+	  <f:selectItems itemValue="#{list.stateName}"  value="#{userBean.userStateIdNameList}" var="list" itemLabel="#{list.stateAbb}" />	 
+	  </h:selectManyListbox>
+	  </h:panelGroup>
+	  
+	  <!-- County -->
+	  <h:panelGroup style="display:block;width:150px">	  
+	   <rich:message id="countyErr" for="county" />
+	   <h:graphicImage name="adv_search/navheader_county_ca.png" library="images" alt="" /><br/>
+	  <h:selectManyListbox  id="county" styleClass="mylength3" value="#{searchBean.countyList}"  onclick="getSelectAllDeselect(this)" immediate="true" style="width:110px" size = "5">
+		<f:selectItem itemLabel="All Counties" itemValue="All Counties" h5:selected="true"/>
+		<f:selectItems value="#{userBean.userCountyIdNameList}" var="list" itemLabel="#{list.countyName}" itemValue="#{list.countyId}"/>	 
+		<f:selectItem itemLabel="Multiple" itemValue="#{applicationConfig.MULTIPLE_COUNTY}"/>
+	  </h:selectManyListbox >
+	  </h:panelGroup>
+	
+	<!-- Section -->
+	 <h:column>
+	 <rich:message id="sectionErr" for="section" />
+	  <h:panelGrid width="322" border="0" cellpadding="0" cellspacing="0">
+	  <h:panelGroup styleClass="border-bottom" style="display:block;width:300px">
+	  <h:graphicImage name="adv_search/navheader_section_ca.png" library="images" alt="Section" border="0" align="left" />
+	  <h:selectBooleanCheckbox id="section_selectall" itemValue="SelectAll" value="#{searchBean.selectAllSection}"
+			onclick="CheckAll(this)"/>
+	  <h:outputLabel for="section_selectall" value="Select All"  styleClass="black11px"/>
+	  </h:panelGroup>
+	  <h:panelGroup styleClass="selection" style="width:300px">
+	  <h:selectManyCheckbox id="section" styleClass="black11px all_table" value="#{searchBean.sectionList}" style="padding-left:10px;" layout="pageDirection" onclick="UnCheck()">
+		<f:selectItems value="#{userBean.allSectionNameAbbList}" var="section" itemValue="#{section.sectionName}" itemLabel="#{section.sectionDesc}"/>
+	  </h:selectManyCheckbox>
+	  </h:panelGroup>
+	  <h:panelGroup styleClass="border-bottom" style="display:block;width:300px">
+	   <h:graphicImage name="adv_search/navheader_bidtype_ca.png" library="images" alt="Section" border="0" align="left" />
+	   </h:panelGroup>
+	   <h:panelGroup>
+	   <rich:message id="bidTypeErr" for="bidType" />
+	  <h:selectManyCheckbox id="bidType" value="#{searchBean.bidTypeList}" style="border-collapse: collapse;display:inline-table" styleClass="black11px">
+		<f:selectItem itemValue="public" itemLabel="Public Work &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" />
+		<f:selectItem itemValue="private" itemLabel="Private Work" />										
+	  </h:selectManyCheckbox>
+	  </h:panelGroup>	  
+	  </h:panelGrid>
+		</h:column>
+	
+	<h:column>
+	 <h:panelGroup styleClass="border-bottom" style="display:block;width:250px">
+	 <h:graphicImage name="adv_search/navheader_indtype_ca.png" library="images" alt="Section" border="0" align="left" />
+	 </h:panelGroup>
+	 <rich:message id="industryErr" for="industry" />
+	 <h:selectManyListbox  style="width:250px" id="industry" value="#{searchBean.industryList}" styleClass="mylength4" size="5" onclick="getSubIndustry()">
+		<f:selectItem itemValue="Select All" itemLabel="Select All" h5:selected="true"/>
+        <f:selectItems value="#{userBean.industryIdNameList}" var="list" itemLabel="#{list.industryName}" itemValue="#{list.industryIdName}" />	
+       </h:selectManyListbox> 
+	 </h:column>
+     <!--  </h:panelGroup> -->
+      
+      </h:panelGrid>
+      
+      </h:panelGroup>
+      
+      <h:panelGroup>
+      
+      <h:panelGrid border="0" columns="3" cellpadding="5" cellspacing="0" style="padding-left:6px">
+      
+     
+       <!-- construction type -->
+       <h:column>
+      <h:panelGroup styleClass="border-bottom" style="display:block;width:290px">
+      <h:graphicImage name="adv_search/navheader_contype_ca.png" library="images" alt="contype" border="0" align="left"  />
+      </h:panelGroup>
+      <h:panelGroup style="display:block;width:290px">
+      <rich:message id="constTypeErr" for="constType" />
+      <h:selectManyCheckbox id="constType" layout="pageDirection" styleClass="black11px verticalAlignTop selection black11px all_table" value="#{searchBean.constTypeList}" style="padding-left:10px;" >
+					<f:selectItem itemValue="new" itemLabel="New Construction" />
+					<f:selectItem itemValue="ren" itemLabel="Renovation" />
+					<f:selectItem itemValue="alt" itemLabel="Alteration" />
+					<f:selectItem itemValue="add" itemLabel="Addition" />
+	  </h:selectManyCheckbox>
+	  </h:panelGroup>
+	  <h:panelGroup id="bidDateAndCompanyName" style="display:block;width:290px;">
+	  
+	  <!-- Bid Date -->
+	  <rich:message id="bidDateErr" for="bidDateFrom" /><br/>
+	  <h:panelGroup id="bidDateImage" styleClass="border-bottom" style="display:block;width:290px">
+	  <h:graphicImage name="adv_search/navheader_biddate_ca.png" library="images" alt="contype" border="0" align="left" />
+	  </h:panelGroup>
+	  <rich:calendar id="bidDateFrom"
+			value="#{searchBean.bidDateFrom}" popup="true"
+			datePattern="#{userBean.datePattern}" inputSize="10" maxlength="9" showWeeksBar="false"
+			label="BidDateFrom" >
+        </rich:calendar> to
+	 <rich:calendar id="bidDateTo"
+			value="#{searchBean.bidDateTo}" popup="true"
+			datePattern="#{userBean.datePattern}" inputSize="10" maxlength="9" showWeeksBar="false"
+			 label="BidDateTo">
+       </rich:calendar>
+     
+      <!-- Company Name  -->
+     <br/>
+      <h:outputText id="and-or-text" value="AND/OR" styleClass="fontWeightBold textAlignCenter" />
+      
+       <h:graphicImage id="companyNameImg" name="adv_search/navheader_companyname_ca.png" library="images" alt="contype" border="0" align="left" />
+      <rich:message id="companyNameErr" for="companyName" />
+     
+      <h:inputText id="companyName" value="#{searchBean.companyName}" size="8" 
+      onmouseover="ddrivetip('To perform a wildcard search for Company Name add an asterisk (*) after the keyword or letter. &lt;li&gt;Example 1: ABC* will display company names beginning with ABC&lt;&#47;li&gt; &lt;li&gt;Example 2: Z* will display company names beginning with Z&lt;&#47;li&gt;','#B3D6E9', 300)" 
+      onmouseout="hideddrivetip()" />
+       </h:panelGroup>
+      </h:column>
+      
+      <!-- Division of Work -->
+      <h:column>
+      <h:panelGroup styleClass="border-bottom" style="display:block;margin-bottom:10px;">
+      <h:graphicImage name="adv_search/navheader_dow_ca.png" library="images" alt="contype" border="0" align="left" />
+      </h:panelGroup>
+      <h:panelGroup layout="block" styleClass="divisions" style="width:300px;">
+      <rich:message id="divisionErr" for="division" />
+      <h:selectManyCheckbox  id="division" style="text-align:left;" value="#{searchBean.divisionList}" layout="pageDirection" size="5"  styleClass="black12px all_table mylength6">
+		<f:selectItems value="#{userBean.divisionIdNameList}" var="division" itemValue="#{division.divisionId}" itemLabel="#{division.division}" />
+      </h:selectManyCheckbox>
+      </h:panelGroup>
+      </h:column>
+      
+      <!-- Industry sub type -->
+      <h:column>
+      <h:panelGroup styleClass="border-bottom" style="display:block;width:250px">
+      <h:graphicImage name="adv_search/navheader_indsubtype_ca.png" library="images" alt="contype" border="0" align="right" />
+      </h:panelGroup>
+      <rich:message id="subIndustryErr" for="subIndustry" />
+      <h:selectManyListbox  style="width:250px" id="subIndustry"  value="#{searchBean.subIndustryList}" styleClass="mylength7" size="5" onclick="getSelectAllDeselect(this)">
+		<f:selectItem itemValue="Select All Sub Type" itemLabel="Select All Sub Type" h5:selected="true"/>
+		<f:selectItems value="#{userBean.industrySubIdNameList}" var="listItem" itemValue="#{listItem.subIndustryIdName}" itemLabel="#{listItem.subIndustryName}" itemDisabled="true"/>	
+	   </h:selectManyListbox>
+      </h:column>
+      </h:panelGrid>
+      
+      </h:panelGroup>
+      
+      <!-- show all checkbox -->
+      <h:panelGroup styleClass="black11px textAlignLeft marginLeft110" >
+		<h:outputText value="Show All " styleClass="fontWeightBold" />
+		<h:outputText value="(removes 1000 limit) " />
+		<h:selectBooleanCheckbox id="allRecords" value="#{searchBean.showAll}"/>
+	</h:panelGroup>
+      
+      <h:panelGrid width="70%" columns="2">
+      <h:panelGroup styleClass="marginLeft10">
+      <h:outputText value=" * " styleClass="red10px" />
+       <h:outputText value="indicates required fields." styleClass="black10px" />
+       </h:panelGroup>
+      <!-- SEarch button and reset  -->
+      <h:panelGroup styleClass="textAlignLeft">
+      <a4j:commandButton value=" " styleClass="searchButtonImage" onclick="return validateform(document.ccmi_form, '#{userBean.nationalUser}');" oncomplete="callDisplay();" />&nbsp;
+      <h:commandButton type="reset" value=" " styleClass="resetButtonImage" />
+      </h:panelGroup>
+      </h:panelGrid>
+      
+      </h:panelGrid>      
+      </h:panelGroup>
+      
+      <div id="dhtmltooltip" align="left"></div>
+      
+<script>
+var contextPath = '#{request.contextPath}';
+function getAllSubIndustry()
+{
+	var y=0;
+	<ui:repeat value="#{userBean.industrySubIdNameList}" var="listItem">
+		subIndustryIdValue[y] = "#{listItem.subIndustryIdName}";
+		subIndustryParentIdValue[y]= "#{listItem.subIndustryParentIdName}";
+		subIndustryName[y]="#{listItem.subIndustryName}";
+		y++;
+	</ui:repeat>
+}
+</script>
+
+</ui:composition>

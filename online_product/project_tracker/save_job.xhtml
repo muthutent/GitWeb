@@ -1,0 +1,544 @@
+<!--
+
+   Copyright 2001-15 Creatus Inc.,
+   2328 Walsh Avenue, Suite G, Santa Clara, CA 95051, U.S.A.
+   All rights reserved.
+
+   This software is the confidential and proprietary information
+   of Creatus Inc. ("Confidential Information").  You shall not disclose
+   such Confidential Information and shall use it only in accordance
+   the terms of the license agreement you entered into with
+   Creatus Inc.
+
+   Company        : Creatus Inc.
+   Author         : Creatus
+   Date Created   : 03/10/2015
+   Last Modified  : 03/10/2015
+   Modifier       : Sathish
+   Description    : Displays the UI to save the Selected Job to Project Tracker
+   					After the Lead Manager Migration from coldfusion to JBoss
+   					
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:f="http://java.sun.com/jsf/core" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:a4j="http://richfaces.org/a4j" 
+	  xmlns:c="http://java.sun.com/jsp/jstl/core"
+	  xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+	  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	 xmlns:ui="http://java.sun.com/jsf/facelets"
+	 xmlns:o="http://omnifaces.org/ui"
+	  xmlns:rich="http://richfaces.org/rich">
+ 
+<h:head>
+	<meta name="robots" content="noindex, nofollow"/>
+	 <h:outputScript library="js" name="project_tracker/saveJob.js?v=6.1" target="body"/>
+	 <h:outputScript library="js" name="JSScripts/Javascript_template.js?v=4.3" target="body"/>
+	<h:outputStylesheet name="sheet.css" library="css" target="body"/>
+	<h:outputStylesheet library="css" name="buttons.css" target="body"/>
+	<h:outputStylesheet library="css" name="project_tracker/saveJob.css" target="body"/>
+	<h:outputScript library="js" name="project_tracker/pt_jobs_display.js?v=4.3" />
+	<h:outputStylesheet name="calendar/add-event.css" library="css" target="head"/> 
+	<h:outputScript name="calendar/add_event.js?v=4.7" library="js" target="head"/> 
+</h:head>
+<h:body>
+<c:set var="PTCount" value="#{applicationConfig.PT_ALLOWED}"/> 
+<c:set var="countiesCount" value="#{fn:length(userBean.userCountyList)}"/> 
+<c:set var="PTAllowed" value="#{PTCount  * countiesCount}"/> 
+<c:if test="${PTAllowed lt applicationContext. PT_allowed_default_new}">
+	<c:set var="PTAllowed" value="#{applicationContext. PT_allowed_default_new}"/>
+</c:if>  
+<h:form id="saveProject">
+<h:inputHidden name="jobid" value="#{pTBean.jobId}"/>
+<h:inputHidden name="cdc_id" value="#{pTBean.cdcId}"/>
+<h:inputHidden name="title" value="#{pTBean.jobTitle}"/> 
+<h:inputHidden id="calFea" h5:name="addcalendar"/>
+<c:choose> 
+<c:when test="${pTBean.jobCount ge PTAllowed}"> <!--First IF starts -->
+	<h:outputText value="You have already saved #{pTBean.jobCount} jobs.The project tracker limit is exceeded." styleClass="black12px" h5:align="center"/><br/>
+	<c:if test="#{not empty userBean.masterId and fn:length(userBean.subUserList) gt 1}">	<!-- IF 2 Start-->
+		<h:graphicImage name="project_tracker/header_addproject_bl.gif" library="images" ALT="" border="0" align="left"/>
+		<h:panelGrid  width="510"  cellpadding="0"  cellspacing="4" border="0" columns="2"	columnClasses="oneColumnStyle,black10px" styleClass="jobTableStyle">
+			<h:column/>
+			<rich:message id="jobErr1" for="jobName1"/>
+			<h:outputText value="Title" styleClass="black12px" style="font-weight:bold;"/>
+			<h:inputText size="41"  id="jobName1" value="#{pTBean.jobTitle}" maxlength="60"/>
+			<h:column/>
+			<h:outputText value="Please avoid quotes and comma (',&quot;) in job name"  styleClass="black10px"/>
+			<h:outputText value="Save it for" styleClass="black12px" style="font-weight:bold;"/>
+			<h:selectOneMenu  id="user_copyto">
+					<f:selectItem h5:id="loginidItems" itemValue="#{userBean.loginId}" itemLabel="#{userBean.loginId}"/>
+					<c:forEach items="#{userBean.subUserList}" var="masterSub">
+							 <c:if test="${userBean.loginId ne  masterSub}">
+									<f:selectItem itemValue="#{fn:replace(masterSub[0],'\'', '')}" itemLabel="#{fn:replace(masterSub[0],'\'','')}" />
+								</c:if>
+						</c:forEach>
+			</h:selectOneMenu>
+			<h:column/>
+			<rich:message id="noteErr1" for="jobName1"/>
+			<h:outputText value="Notes"  styleClass="black12px" style="font-weight:bold;"/>
+			<h:inputTextarea cols="43" rows="4" id="note1"/>
+			<c:choose>
+				<c:when test="${!fn:containsIgnoreCase(userBean.userFeatures, 'Calendar')}">
+					 <h:column/>
+					  <h:outputText value="You have not subscribed to Calendar feature." styleClass="black12px fontWeightBold" />
+					  <h:outputText value="The " styleClass="black12px" />
+					  <h:outputText value="Calendar " styleClass="black12px fontWeightBold" />
+					  <h:outputText value="feature allows you to create your own calendar and create automatic email reminder for your saved project. Call us at 1-800-652-0008 to subscribe to this feature." styleClass="black12px" />
+				</c:when>
+				<c:otherwise>
+					<h:column/>
+					 <h:column>
+						<h:selectBooleanCheckbox id="addcalendar" itemValue="1" itemLabel="Add to calendar"  styleClass="black10px" value="#{pTBean.addCalendar}" onclick="checkoption('c')"/>
+								<h:outputLabel  for="saveProject:addcalendar" value="Add to calendar" styleClass="black10px"/>
+					 </h:column>
+					<h:column/>
+					 <h:column>
+						<h:selectBooleanCheckbox id="addreminder" itemValue="1" itemLabel="Add to email reminder" styleClass="black10px" value="#{pTBean.addReminder}" onclick="checkoption('e')"/>
+								<h:outputLabel  for="saveProject:addreminder" value="Add to email reminder" styleClass="black10px"/>
+					 </h:column>
+				</c:otherwise>
+			</c:choose>
+			<h:column/>
+			<h:column>
+				<a4j:commandButton  value=" "  styleClass="saveButtonImage"  onclick="return submitform(1);setAddCalendar()"/><h:outputText style="padding:1px"/>
+				<a4j:commandButton type="reset" value=" " styleClass="resetButtonImage"/><h:outputText style="padding:1px"/>
+				<a4j:commandButton  value=" " styleClass="cancelButtonImage" onclick="window.close();"/>
+			</h:column>	
+		</h:panelGrid>  
+	  </c:if>
+	 </c:when><!--First IF END -->
+	 <c:when test="${not empty pTBean.singleJob and fn:length(pTBean.singleJob) ne 0}">	<!-- ELSE -->
+		<!-- job is already saved -->
+		<!-- 12/08/2003 display notes & job details -->
+			<h:outputText value="You have already saved this job in Project Tracker	under jobname of " styleClass="black12px" style="font-family: Arial;"/>
+			  <h:outputText value="&quot;#{pTBean.jobTitle}&quot;" styleClass="black12px fontWeightBold" style="font-family: Arial;" />
+			  <h:outputText value=", in folder of " styleClass="black12px" style="font-family: Arial;" />
+			  <c:if test="${not empty pTBean.jobFolderName}">
+			  <h:outputText value="&quot;#{pTBean.jobFolderName}&quot;" styleClass="black12px fontWeightBold" style="font-family: Arial;" />
+			  </c:if>
+			  <c:if test="${empty pTBean.jobFolderName}">
+			  <h:outputText value="&quot;My Jobs&quot;" styleClass="black12px fontWeightBold" style="font-family: Arial;"/>
+			  </c:if>
+			  <h:outputText value="." styleClass="black12px" style="font-family: Arial;" />
+			  <br /><br />
+			<c:if test="${not empty userBean.masterId and fn:length(userBean.subUserList) gt 1}">
+				
+				<h:outputText value="If you would like to copy this job to one of your sub users, select a login id and click on saveas. job will be saved in sub user's default folder of &quot;My Jobs&quot;." styleClass="black12px" style="font-family: Arial;"/>
+				<h:panelGrid  width="500"  cellpadding="1"  cellspacing="1" border="0" columns="3">	
+					<h:column>
+						<h:outputText value="Copy this job to" styleClass="black12px" style="font-family: Arial;"/>
+					</h:column>
+					<h:panelGroup style="width: 80px" styleClass="textAlignLeft">
+						<h:selectOneMenu  id="user_copyto">
+							 <f:selectItem h5:id="loginidItems" itemValue="#{userBean.loginId}" itemLabel="#{userBean.loginId}"/>
+							<c:forEach items="#{userBean.subUserList}" var="masterSub">
+								 <c:if test="${userBean.loginId ne  masterSub}">
+										<f:selectItem itemValue="#{fn:replace(masterSub[0],'\'', '')}" itemLabel="#{fn:replace(masterSub[0],'\'','')}" />
+									</c:if>
+							</c:forEach>
+						</h:selectOneMenu>
+					</h:panelGroup>
+					<h:panelGroup styleClass="textAlignRight">
+						<a4j:commandButton  value=" "  styleClass="saveasButtonImage" onclick="javascript:copyto();"/>
+					</h:panelGroup>
+				</h:panelGrid>
+			</c:if>
+			<o:resourceInclude path="/online_product/project_detail/pt_details.jsp?pid='#{pTBean.singleJobContentId[0]}'&amp;jobid='#{pTBean.singleJob[0]}'" />
+	 </c:when>
+	 <c:otherwise>
+			<h:graphicImage name="project_tracker/header_addproject_bl.gif" library="images" ALT="" border="0" align="left"/>
+			<h:panelGrid  width="510"  cellpadding="0"  cellspacing="4" border="0" columns="2"	columnClasses="oneColumnStyle,black10px"  styleClass="jobTableStyle">
+				<h:column/>
+				<rich:message id="jobErr2" for="jobName2"/>
+				<h:outputText value="Title" styleClass="black12px" style="font-weight:bold;" />
+				<h:inputText size="41" value="#{pTBean.jobTitle}" id="jobName2" maxlength="60"/>
+				<h:column/>
+				<h:outputText value="Please avoid quotes and comma (',&quot;) in job name"  styleClass="black10px"/>
+				<c:if test="#{not empty userBean.masterId and fn:length(userBean.subUserList) gt 1}">	
+					<h:outputText value="Save it for" styleClass="black12px" style="font-weight:bold;"/>
+					<h:selectOneMenu  id="user_copyto" value="#{pTBean.selectedUserCopyto}">
+						<f:selectItem h5:id="loginidItems" itemValue="#{userBean.loginId}" itemLabel="#{userBean.loginId}" />
+						<c:forEach items="#{userBean.subUserList}" var="masterSub">
+							 <c:if test="${userBean.loginId ne  masterSub}">
+									<f:selectItem itemValue="#{fn:replace(masterSub[0],'\'', '')}" itemLabel="#{fn:replace(masterSub[0],'\'','')}" />
+								</c:if>
+						</c:forEach>
+					</h:selectOneMenu>
+				</c:if>
+				<h:column/>
+				<rich:message id="noteErr2" for="note2"/>
+				<h:outputText value="Notes" styleClass="black12px" style="font-weight:bold;"/>
+				<h:inputTextarea cols="43" rows="4" id="note2"  value="#{pTBean.notes}"/>
+				<h:outputText value="Save in Folder" styleClass="black12px" style="font-weight:bold;"/>
+				<a4j:outputPanel ajaxRendered="true" id="JobFolder">
+					<h:inputText value="#{treeBean.filePath}" id="job_folder" size="30" onfocus="javascript:this.blur();"/>
+				</a4j:outputPanel> 
+				<h:column/>
+				<rich:panelMenu id="treeHolder" style="width:299px;" itemMode="client" groupMode="client" groupExpandedLeftIcon="triangleUp" groupCollapsedLeftIcon="triangleDown" topGroupExpandedRightIcon="chevronUp" topGroupCollapsedRightIcon="chevronDown"  >
+						<rich:panelMenuGroup label="PickFolder">
+							<rich:panelMenuItem  name="Item_1_1" style="background-color:white;font-style:normal;">
+								<h:form id="one"> 
+								<h:panelGrid>
+								<h:panelGroup>
+								  <h:graphicImage name="project_tracker/menu-images/menu_new_root.gif" library="images"  ALT="" border="0" align="left"/>My Project Tracker
+								    <rich:tree id="treeFolder" toggleType="client" selectionType="ajax" var="root" selectionChangeListener="#{pTController.selectionChanged}" render="file_info">
+										<rich:treeModelRecursiveAdaptor roots="#{treeBean.rootNodes}" nodes="#{root.subFolders}" >
+											<rich:treeNode iconExpanded="images/project_tracker/menu-images/menu_folder_open.gif" iconCollapsed="images/project_tracker/menu-images/menu_folder_closed.gif">
+												#{root.name}
+											</rich:treeNode>
+										</rich:treeModelRecursiveAdaptor>
+									</rich:tree>
+								 </h:panelGroup>
+									<a4j:outputPanel ajaxRendered="true" id="selectedFolder">
+										<strong>SelectedFolder:</strong><h:outputText id="showFolder" value="#{treeBean.filePath}" styleClass="orange11px"/>
+										
+									</a4j:outputPanel>
+									<h:column>
+										
+										<a4j:outputPanel id="folder_info" ajaxRendered="true">
+											<c:if test="#{userBean.folderRestriction}">
+													<h:outputLabel value="No more new folder can be created beyond this level." styleClass="fontBold orange11px"/> 
+											</c:if>
+											<c:if test="#{!userBean.folderRestriction}">
+												<a4j:commandButton styleClass="createNewFolderImage" value=" ">
+													<f:ajax execute="@this" event="click" render="JobFolder,selectedFolder,create,delete,edit"/>
+													<rich:componentControl target="folderCreate"   event="click" operation="show"/>
+												</a4j:commandButton>
+											</c:if>
+										</a4j:outputPanel>
+										<a4j:commandButton value=" " onclick="return checkTree(0)" styleClass="deleteFolderImage">
+											<f:ajax execute="@this" event="click" render="JobFolder,selectedFolder,selectedFolder3,selectedFolder4,create,delete,edit"/>
+											<rich:componentControl target="folderDelete"   event="click" operation="show"/> 
+										</a4j:commandButton>
+										<a4j:commandButton value=" " onclick="return checkTree(0)" styleClass="editFolderNameImage">
+											<f:ajax execute="@this" event="click" render="JobFolder,selectedFolder,selectedFolder3,selectedFolder4,create,delete,edit"/>
+											<rich:componentControl target="folderEdit"   event="click" operation="show"/>
+										</a4j:commandButton>
+									</h:column>
+									</h:panelGrid>
+								</h:form>
+								
+							</rich:panelMenuItem>
+							
+						</rich:panelMenuGroup>
+				
+				</rich:panelMenu>
+				
+				<c:choose>
+				<c:when test="#{!fn:containsIgnoreCase(userBean.userFeatures, 'Calendar')}">
+				  <h:column/>
+				  <h:column>
+					<h:outputText value="You have not subscribed to Calendar feature." styleClass="black12px fontWeightBold" />
+					  <h:outputText value="The " styleClass="black12px" />
+					  <h:outputText value="Calendar " styleClass="black12px fontWeightBold" />
+					  <h:outputText value="feature allows you to create your own calendar and create automatic email reminder for your saved project. Call us at 1-800-652-0008 to subscribe to this feature." styleClass="black12px" />
+				  </h:column> 
+				</c:when>
+				<c:otherwise>
+					<h:column/>
+					  <h:column>
+						<h:selectBooleanCheckbox id="addcalendar" itemValue="1" itemLabel="Add to calendar"  styleClass="black10px" value="#{pTBean.addCalendar}" onclick="checkoption('c')"/>
+							<h:outputLabel  for="saveProject:addcalendar" value="Add to calendar" styleClass="black10px"/>
+					  </h:column>
+					  <h:column/>
+					  <h:column>
+						<h:selectBooleanCheckbox id="addreminder" itemValue="1" itemLabel="Add to email reminder"  styleClass="black10px" value="#{pTBean.addReminder}" onclick="checkoption('e')"/>
+							<h:outputLabel  for="saveProject:addreminder" value="Add to email reminderr" styleClass="black10px"/>
+					   </h:column>
+				</c:otherwise>
+				</c:choose>
+				<h:column/>
+				<h:column><!--onclick="return submitform(2)" -->  
+							<a4j:commandButton  value=" " onclick="setAddCalendar()" styleClass="saveButtonImage" action="#{pTController.saveJobAction(request)}" oncomplete="pt_saved('#{pTBean.projectId}','N','#{pTBean.addCalendar}','#{pTBean.addReminder}')" render="addEventRender" execute="@form" limitRender="true" rendered="#{pTBean.addCalendar eq true and  pTBean.addReminder eq true}">
+								<c:if test="#{pTBean.addCalendar eq true and  pTBean.addReminder eq true}">
+									<f:param name="saveToCaleander" value="YES"/>
+									<f:param name="biddate_savejob" value="#{requestScope.biddate_savejob}"/>
+									<f:param name="prebiddate_savejob" value="#{requestScope.prebiddate_savejob}"/>
+									<f:param name="bidsinfo_savejob" value="#{requestScope.bidsinfo_savejob}"/>
+								</c:if>
+							</a4j:commandButton>
+							<a4j:commandButton  value=" "  onclick="setAddCalendar()" styleClass="saveButtonImage" action="#{pTController.saveJobAction(request)}" oncomplete="pt_saved('#{pTBean.projectId}','N','false','false')" render="addEventRender" execute="@form" limitRender="true" rendered="#{!(pTBean.addCalendar eq true and  pTBean.addReminder eq true)}"/>
+								<h:outputText style="padding:1px"/>
+							<a4j:commandButton type="reset"  value=" " styleClass="resetButtonImage" /><h:outputText style="padding:1px"/>
+							<a4j:commandButton  value=" " styleClass="cancelButtonImage" onclick="window.close();"/>
+				</h:column>
+			</h:panelGrid>
+	</c:otherwise>	<!-- ELSE End -->
+	</c:choose>
+	</h:form>
+
+	<rich:popupPanel id="folderCreate" modal="true" left="180" top="109" autosized="true" onbeforeshow="clearText('create:newName');">
+						<f:facet name="header">
+							CreateFolder
+						</f:facet>
+						<f:facet name="controls"> 
+							<h:commandButton value=" " type="button" styleClass="popupCloseImage" onclick="#{rich:component('folderCreate')}.hide(); return false;"/>
+						</f:facet>
+							
+							<h:form id="create">
+							   <h:panelGrid columns="2">
+									<h:outputLabel value="SelectedFolder:" style="font-weight:bold"/>
+									<a4j:outputPanel ajaxRendered="true" id="selectedFolder2">
+										<h:outputText value="#{treeBean.filePath}" styleClass="orange11px"/>
+									</a4j:outputPanel>	
+									<h:outputLabel value="Name Your New Folder:" style="font-weight:bold"/>
+									<h:inputText id="newName" value="#{treeBean.folderName}"/>
+									<a4j:commandButton value=" " styleClass="saveNewFolderImage" action="#{pTController.createTree(request)}" 
+									onclick="#{rich:component('folderCreate')}.hide();">
+									<f:ajax execute="@form" render="saveProject:one:treeFolder,JobFolder,selectedFolder"/>
+									</a4j:commandButton>
+									<a4j:commandButton value=" " styleClass="cancelButtonImage" onclick="#{rich:component('folderCreate')}.hide();"/>
+								</h:panelGrid>
+							</h:form>
+	</rich:popupPanel>
+	<rich:popupPanel id="folderDelete" modal="true" left="180"  top="109" autosized="true">
+			<c:set var="defaultFolder" value="My Jobs"/> 
+			<f:facet name="header">
+						DeleteFolder
+			</f:facet>
+			<f:facet name="controls"> 
+							<h:commandButton value=" " type="button" styleClass="popupCloseImage" onclick="#{rich:component('folderDelete')}.hide(); return false;"/>
+						</f:facet>
+						<h:form id="delete">
+							<h:panelGrid>
+							   <h:panelGroup>
+									<h:outputLabel value="You have selected"/> &nbsp;
+										<a4j:outputPanel ajaxRendered="true" id="selectedFolder4">	
+											<h:outputText value="#{treeBean.filePath}" styleClass="orange11px"/>
+											&nbsp;
+										</a4j:outputPanel>
+									<h:outputLabel value="to Delete"/>
+								</h:panelGroup>
+								<h:outputText value="Are your sure you want this folder and all subfolders/projects inside it deleted?" style="color:red;" styleClass="black12px"/>
+							</h:panelGrid>
+							<h:panelGrid columns="2">
+								<a4j:commandButton value=" " styleClass="deleteButtonImage" action="#{pTController.deleteTree(request)}"  onclick="#{rich:component('folderDelete')}.hide();">
+									<f:ajax execute="@this" render="saveProject:one:treeFolder,JobFolder,selectedFolder"/>
+								</a4j:commandButton>
+								<a4j:commandButton value=" " styleClass="cancelButtonImage" onclick="#{rich:component('folderDelete')}.hide();"/>
+							</h:panelGrid>
+						</h:form>
+				
+	</rich:popupPanel>
+	<rich:popupPanel id="folderEdit" modal="true" left="180" top="109" autosized="true" onbeforeshow="clearText('edit:editFolderName');">
+						<c:set var="defaultFolder" value="My Jobs"/>
+						<f:facet name="header">
+							Edit Folder
+						</f:facet>
+						<f:facet name="controls"> 
+							<h:commandButton value=" " type="button" styleClass="popupCloseImage" onclick="#{rich:component('folderEdit')}.hide(); return false;"/>
+						</f:facet>
+						<h:form id="edit">
+							<h:panelGrid columns="2">
+								<h:outputLabel value="SelectedFolder:" style="font-weight:bold"/>
+									<a4j:outputPanel ajaxRendered="true" id="selectedFolder3">	
+										<h:outputText value="#{treeBean.filePath}" styleClass="orange11px"/>
+									</a4j:outputPanel>
+								<h:outputLabel value="Rename Your Folder:" style="font-weight:bold"/>
+								<h:inputText id="editFolderName"  value="#{treeBean.folderName}"/>
+								<a4j:commandButton value=" " styleClass="editFolderNameImage" action="#{pTController.editTree(request)}"  onclick="#{rich:component('folderEdit')}.hide();">
+									<f:ajax execute="@form" render="saveProject:one:treeFolder,JobFolder,selectedFolder"/>
+								</a4j:commandButton>
+								<a4j:commandButton value=" " styleClass="cancelButtonImage" onclick="#{rich:component('folderEdit')}.hide();"/>
+							</h:panelGrid>
+						</h:form>
+	</rich:popupPanel> 
+	<h:form id="addEventForm"> 
+			<rich:popupPanel id="addEvent" modal="true" immediate="true" domElementAttachment="form" width="580" height="450" onshow="setFormId('addEventForm');" onhide="window.close();">	
+				<f:facet name="controls"> 		
+					<h:commandButton value=" " type="button" styleClass="popupCloseImage" onclick="#{rich:component('addEvent')}.hide(); return false;"/>  
+			 	</f:facet>
+				 <rich:hotKey key="Esc">
+					<rich:componentControl target="addEvent" operation="hide"/>
+				</rich:hotKey>			
+				
+				<a4j:outputPanel id="addEventRender" ajaxRendered="true">			
+					
+	 	 
+	 	<rich:tabPanel switchType="client">
+			<rich:tab id="eventTab" header=" " headerClass="addEventsActive"> 
+				<h:panelGrid width="540"    cellspacing="2" cellpadding="2" border="0"  bgcolor="white" styleClass="eventsTable" rowClasses=" , , ,emailHotList">
+						<h:panelGrid width="540"    cellspacing="2" cellpadding="2" border="0"  bgcolor="EFF4FA" styleClass="grey10pxbold padding10px" rowClasses="border-bottom">
+							<h:outputLabel value="A Calendar Event can be added by using this form. Have a reminder emailed to you automatically by selecting one of the notification options below. To add a Calendar Event, please complete the fields below."/> 
+							<h:outputLabel value="The project you are saving does not have any dated events associated with it. You may schedule your own project event now."/> 
+						</h:panelGrid>
+						<h:panelGrid  width="498" border="0" cellpadding="0" cellspacing="10" columns="2" columnClasses="columnOne,">
+							 
+							<!-- Title -->
+							<h:column/>
+							<rich:message id="titleErr" for="title2" />
+							<h:outputLabel value="Title" styleClass="grey10pxbold"/>
+							<h:inputText id="title2" size="40" maxlength="100" value="#{calendarBean.eventTitle}"/>
+							<h:column/>
+							<rich:message id="noteErr" for="note" />
+							<h:outputLabel value="Note" styleClass="grey10pxbold"/>
+							<h:inputTextarea id="note" size="40"  cols="38" rows="4" value="#{calendarBean.eventNotes}"/>
+							
+							<!-- Event Date -->
+							<h:column/>
+							<rich:message id="eventDateErr" for="eventDate" />
+							<h:outputLabel value="Event Date" styleClass="grey10pxbold"/> 
+							<rich:calendar id="eventDate"  value="#{calendarBean.eventDate}" popup="true" datePattern="#{userBean.datePattern}" inputSize="10" maxlength="9" 								
+							showWeeksBar="false" dayDisableFunction="disablementFunction" dayClassFunction="disabledClassesProv">
+								<f:convertDateTime pattern="MM/dd/yyyy" />
+							</rich:calendar> 
+							
+							<!-- Event Time -->
+							<h:column/>
+							<rich:message id="eventTimeErr" for="hour" />
+							<h:outputLabel value="Event Time" styleClass="grey10pxbold"/>
+							<h:panelGroup>
+								<!-- Hour -->
+								<h:selectOneMenu id="hour" value="#{calendarBean.hour}">
+									<f:selectItem itemValue="" itemLabel="Hour"/>
+									<c:forEach var="hourCount" begin="1" end="12">
+										<f:selectItem itemValue="#{hourCount}" itemLabel="#{hourCount}"/>
+									</c:forEach> 
+								</h:selectOneMenu>&nbsp;
+								<!-- Minute -->
+								<h:selectOneMenu id="minute" value="#{calendarBean.minute}">
+									<f:selectItem itemValue="Minute" itemLabel="Minute"/>
+									<f:selectItem itemValue="00" itemLabel="00"/>
+									<f:selectItem itemValue="15" itemLabel="15"/>
+									<f:selectItem itemValue="30" itemLabel="30"/>
+									<f:selectItem itemValue="45" itemLabel="45"/>
+								</h:selectOneMenu>&nbsp;
+								<!-- AM/PM -->
+								<h:selectOneMenu id="AmPm" value="#{calendarBean.AMorPM}">
+									<f:selectItem itemValue="AM" itemLabel="AM"/>
+									<f:selectItem itemValue="PM" itemLabel="PM"/>
+								</h:selectOneMenu>
+							</h:panelGroup>
+							<h:outputLabel value="Event Type" styleClass="grey10pxbold"/>
+							<h:outputLabel value="#{calendarBean.eventType}"/> 
+						 </h:panelGrid>
+					
+						 <!-- Reminders -->
+						 
+							<h:selectOneRadio id="reminder" styleClass="grey10pxbold reminder"  style="display: inline-table;float:right" onclick="javascript:changreminder(this);setEmail('#{hotListBean.sendResultsTo}');" value="#{calendarBean.reminderFlag}" >&nbsp;
+									<f:selectItem itemValue="0" itemLabel="Do not send reminder" />
+									<f:selectItem itemValue="1" itemLabel="Send Reminder" />
+									<f:selectItem itemValue="2" itemLabel="Send Recurring Reminder" />
+							</h:selectOneRadio> 
+						
+						<!-- Reminder Information -->
+						<h:panelGroup styleClass="gre10pxbold hideClass" style="display:none">
+							<h:outputLabel value="Reminder Information" />
+						</h:panelGroup> 
+					
+						<h:panelGroup id="remiderBlock" styleClass="hideClass" style="display:none">
+							<h:panelGrid  width="498" border="0" cellpadding="0" cellspacing="2" columns="2" columnClasses="columnOne,">
+							
+								<!-- Every Day -->
+								<h:outputText value="Every Day" styleClass="boldpx"/>
+								 
+								<h:selectOneRadio id="Frequency_everyday" onclick="javascript:checkFrequency('everyday');"  value="#{hotListBean.everyDay}">
+									<f:selectItem itemValue="D" />
+								</h:selectOneRadio>
+								
+								<!-- Every Week -->
+								<h:column/><rich:message for="Frequency_everyweek" id="daysMsg"/>
+								 <h:outputText value="Every Week" styleClass="boldpx"/>
+								<h:panelGroup>
+										<h:selectOneRadio id="Frequency_everyweek" 	onclick="javascript:checkFrequency('everyweek');" style="float:left;" value="#{hotListBean.everyWeek}" >
+											<f:selectItem itemValue="W" />
+										</h:selectOneRadio>
+											   <c:set var="SHORTDAYLIST" value="M,T,W,R,F,S,N" /> 
+											   <c:set  var="LONGDAYLIST" value="Mon,Tue,Wed,Thu,Fri,Sat,Sun" /> 
+											   <c:set var="SHORTDAYLIST" value="${fn:split(SHORTDAYLIST, ',')}" />
+												<c:set var="LONGDAYLIST" value="${fn:split(LONGDAYLIST, ',')}" />
+												<h:selectManyCheckbox id="Weekly" value="#{hotListBean.daysInEveryWeek}" onclick="javascript:checkWeekly();">
+														<c:forEach begin="0" end="${fn:length(SHORTDAYLIST)-1}"	var="ndx"> 
+															<c:set var="THISDAY"  value="${fn:trim(SHORTDAYLIST[ndx])}" />
+															  <f:selectItem  itemValue="${THISDAY}" itemLabel="${LONGDAYLIST[ndx]}" />
+														</c:forEach>
+												</h:selectManyCheckbox>
+								 </h:panelGroup>
+								 
+								 <!-- Every Year -->
+								 <h:outputText value="Every Year" styleClass="boldpx"/>
+									 <h:panelGroup>
+										<h:selectOneRadio id="Frequency_everyYear" style="display:inline-table;" onclick="javascript:checkFrequency('everyyear');"  value="#{hotListBean.everyYear}" >
+											<f:selectItem itemValue="Y" />
+									</h:selectOneRadio>	
+										<h:selectOneMenu id="everyYearMonth" onfocus="checkMonthly();" value="#{hotListBean.everyYearMonth}">
+											<f:selectItem  itemValue="SelectMonth" itemLabel="SelectMonth" />
+											<f:selectItem itemValue="1" itemLabel="January"/>
+											<f:selectItem itemValue="2" itemLabel="February"/>
+											<f:selectItem itemValue="3" itemLabel="March"/>
+											<f:selectItem itemValue="4" itemLabel="April"/>
+											<f:selectItem itemValue="5" itemLabel="May"/>
+											<f:selectItem itemValue="6" itemLabel="June"/>
+											<f:selectItem itemValue="7" itemLabel="July"/>
+											<f:selectItem itemValue="8" itemLabel="August"/>
+											<f:selectItem itemValue="9" itemLabel="September"/>
+											<f:selectItem itemValue="10" itemLabel="October"/>
+											<f:selectItem itemValue="11" itemLabel="November"/>
+											<f:selectItem itemValue="12" itemLabel="December"/> 
+										</h:selectOneMenu>&nbsp;
+										<h:selectOneMenu id="everyYear"   onfocus="checkMonthly();" value="#{hotListBean.everyYearDay}">
+											<f:selectItem  itemValue="SelectDay" itemLabel="SelectDay" />
+											 <c:forEach var="LoopCount" begin="1" end="31" step="1">
+													<f:selectItem itemValue="#{LoopCount}" itemLabel="#{LoopCount}"/>
+											</c:forEach> 
+										</h:selectOneMenu>
+									</h:panelGroup>
+								
+								<!-- Every Month -->	
+								<h:outputText value="Every Month" styleClass="boldpx"/> 
+								 <h:panelGroup>
+									<h:inputHidden 	h5:id="Frequency_everymonth" value="M"/> 
+									<h:selectOneRadio id="Frequency_everymonth" onclick="javascript:checkFrequency('everymonth');"  style="display:inline-table;" value="#{hotListBean.everyMonth}">
+											<f:selectItem itemValue="M" />
+									</h:selectOneRadio>	
+									
+									<h:outputText value="On" styleClass="boldpx"/>
+									<h:selectOneMenu id="OnDay"   onfocus="checkOnDate();" value="#{hotListBean.onDay}">
+										<c:forEach var="LoopCount" begin="1" end="31" step="1">
+												<f:selectItem itemValue="#{LoopCount}" itemLabel="#{LoopCount}"/>
+										</c:forEach>
+									</h:selectOneMenu>
+								</h:panelGroup>
+								<!-- Email -->
+								<h:column/><rich:message for="EmailTo" id="email_addr_msg"/>
+								<h:outputText  value="Send Reminder To" styleClass="boldpx"/>
+								 <h:panelGroup>  
+								 	<c:if test="#{empty hotListBean.sendResultsTo}">
+										<c:set target="#{hotListBean}" property="sendResultsTo" value="#{userBean.loginEmail}" scope="request"/>
+									</c:if>
+									<h:inputText id="email" value="#{hotListBean.sendResultsTo}" size="40" maxlength="100"/>
+								</h:panelGroup> 
+							</h:panelGrid>
+						</h:panelGroup>
+						
+					 
+					  
+					<h:panelGroup styleClass="textAlignCenter" style="text-align:center">
+						 
+								<a4j:commandButton value=" " styleClass="saveButtonImage" execute="@all" action="#{calendarController.addCalendarEvent(request)}" oncomplete="pt_saved('#{pTBean.projectId}','Y');#{rich:component('addEvent')}.hide();" render="@this" limitRender="true" 
+								onclick="javascript:return validateEventForm('addEventForm')">
+									<f:param name="from" value="pt"/>
+								</a4j:commandButton>
+								<h:commandButton value=" " styleClass="cancelButtonImage" onclick="pt_saved('#{pTBean.projectId}','Y');window.close();"/>
+							 
+					</h:panelGroup>
+					
+				</h:panelGrid> 
+			</rich:tab>
+		 </rich:tabPanel>	
+		 <h:outputScript> 
+			setFormId("addEventForm");
+			
+		</h:outputScript> 
+				</a4j:outputPanel>				
+				 
+			</rich:popupPanel> 
+			 
+	</h:form>
+	<script>
+	contextPath = '#{request.contextPath}';
+	</script>
+	</h:body>
+</ui:composition>

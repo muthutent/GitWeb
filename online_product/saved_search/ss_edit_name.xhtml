@@ -1,0 +1,74 @@
+<!--
+
+   Copyright 2001-15 Creatus Inc.,
+   2328 Walsh Avenue, Suite G, Santa Clara, CA 95051, U.S.A.
+   All rights reserved.
+
+   This software is the confidential and proprietary information
+   of Creatus Inc. ("Confidential Information").  You shall not disclose
+   such Confidential Information and shall use it only in accordance
+   the terms of the license agreement you entered into with
+   Creatus Inc.
+
+   Company        : Creatus Inc.
+   Author         : Creatus
+   Date Created   : 03/10/2015
+   Last Modified  : 03/10/2015
+   Modifier       : Selva 
+   Description    : Displays the UI to change the Saved Search Name
+   					After the Lead Manager Migration from coldfusion to JBoss
+-->
+<!DOCTYPE html PUBLIC "-//W3C//Dtd XHTML 1.0 Transitional//EN" "http://www.w3.org/tr/xhtml1/Dtd/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:f="http://java.sun.com/jsf/core" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:a4j="http://richfaces.org/a4j" 
+	 xmlns:ui="http://java.sun.com/jsf/facelets"
+	 xmlns:c="http://java.sun.com/jsp/jstl/core"
+	  xmlns:rich="http://richfaces.org/rich"
+	  xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:o="http://omnifaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+ 
+<h:outputScript library="js" name="saved_search/ss_edit_name.js" />
+<h:form id="searchName">
+<a4j:outputPanel id="changeNameRender" ajaxRendered="true">
+	<h:panelGrid width="360" border="0" cellspacing="0" cellpadding="0" bgcolor="white" style="text-align:left;">
+		<h:graphicImage name="tabs/navbar_ss_on.gif" library="images" alt="Saved Search" style="float:left;" />
+		<h:panelGrid styleClass="black12px savedSearchEditTable" width="360">
+				<h:panelGrid style="height:16px;"/>
+				<rich:message for="searchName" id="searchNameErr1" ajaxRendered="false"/>
+				<rich:message for="searchName" id="searchNameErr2" ajaxRendered="false"/>
+				<h:panelGrid columns="2" rowClasses=",space, ,black10px" columnClasses="adjustWidth, ">
+					<h:outputLabel value="Search Name:"/><h:outputText id="sNameLbl" value="#{savedSearchBean.savedSearchName}"/>
+					<h:column style="height:5px;"/><h:column style="height:5px;"/>
+					<h:outputLabel value="Change To:"/><h:inputText id="searchName" size="30" maxlength="50" value="#{savedSearchBean.newSavedSearchName}"/>
+					<h:column/><h:outputText value="Please avoid apostrophe and quotes(',&quot;) in search name."/>
+				</h:panelGrid>
+				<h:panelGroup style="padding-left:95px;">
+					<h:commandButton  styleClass="submitButtonImage" value=" "  onclick="return submitformEdit();" action="#{savedSearchController.ssChangeNameAction(request)}">
+						<f:param name="oldSSName" value="#{savedSearchBean.savedSearchName}"/>
+					</h:commandButton>&nbsp;
+					<a4j:commandButton  styleClass="cancelButtonImage" value=" " onclick="#{rich:component('changeName')}.hide(); return false;"/>
+				</h:panelGroup>
+				<h:panelGrid style="padding:3px;"/>
+		</h:panelGrid> 
+	</h:panelGrid>
+</a4j:outputPanel>
+</h:form>
+
+<script>
+
+searchName = '#{savedSearchBean.savedSearchName}';
+
+/* var i=0;
+<ui:repeat value="#{requestScope.SSnames}" var="name">
+	SSnames[i]= "#{name.search_name}";
+	i++;
+</ui:repeat> */
+
+//setting contextPath to use in js files
+contextPath = '#{request.contextPath}';
+</script>
+	
+</ui:composition>

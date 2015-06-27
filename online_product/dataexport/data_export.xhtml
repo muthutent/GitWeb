@@ -1,0 +1,153 @@
+<!--
+
+   Copyright 2001-15 Creatus Inc.,
+   2328 Walsh Avenue, Suite G, Santa Clara, CA 95051, U.S.A.
+   All rights reserved.
+
+   This software is the confidential and proprietary information
+   of Creatus Inc. ("Confidential Information").  You shall not disclose
+   such Confidential Information and shall use it only in accordance
+   the terms of the license agreement you entered into with
+   Creatus Inc.
+
+   Company        : Creatus Inc.
+   Author         : Creatus
+   Date Created   : 04/07/2015
+   Last Modified  : 04/07/2015
+   Modifier       : Sathish 
+   Description    : Displays the DataExport UI
+   					After the Lead Manager Migration from coldfusion to JBoss
+-->
+<!DOCTYPE html PUBLIC "-//W3C//Dtd XHTML 1.0 Transitional//EN" "http://www.w3.org/tr/xhtml1/Dtd/xhtml1-transitional.dtd">
+<!-- THE PAGE USES THE JSF 2.0 TEMPLATE -->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	 xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions" 
+	  xmlns:a4j="http://richfaces.org/a4j" 
+	 xmlns:rich="http://richfaces.org/rich">
+			
+			<h:outputStylesheet name="sheet.css" library="css" target="head"/>
+			<h:outputStylesheet library="css" name="buttons.css" target="head"/>
+			<h:outputStylesheet library="css" name="dataexport/dataexport.css" />
+			
+			<h:outputScript library="js" name="JSScripts/Javascript_template.js?v=1.0" target="head"/>
+			<h:outputScript library="js" name="dataexport/dataexport.js?v=4.5" target="head"/>
+			
+			<rich:panel>
+					<h:form id="myDataExport">
+						<a4j:outputPanel id="dxRender" ajaxRendered="true">
+						 <h:panelGrid width="460" border="0" cellspacing="0" cellpadding="0" bgcolor="white">
+						 	<h:graphicImage library="images" name="dataexport/MyDataExport.gif" border="0" width="365" height="81" style="padding-right:151px;"/>
+							<h:outputLink value="online_product/LM-DE-How-To-Guide-110112.pdf" style="float:left">Step By Step Instructions</h:outputLink>
+							<c:if test="${dataExportBean.dataExport == 0}">
+								<h:outputLabel value="Enter or Confirm Data Export Delivery Method" styleClass="red11px"  style="float:left;font-size:9px"/>
+							</c:if>
+							<rich:panel styleClass="panelStyle">
+							   <h:panelGroup style="padding-right:156px"> <br/>
+								   <c:if test="${dataExportBean.dataExport == 1}">
+								   		<h:outputLabel value="Saved Search Name: " styleClass="fontWeightBold black12px"/>
+										<h:outputLabel value="#{savedSearchBean.savedSearchName}" styleClass="blue12px fontWeightBold" style="padding-right:153px;" /><br/><br/>
+									</c:if>
+									<h:outputLabel value="Export Data" styleClass="fontWeightBold black12px" />
+									<h:selectOneRadio id="dataexport_enabled" h5:name="dataexport"  value="#{dataExportBean.exportOrNot}" styleClass="black11px" style="display: inline-table;vertical-align:middle;" onclick="exportEnableDisableCheck('export')"> 
+										<f:selectItem itemValue="1" itemLabel=" " />										 
+									</h:selectOneRadio> 
+									<c:if test="${dataExportBean.dataExport == 1}">
+									<h:outputLabel value="Do Not Export Data" styleClass="fontWeightBold black12px" />
+									<h:selectOneRadio id="dataexport_disabled" h5:name="dataexport" value="#{dataExportBean.exportOrNot}" styleClass="black11px" style="display: inline-table;vertical-align:middle;" onclick="exportEnableDisableCheck('donotexport')"> 
+										<f:selectItem itemValue="0" itemLabel=" " />										 
+									</h:selectOneRadio> 
+									</c:if>
+							   </h:panelGroup><br/><br/>
+							   <h:outputLabel value="Send Data To: (Select FTP Site or Email Address Option)" styleClass="black12px fontWeightBold" style="text-align:left"/> 
+								<h:panelGrid width="492"  styleClass="black12px" columns="2" border="0" cellspacing="1" cellpadding="2" bgcolor="white" columnClasses="columnOne,columnTwo">
+									<h:column/>
+									<rich:message id="ftpsiteErr" for="ftpsite1" ajaxRendered="false"/>
+									<h:outputLabel  value="FTP Site:" />
+									<h:selectOneRadio id="ftpsite1" h5:name="ftpsite" value="#{dataExportBean.transferMode}" styleClass="black11px" style="display: inline-table;vertical-align:middle;" onclick="enableFTPSite()"> 
+										<f:selectItem itemValue="0" />										 
+									</h:selectOneRadio>
+									<h:column/>
+									<rich:message id="ftpaddressErr" for="ftpaddress" ajaxRendered="false"/>
+									<h:outputLabel value="FTP Address:"/>
+									<h:inputText id="ftpaddress" value="#{dataExportBean.ftpAddress}"  size="35" style="height:17px;"/>
+									<h:column/>
+									<h:outputLabel value="Examples:IP:123.45.678.90 OR ftp.domain.com" styleClass="black10px"/>
+									<h:column/>
+									<rich:message id="ftpusernameErr" for="ftpusername" ajaxRendered="false"/>
+									<h:outputLabel value="FTP Username:"/>
+									<h:inputText id="ftpusername" h5:name="ftpusername" value="#{dataExportBean.ftpUsername}" size="35" style="height:17px;"/>
+									<h:column/>
+									<rich:message id="ftppasswordtxtErr" for="ftppasswordtxt" ajaxRendered="false"/>
+									<h:outputLabel value="Password Required?:" />
+									<h:column>
+										<h:selectOneRadio id="ftppassword1" h5:name="ftppassword" value="Y" styleClass="fontWeightBold"  style="display: inline-table;" onclick="disableFTPSitePwdTxt('Yes')"> 
+											<f:selectItem itemValue="Y" itemLabel="Yes" />							 
+										</h:selectOneRadio>&nbsp;&nbsp;
+										<h:outputLabel value="Password:"/>&nbsp; 
+										<h:inputSecret id="ftppasswordtxt" value="#{dataExportBean.ftpPassword}" size="15" style="height:17px;"/>
+										<h:selectOneRadio id="ftppassword2" h5:name="ftppassword" value="Y" styleClass="fontWeightBold"  onclick="disableFTPSitePwdTxt('No')"> 
+											 <f:selectItem itemValue="N" itemLabel="No" />										 
+										</h:selectOneRadio>
+									</h:column>
+									<h:column/>
+									<rich:message id="ftpportErr" for="ftpport" ajaxRendered="false"/>
+									<h:outputLabel value="FTP Port #:"/>
+									<h:column>
+										<h:outputScript>
+											clearDEForm();
+										</h:outputScript>
+										<h:inputText id="ftpport" value="#{dataExportBean.ftpPort}" size="10"/>&nbsp;&nbsp;
+										<h:outputLabel value="Default(Change if needed)" styleClass="black10px"/>
+									</h:column>	
+									<h:column/>
+									<rich:message id="ftpemailtxtErr" for="ftpemailtxt" ajaxRendered="false"/>
+									<h:outputLabel value="EMAIL Address:"/>
+									<h:column>
+										<h:selectOneRadio id="ftpsite2" h5:name="ftpsite" value="2" styleClass="black11px" style="display: inline-table;vertical-align:middle;" onclick="disableFTPSite()"> 
+											<f:selectItem itemValue="2" />										 
+										</h:selectOneRadio> 
+									<h:inputText id="ftpemailtxt" size="31" value="#{dataExportBean.ftpEmail}"  style="height:17px;"/>
+									</h:column>
+									<h:column/>
+									<rich:message id="ftpxmlErr" for="ftpxml" ajaxRendered="false"/>
+									<h:outputLabel value="Data Format:"/>
+									 <h:selectOneRadio id="ftpxml" h5:name="dataformat" value="#{dataExportBean.dataFormat}" styleClass="black11px,fontWeightBold" style="display: inline-table;" > 										<f:selectItem itemValue="xml" itemLabel="XML" />	
+										<f:selectItem itemValue="json" itemLabel="JSON/delimited"/>										 
+										
+									</h:selectOneRadio> 
+								</h:panelGrid>
+								<h:column>
+									<h:outputLabel value="NOTE :" styleClass="fontWeightBold"/>
+									<h:outputLabel value="Data will be exported for project(s) selected to the option selected above after clicking Export." /> 
+								</h:column>
+								<c:choose>
+								<c:when test="${dataExportBean.dataExport eq 0}"> 
+									<a4j:jsFunction name="renPT" render="SP_UP_holder:jobsName,projectListRender" limitRender="true" execute="@none"/>
+									<a4j:commandButton value=" " styleClass="buttonExportImage" style="margin-top:20px;" onclick="return validateDataExport('pt');" execute="myDataExport" render="@none" limitRender="true" />  &nbsp;
+									<a4j:commandButton value=" " styleClass="cancelButtonImage" style="margin-top:20px;" render="@none" onclick="cancelPopup(); return false;"/>
+								</c:when>
+								<c:otherwise>  
+									<a4j:commandButton value=" " styleClass="okButtonImage" style="margin-top:20px;" 
+									onclick="return validateDataExport('savedsearch');" type="button" />  
+								</c:otherwise>
+								</c:choose>
+							</rich:panel>
+						</h:panelGrid>
+						<h:outputScript>
+						<c:if test="${dataExportBean.exportOrNot eq 0}">
+							exportEnableDisableCheck('donotexport')
+						</c:if>
+						<c:if test="${dataExportBean.exportOrNot eq 1}">
+							exportEnableDisableCheck('export')
+						</c:if>
+						</h:outputScript>
+						</a4j:outputPanel>
+					</h:form>
+					</rich:panel>
+		 
+</ui:composition>

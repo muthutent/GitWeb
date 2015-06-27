@@ -1,0 +1,256 @@
+<!--
+
+   Copyright 2001-15 Creatus Inc.,
+   2328 Walsh Avenue, Suite G, Santa Clara, CA 95051, U.S.A.
+   All rights reserved.
+
+   This software is the confidential and proprietary information
+   of Creatus Inc. ("Confidential Information").  You shall not disclose
+   such Confidential Information and shall use it only in accordance
+   the terms of the license agreement you entered into with
+   Creatus Inc.
+
+   Company        : Creatus Inc.
+   Author         : Creatus Inc.
+   Date Created   : 02/17/2015
+   Last Modified  : 03/10/2015
+   Modifier       :	Selva
+   Description    : List all projects related to this contacts 
+					After the Lead Manager Migration from coldfusion to JBoss
+
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:ui="http://java.sun.com/jsf/facelets"
+     xmlns:c="http://java.sun.com/jsp/jstl/core"
+	 xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	 xmlns:a4j="http://richfaces.org/a4j"
+	 xmlns:rich="http://richfaces.org/rich"
+                xmlns:o="http://omnifaces.org/ui">
+     <h:head>
+     <h:outputStylesheet name="sheet.css" library="css" />
+     </h:head>
+     
+     <c:choose>
+     <c:when test="${requestScope.popup == 'no'}">
+     <c:set var="width" value="760"/>
+     </c:when>
+     <c:otherwise>
+     <c:set var="width" value="402"/>
+     </c:otherwise>
+     </c:choose>
+     
+     <h:panelGrid width="${width}" border="0" cellpadding="1" cellspacing="1">
+     <h:panelGroup>
+     
+     <c:choose>
+     <c:when test="${requestScope.popup == 'no'}">
+     <c:set var="width" value="535"/>
+     </c:when>
+     <c:otherwise>
+     <c:set var="width" value="400"/>
+     </c:otherwise>
+     </c:choose>
+     
+     <h:panelGrid width="${width}" border="0" cellpadding="1" cellspacing="1">
+     <h:panelGroup>
+     <h:form id="contactProjectsForm">
+     <a4j:outputPanel id="contactProjectsList" ajaxRendered="true">
+     <h:panelGrid border="0" cellpadding="2" cellspacing="2" styleClass="panelGridCenter" rendered="#{requestScope.projectFound == 0}">
+     <h:panelGroup styleClass="lightblue11px">
+     <h:outputText value="There are no projects found for ${requestScope.contact_company_name} in your coverage area. " styleClass="fontWeightBold" />
+     
+     <!-- below commandlink shown in rich:popup -->
+     <a4j:commandLink value="View Profile to view the contact's updated profile." render="contact_profile_render" style="color:blue" oncomplete="#{rich:component('viewConProfile')}.show();#{rich:component('viewProjects')}.hide();" rendered="#{contactBean.jsp==false}" limitRender="true" />
+     
+      <!-- below outputlink shown in window popup -->
+     <h:outputLink style="color:blue" onclick="call_profile('#{contactBean.contactId}', '#{requestScope.contact_company_name}'); return false;" rendered="#{contactBean.jsp==true}">View Profile to view the contact's updated profile.</h:outputLink>
+     </h:panelGroup>
+     
+     <c:if test="${fn:length(requestScope.otherProjects) gt 0}">
+     <h:panelGroup styleClass="black11px" style="background: #FFFFFF">
+     <h:outputText value="There are " />
+     <h:outputText value="${requestScope.otherProjects.number_of_projects}" styleClass="fontWeightBold" />
+     <h:outputText value=" projects in " />
+     <h:outputText value="${requestScope.otherProjects.publication_name}" styleClass="fontWeightBold"/>
+     <h:outputText value=", " />
+     <h:outputText value="For more info please call 1-800-652-0008." />
+     </h:panelGroup>
+     </c:if>
+     </h:panelGrid>
+     
+     <h:panelGrid rendered="#{requestScope.projectFound != 0}">
+     <h:panelGrid width="402" border="0" cellpadding="2" cellspacing="2" styleClass="panelGridCenter">
+     <h:panelGroup styleClass="black11px textAlignCenter" style="background: #F0F5FB">
+     <h:outputText value="Projects found for ${requestScope.contact_company_name} &nbsp;" styleClass="fontWeightBold"/>
+     
+     <!-- below commandlink shown in rich:popup -->
+     <a4j:commandLink value="View Profile" render="contact_profile_render" style="color:blue" oncomplete="#{rich:component('viewConProfile')}.show();#{rich:component('viewProjects')}.hide();" rendered="#{contactBean.jsp==false}" limitRender="true" />
+	
+	<!-- below link shown in window popup -->	
+     <h:outputLink style="color:blue" onclick="call_profile('#{contactBean.contactId}', '#{requestScope.contact_company_name}'); return false;" rendered="#{contactBean.jsp==true}">View Profile</h:outputLink>
+     
+     </h:panelGroup>
+     </h:panelGrid>
+     <br />
+     
+     <h:panelGrid width="400" border="0" cellpadding="0" cellspacing="0" styleClass="panelGridCenter">
+     <h:panelGroup style="background: #6699FF">
+     
+     <h:panelGrid width="400" border="0" columns="2" cellpadding="0" cellspacing="0" styleClass="panelGridCenter" columnClasses="borderForTableTd,borderForTableTd">
+     <h:column />
+     <h:panelGroup style="background: #FFFFFF;">
+     <h:outputText value="&nbsp;Project" styleClass="black11px textAlignCenter" />
+     </h:panelGroup>
+     
+     <c:set var="prev_cdc_id" value="" />
+     
+     <c:forEach var="cont" items="#{contactBean.projectList}">
+     <c:if test="#{prev_cdc_id != cont.short_cdcid}">
+
+     <h:panelGroup styleClass="black11px">
+     <!-- Redirected to view_details.jsp page by Muthu on 03/26/13. Because Project Details might be wrong since we only pass the project id. -->
+     <a4j:commandLink id="viewDetailsLink" render="viewProDetailsRender" limitRender="true" value="View Details" style="color:blue" oncomplete="#{rich:component('viewProDetails')}.show();#{rich:component('viewProjects')}.hide();" rendered="#{contactBean.jsp==false}">
+     <f:param value="#{cont.content_id}" name="pid" />
+     <f:param value="blank" name="target" />
+     <f:param value="#{requestScope.popup}" name="popup" />
+     <f:param value="no" name="projectscreener" />
+     <f:param value="#{requestScope.FFbackPage}" name="FFbackPage" />
+     </a4j:commandLink>
+     
+     <!-- shown while view detail window option is 'seperate' window -->
+     <h:outputLink style="color:blue" value="#{request.contextPath}/online-product/search-results/details?pid=#{cont.content_id}&amp;popup=yes&amp;backbutton=yes&amp;projectscreener=no&amp;FFbackPage=-1" rendered="#{requestScope.popup eq 'yes' and contactBean.jsp==true}">View Details</h:outputLink>
+     <!-- shown while view detail window option is 'current' window -->
+     <h:outputLink style="color:blue" value="#{request.contextPath}/online-product/search-results/details-cw?pid=#{cont.content_id}&amp;popup=no&amp;backbutton=yes&amp;projectscreener=no&amp;FFbackPage=-1" rendered="#{requestScope.popup eq 'no' and contactBean.jsp==true}">View Details</h:outputLink>
+     
+     </h:panelGroup>
+
+     <h:panelGroup styleClass="black11px textAlignLeft paddingLeft10">
+     <!-- CHANGED FROM #replace(title,'"',"'",'ALL')# to handle two single quotes in project title stored in content_Contact table by Johnson on Sept 17th2013-->
+     <h:outputText value="#{cont.title}" styleClass="fontWeightBold"/><br />
+     <h:outputText value="#{cont.cdc_id}&nbsp;&nbsp;&nbsp;#{cont.sub_sec}" />
+     </h:panelGroup>
+
+     </c:if>
+      <c:set var="prev_cdc_id" value="#{cont.short_cdcid}" />
+     </c:forEach>
+     
+     </h:panelGrid>
+     
+     <c:if test="#{fn:length(requestScope.otherProjects) > 0}">
+     <h:panelGrid width="400" columnClasses="borderForTableTd" cellspacing="0" cellpadding="0" border="0">
+     <h:panelGroup styleClass="black11px" style="background: #FFFFFF">
+     <h:outputText value="There are " />
+     <c:forEach items="${requestScope.otherProjects}" var="otherProject">
+     <h:outputText value="${otherProject.number_of_projects}" styleClass="fontWeightBold" />
+     <h:outputText value=" projects in " />
+     <h:outputText value="${otherProject.publication_name}" styleClass="fontWeightBold"/>
+     <h:outputText value=", " />
+     </c:forEach>
+     <h:outputText value="For more info please call 1-800-652-0008." />
+     </h:panelGroup>
+     </h:panelGrid>
+     </c:if> 
+      
+     
+     </h:panelGroup>
+     </h:panelGrid>
+     </h:panelGrid>
+     
+     </a4j:outputPanel>
+     </h:form>
+     <br />
+     
+     <h:panelGrid border="0" cellpadding="0" cellspacing="0" styleClass="panelGridCenter">
+     <h:panelGroup styleClass="orange11px textAlignCenter">
+     
+     <c:choose>
+     <c:when test="${requestScope.popup == 'yes'}">
+     
+     <c:if test="${requestScope.win != 'noback' and contactBean.jsp == true}">
+     
+      <c:choose>
+     <c:when test="${fn:containsIgnoreCase(requestScope.http-user-agent, 'Firefox')}">
+     <h:link onclick="javascript:history.go(-2);">
+     <h:outputText value="BACK" styleClass="fontWeightBold blue11px"/>
+     </h:link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+     </c:when>
+     <c:otherwise>
+     <h:link onclick="javascript:history.go(-1);">
+     <h:outputText value="BACK" styleClass="fontWeightBold blue11px"/>
+     </h:link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+     </c:otherwise>
+     </c:choose>
+     
+     </c:if>
+     
+     <h:link onclick="closePopup('viewProjects'); return false;"><h:outputText value="Close Window" styleClass="fontWeightBold blueFont"/></h:link>
+     
+     </c:when>
+	 <c:otherwise>
+	 
+	 <c:choose>
+	 <!--projectFound=0/no records. projectFound=1 records found. cprofile is a flag from contact_profile.cfm page-->
+	 <c:when test="${not empty requestScope.cprofile and contactBean.jsp == true}">
+	 <h:link onclick="javascript:history.go(-1);">
+     <h:outputText value="BACK" styleClass="fontWeightBold blue11px"/>
+     </h:link>
+	 </c:when>
+	 <c:otherwise>
+	 
+	 <c:if test="${requestScope.win != 'noback' and contactBean.jsp == true}">
+	 
+	 <c:choose><!--Detects browser and sets back button preferrences. Added on 09-July-2012-->
+	 <c:when test="${fn:containsIgnoreCase(requestScope.http-user-agent, 'MSIE')}">
+	 <h:link onclick="javascript:history.go(-2);">
+     <h:outputText value="BACK" styleClass="fontWeightBold blue11px"/>
+     </h:link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	 </c:when>
+	 <c:otherwise>
+	 <h:link onclick="javascript:history.go(-1);">
+     <h:outputText value="BACK" styleClass="fontWeightBold blue11px"/>
+     </h:link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	 </c:otherwise>
+	 </c:choose>
+	 
+	 </c:if>
+	 
+	 <h:link onclick="closePopup('viewProjects'); return false;"><h:outputText value="Close Window" styleClass="fontWeightBold blueFont"/></h:link>
+	 
+	 </c:otherwise>
+	 </c:choose>
+	 
+	 </c:otherwise>     
+     </c:choose>
+     
+     </h:panelGroup>
+     </h:panelGrid>
+     
+     
+     </h:panelGroup>
+     </h:panelGrid>
+     
+     </h:panelGroup>
+     </h:panelGrid>
+     
+     <h:outputScript name="contact_search/contact_projects_list.js" library="js"/>
+     <script>
+	contextPath = '#{request.contextPath}';
+     </script>
+     
+<!-- view project details -->
+<rich:popupPanel id="viewProDetails" width="530" height="600" styleClass="textAlignLeft">		  
+ <f:facet name="header">
+			<h:outputText value="View Details" styleClass="black12px"/>
+ </f:facet>
+<f:facet name="controls"> 
+	<h:commandButton value=" " type="button" styleClass="popupCloseImage" onclick="#{rich:component('viewProDetails')}.hide();#{rich:component('viewProjects')}.show(); return false;"/>
+</f:facet>
+<a4j:outputPanel id="viewProDetailsRender" ajaxRendered="true">
+	<ui:include src="/online_product/project_detail/details.xhtml"/>
+</a4j:outputPanel>
+</rich:popupPanel>
+
+</ui:composition>

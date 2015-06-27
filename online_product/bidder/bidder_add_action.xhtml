@@ -1,0 +1,61 @@
+<!--
+
+   Copyright 2001-15 Creatus Inc.,
+   2328 Walsh Avenue, Suite G, Santa Clara, CA 95051, U.S.A.
+   All rights reserved.
+
+   This software is the confidential and proprietary information
+   of Creatus Inc. ("Confidential Information").  You shall not disclose
+   such Confidential Information and shall use it only in accordance
+   the terms of the license agreement you entered into with
+   Creatus Inc.
+
+   Company        : Creatus Inc.
+   Author         : Creatus
+   Date Created   : 03/10/2015
+   Last Modified  : 03/10/2015
+   Modifier       : Selva
+   Description    : Displays if New Saved Search Name is already used.
+   					After the Lead Manager Migration from coldfusion to JBoss
+-->	
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+<h:head>      
+	<h:outputStylesheet name="sheet.css" library="css" />
+</h:head>
+<h:body>
+	
+	<h:panelGrid>
+	
+	<h:panelGroup styleClass="orange12px">
+	<h:outputText value="Your request for " />
+	
+	<c:forEach begin="0" end="#{fn:length(bidderBean.requestTypes) - 1}" items="#{bidderBean.requestTypes}" var="requestType" varStatus="count">
+	<c:if test="${count.index == 0}">
+	<h:outputText value="''" />
+	</c:if>
+	<h:outputText value="#{requestType}" />
+	<c:if test="${fn:length(bidderBean.requestTypes)-1 != count.index}">
+	<h:outputText value=", " />
+	</c:if>
+	<c:if test="${fn:length(bidderBean.requestTypes)-1 == count.index}">
+	<h:outputText value="''" />
+	</c:if>
+	</c:forEach>
+	
+	<h:outputText value=" on Project #{pTBean.jobTitle} has been sent to #{requestScope.name}, of the #{requestScope.description} editorial office. If you need any additional information you may contact #{requestScope.phone} or #{requestScope.email}." />
+	</h:panelGroup>
+	</h:panelGrid>
+	
+	<h:panelGrid styleClass="panelGridCenter">
+	<h:panelGroup styleClass="black12px">
+	<h:link value="Close Window" onclick="javascript:window.close();" style="color:blue"/>
+	</h:panelGroup>
+	</h:panelGrid>
+</h:body>
+</ui:composition>

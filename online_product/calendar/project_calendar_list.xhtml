@@ -1,0 +1,138 @@
+ <!--
+
+   Copyright 2001-15 Creatus Inc.,
+   2328 Walsh Avenue, Suite G, Santa Clara, CA 95051, U.S.A.
+   All rights reserved.
+
+   This software is the confidential and proprietary information
+   of Creatus Inc. ("Confidential Information").  You shall not disclose
+   such Confidential Information and shall use it only in accordance
+   the terms of the license agreement you entered into with
+   Creatus Inc.
+
+   Company        : Creatus Inc.
+   Author         :	Creatus
+   Date Created   :	04/24/2015
+   Last Modified  : 04/24/2015
+   Modifier       : Sathish
+   Description    :	Displays the  UI to add or Event of the Calender
+ 					After the Lead Manager Migration from coldfusion to JBoss
+-->
+<!DOCTYPE html PUBLIC "-//W3C//Dtd XHTML 1.0 Transitional//EN" "http://www.w3.org/tr/xhtml1/Dtd/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	 xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions" 
+	  xmlns:a4j="http://richfaces.org/a4j" 
+	 xmlns:rich="http://richfaces.org/rich"
+	  xmlns:cdccomp="http://java.sun.com/jsf/composite/cdccomp">
+	 
+	 <h:head>
+	 	<h:outputStylesheet name="sheet.css" library="css"/>
+		<h:outputStylesheet name="buttons.css" library="css"/> 
+		<h:outputStylesheet name="calendar/cdc_calendar_home.css" library="css" /> 
+	 </h:head>
+	 <h:body>
+	 		 <c:if test="#{requestScope.close eq 'Y'}">
+			 	<h:outputScript>
+					closeWindow();
+				</h:outputScript>
+			 </c:if>
+		 <h:form>
+		 	 <h:panelGrid cellspacing="0" cellpadding="0" border="0" width="480">
+	            <h:graphicImage name="calendar/mycalendartitle.gif" library="images"/>
+				<h:graphicImage name="calendar/spacer1pexel.gif" library="images" style="background-color:#FF9900" width="480" height="1"/>
+			</h:panelGrid>
+			<rich:panel  >
+				<h:panelGrid >
+				 <c:choose>
+					<c:when test="${fn:length(calendarBean.calendarData) gt 0}"> 
+						<h:dataTable value="#{calendarBean.calendarData}" var="calendar">
+							<h:column>
+								<f:facet name="header">
+									<h:outputLabel value="Event Title" styleClass="fontWeightBold"/>
+								</f:facet>
+								<h:outputText value="#{calendar.eventTitle}"/>
+							</h:column>
+							<h:column>
+								<f:facet name="header">
+									<h:outputLabel value="Event Date" styleClass="fontWeightBold"/> 
+								</f:facet>
+								<h:outputText value="#{calendar.eventDate}">
+									<f:convertDateTime pattern="MM/dd/yyyy" />
+								</h:outputText>
+							</h:column>
+							<h:column>
+								<f:facet name="header">
+									<h:outputLabel value="Edit"/> 
+								</f:facet>
+								<!-- <h:graphicImage name="buttons/button_edit_icn.gif"  library="images" />-->
+								 <a4j:commandLink onclick="getEditOptionDetails('#{calendar.calendarId}','project');" render="@none" limitRender="true" execute="@this" styleClass="padding10Right"> 
+											<h:graphicImage name="buttons/button_edit_icn.gif" alt="Edit Event" library="images" styleClass="padding10Right"/> 
+											<f:param name="calendarId" value="#{calBean.calendarId}"/>   
+											<c:forEach items="#{calendarBean.hotListCalendarData}" var="hotBean" varStatus ="hot">
+													 
+													      <h:outputScript>
+														  		storeHotlistCalendarData('#{calBean.calendarId}','#{hotBean.frequency}','#{hotBean.periodValue}','#{hotBean.everyYearMonth}','#{hotBean.daysInEveryWeek}','#{hotBean.onDay}','#{hotBean.sendResultsTo}','#{hotBean.everyYearDay}','#{calBean.reminderFlag}');
+														  </h:outputScript>
+											</c:forEach>
+										</a4j:commandLink>
+							</h:column>
+							<h:column>
+								<f:facet name="header">
+									<h:outputLabel value="Delete" styleClass="fontWeightBold"/> 
+								</f:facet> 
+								<a4j:jsFunction name="showDelPopup" oncomplete="#{rich:component('confirmPanel')}.show();" render="confirmPanel" limitRender="true"  execute="@none" />
+								<a4j:commandLink  id="delEvent" type="submit" onclick="setCalendarId('#{calendar.calendarId}','pt');" render="@none" limitRender="true" execute="@none">
+											 <h:graphicImage name="icons/trash_can.gif"   library="images" styleClass="padding10Right"/> 
+								</a4j:commandLink> 
+							</h:column>
+						</h:dataTable>  
+						<a4j:commandButton render="addEventRender" execute="@this" action="#{calendarController.showAddEventPage(request)}"  value=" " 
+						styleClass="addNewEventImage" style="margin-left:176px;" limitRender="true"> 		
+												<c:set var="action" value="project" scope="session"/>
+						</a4j:commandButton>
+					 </c:when>
+					<c:otherwise>
+						<a4j:commandButton render="addEventRender" execute="@this" action="#{calendarController.showAddEventPage(request)}"  value=" " 
+						styleClass="addNewEventImage" style="margin-left:176px;" limitRender="true">  
+												<f:setPropertyActionListener target="#{calendarBean.event}" value="project"/>
+						</a4j:commandButton>
+					 </c:otherwise>
+					 
+				</c:choose> 
+			 	</h:panelGrid>
+			</rich:panel>
+			<!--<h:commandButton onlick="history.go(-1);" styleClass="backButtonImage" value=" "/>-->
+		</h:form>
+		<h:form id="addEventForm"> 
+			<rich:popupPanel id="addEvent" modal="true" immediate="true" domElementAttachment="form"  height="450"   onshow="setFormId('addEventForm');clearAddEventFormInput();" autosized ="true">	
+				<f:facet name="controls"> 		
+					<h:commandButton value=" " type="button" styleClass="popupCloseImage" onclick="#{rich:component('addEvent')}.hide(); return false;"/>  
+			 	</f:facet>
+				 <rich:hotKey key="Esc">
+					<rich:componentControl target="addEvent" operation="hide"/>
+				</rich:hotKey>			
+				
+				<a4j:outputPanel id="addEventRender" ajaxRendered="true">			
+					<ui:include src="/online_product/calendar/add_event_holder.xhtml"/>
+				</a4j:outputPanel>				
+				 
+			</rich:popupPanel>
+			<cdccomp:okCancel popupId="confirmPanel" message="Are you sure you want to delete this event ?" headerMsg="Delete Calendar Event" 
+			okAction="#{calendarController.deleteCalendarEvent(request)}" okRender="@none" performAction="YES" completeAction="closeWindow()"/> 
+		</h:form> 
+	 </h:body>
+	 <h:outputScript name="calendar/add_event.js?v=4.3" library="js" />
+	 <h:outputScript>
+	 	function closeWindow(){
+			window.close();
+		}
+		function hideWindow(){
+			window.hide();
+		}
+	 </h:outputScript>
+</ui:composition>

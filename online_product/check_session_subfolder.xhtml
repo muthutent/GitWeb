@@ -1,0 +1,71 @@
+<!--
+
+   Copyright 2001-15 Creatus Inc.,
+   2328 Walsh Avenue, Suite G, Santa Clara, CA 95051, U.S.A.
+   All rights reserved.
+
+   This software is the confidential and proprietary information
+   of Creatus Inc. ("Confidential Information").  You shall not disclose
+   such Confidential Information and shall use it only in accordance
+   the terms of the license agreement you entered into with
+   Creatus Inc.
+
+   Company        : Creatus Inc.
+   Author         : Creatus
+   Date Created   : 03/10/2015
+   Last Modified  : 03/10/2015
+   Modifier       : Selva
+   Description    : Checks whether the session expired or not
+   					After the Lead Manager Migration from coldfusion to JBoss
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:sec="http://www.springframework.org/security/tags">
+ 
+<c:choose>
+	<c:when test="${empty userBean.loginId}">
+		<!-- session timed out -->
+		<h:outputScript library="javascript">
+	
+		<!--  if (top.opener && !top.opener.closed) {
+	 	top.opener.location="../../default.cfm?loginback=yes";
+	 	top.opener.focus();
+		top.close();
+	 }
+	 else {
+		window.open("../../default.cfm?loginback=yes");
+	 	top.document.location.href="../massage_session.htm";
+	 } -->
+	 
+	 top.document.location.href="#{request.contextPath}/online_product/messages/message_session.xhtml";
+	</h:outputScript>
+	</c:when>
+	<c:when test="${userBean.subscriberType == 'normal'}">
+	<!-- Check for single login -->
+
+	<!-- Anand: Concurrent Login Change -->
+	<!-- Get application variable for this page, this prevent memory leak -->
+	<!-- <cflock scope="APPLICATION" timeout="16" type="READONLY">
+		<cfset source = "#application.datasource#">
+		<cfset uname = "#application.username#">
+		<cfset pwd = "#application.password#">
+	</cflock>
+	
+	
+	<cfquery name="check_concurrent_login" datasource="#source#" username="#uname#" password="#pwd#">
+		SELECT 'x' FROM login_tracker
+		WHERE login_id = '#Session.login_id#'
+		AND session_id = '#Session.SessionID#'
+	</cfquery>
+	
+	<CFIF check_concurrent_login.RecordCount eq 0>
+		<CFSET Session.login_id="">
+		<CFLOCATIOn url="../conc_logout.html">
+	</CFIF> -->
+	</c:when>
+</c:choose>
+</html>

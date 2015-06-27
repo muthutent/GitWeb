@@ -1,0 +1,136 @@
+<!--
+
+   Copyright 2001-15 Creatus Inc.,
+   2328 Walsh Avenue, Suite G, Santa Clara, CA 95051, U.S.A.
+   All rights reserved.
+
+   This software is the confidential and proprietary information
+   of Creatus Inc. ("Confidential Information").  You shall not disclose
+   such Confidential Information and shall use it only in accordance
+   the terms of the license agreement you entered into with
+   Creatus Inc.
+
+   Company        : Creatus Inc.
+   Author         : Creatus
+   Date Created   : 03/10/2015
+   Last Modified  : 03/10/2015
+   Modifier       : Selva
+   Description    : Displays the Option to edit the Information about the Saved Searches
+ 
+   					After the Lead Manager Migration from coldfusion to JBoss
+					
+					<!DOCTYPE html PUBLIC "-//W3C//Dtd XHTML 1.0 Transitional//EN" "http://www.w3.org/tr/xhtml1/Dtd/xhtml1-transitional.dtd">
+--> 
+<!DOCTYPE html PUBLIC "-//W3C//Dtd XHTML 1.0 Transitional//EN" "http://www.w3.org/tr/xhtml1/Dtd/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:f="http://java.sun.com/jsf/core" 
+	  xmlns:h="http://java.sun.com/jsf/html" 
+	  xmlns:a4j="http://richfaces.org/a4j" 
+	 xmlns:ui="http://java.sun.com/jsf/facelets"
+	 xmlns:c="http://java.sun.com/jsp/jstl/core"
+	  xmlns:rich="http://richfaces.org/rich"
+      xmlns:o="http://omnifaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+	
+	<ui:include  src="/online_product/check_session_curfolder.xhtml" /> 			
+
+	<h:outputStylesheet library="css" name="buttons.css"/>
+	<h:outputStylesheet library="css" name="saved_search/savedSearchEdit.css" />
+	
+	<h:outputScript library="js" name="JSScripts/Javascript_template.js" />
+	<h:outputScript library="js" name="saved_search/savedSearchEdit.js?v=1.2" />
+	<h:outputScript library="js" name="saved_search/ss_edit_name.js" />
+	<h:outputScript library="jquery-ui-1.8.16.custom" name="jquery-1.11.3.min.js"/>
+
+	<h:form id="savedSearchEdit">
+	<h:panelGrid width="360" border="0" cellspacing="0" cellpadding="0" bgcolor="white" style="text-align:left;">
+		<h:graphicImage name="tabs/navbar_ss_on.gif" library="images" alt="Saved Search" style="float:left;"/>
+		<h:panelGrid styleClass="black11px savedSearchEditTable" width="360">
+				<h:panelGrid style="height:25px;"/>
+				<rich:message for="options" id="selectErr"/>
+				<h:column>
+						<h:outputText value="What would you like to edit?" />
+				</h:column>
+				<h:panelGrid style="padding-top:2px;"/>
+ 
+				<h:selectOneRadio id="options" layout="pageDirection" value="#{savedSearchBean.optionSelected}"> 
+ 						<f:selectItem itemValue="0" itemLabel="Change Name"/>
+						<f:selectItem itemValue="1" itemLabel="Change/View Search Criteria"/>
+						<c:if test="#{fn:containsIgnoreCase(userBean.userFeatures, 'Email Hotlist')}">
+							<f:selectItem itemValue="2"	itemLabel="Change Email Reminder Information" />
+						</c:if>
+						<c:if test="#{not empty userBean.masterId and fn:length(userBean.subUserList) gt 1}"> 
+							<f:selectItem itemValue="3" itemLabel="Copy this search for" />
+						</c:if> 
+						<c:if test="#{empty userBean.subscriberType}">
+							<f:selectItem itemValue="4" itemLabel="Transfer searches (Emp accounts)"/>
+						</c:if>
+						<c:if test="#{fn:containsIgnoreCase(userBean.userFeatures, 'Data Export')}">
+							<f:selectItem itemValue="5" itemLabel="Data Export"/>
+						</c:if>
+						<c:if test="#{fn:containsIgnoreCase(userBean.userFeatures, 'eProjects')}">
+						    <f:selectItem itemValue="6" itemLabel="Change eProjects Email Information"/>
+						</c:if>
+				</h:selectOneRadio>
+				<h:panelGrid style="padding:2px;"/>
+				<h:panelGroup style="padding-left:53px;">
+					<a4j:commandButton styleClass="submitButtonImage" value=" " onclick="return formsubmit();" render="changeNameRender editHotlistRender dxRender eProjectsFormRender" limitRender="true"  oncomplete="actionAfterComplete();">
+					<f:param value="1" name="flag" />
+					</a4j:commandButton> 
+						&nbsp;
+					<a4j:commandButton  styleClass="cancelButtonImage" value=" " onclick="#{rich:component('savedSearches')}.hide(); return false;"/>
+				</h:panelGroup>
+				<h:panelGrid style="padding:3px;"/>
+		</h:panelGrid> 
+	</h:panelGrid>
+	</h:form>
+
+	<rich:popupPanel id="changeName" modal="true"  width="381" height="220" onshow="#{rich:component('savedSearches')}.hide()" onhide="#{rich:component('savedSearches')}.show()">
+						<f:facet name="header">
+							
+						</f:facet>
+						<f:facet name="controls"> 
+							 <h:commandButton value=" " type="button" styleClass="popupCloseImage" onclick="#{rich:component('changeName')}.hide(); return false;"/>   
+						</f:facet>
+ 
+						<ui:include  src="/online_product/saved_search/ss_edit_name.xhtml"/> 				
+						
+	</rich:popupPanel>
+	
+	<rich:popupPanel id="editHotlist" modal="true"  autosized="true" onshow="#{rich:component('savedSearches')}.hide()" onhide="hideEHtooltips();#{rich:component('savedSearches')}.show()">
+						<f:facet name="header">
+							
+						</f:facet>
+						<f:facet name="controls"> 
+							<h:commandButton value=" " type="button" styleClass="popupCloseImage" onclick="#{rich:component('editHotlist')}.hide(); return false;"/> 
+						</f:facet>
+ 
+						<ui:include  src="/online_product/emailhotlist/edit_hotlist.xhtml" /> 				
+ 
+	</rich:popupPanel>
+	
+	<rich:popupPanel id="dataExport" modal="true"  autosized="true" onshow="#{rich:component('savedSearches')}.hide();" onhide="#{rich:component('savedSearches')}.show()">
+		<f:facet name="header">
+			
+		</f:facet>
+		<f:facet name="controls"> 
+			<h:commandButton value=" " type="button" styleClass="popupCloseImage" onclick="#{rich:component('dataExport')}.hide(); return false;"/> 
+		</f:facet>
+
+		<ui:include  src="/online_product/dataexport/data_export.xhtml" /> 				
+ 
+	</rich:popupPanel>
+	
+	<rich:popupPanel id="eProjectsEmailInfo" modal="true"  autosized="true" onshow="#{rich:component('savedSearches')}.hide();" onhide="#{rich:component('savedSearches')}.show()">
+		<f:facet name="header">
+			
+		</f:facet>
+		<f:facet name="controls"> 
+			<h:commandButton value=" " type="button" styleClass="popupCloseImage" onclick="#{rich:component('eProjectsEmailInfo')}.hide(); return false;"/> 
+		</f:facet>
+
+		<ui:include  src="/online_product/saved_search/ss_eProjects.xhtml" /> 				
+ 
+	</rich:popupPanel>
+	
+</ui:composition>

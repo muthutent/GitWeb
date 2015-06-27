@@ -1,0 +1,103 @@
+<!--
+
+   Copyright 2001-15 Creatus Inc.,
+   2328 Walsh Avenue, Suite G, Santa Clara, CA 95051, U.S.A.
+   All rights reserved.
+
+   This software is the confidential and proprietary information
+   of Creatus Inc. ("Confidential Information").  You shall not disclose
+   such Confidential Information and shall use it only in accordance
+   the terms of the license agreement you entered into with
+   Creatus Inc.
+
+   Company        : Creatus Inc.
+   Author         : Creatus
+   Date Created   : 03/10/2015
+   Last Modified  : 03/10/2015
+   Modifier       : Selva
+   Description    : Dash board to show the ContactSearch, ContactSavedsSearches
+   					After the Lead Manager Migration from coldfusion to JBoss
+-->	
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+ 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	 template="/WEB-INF/templates/cdc_template.xhtml"
+	 xmlns:rich="http://richfaces.org/rich"
+	 xmlns:o="http://omnifaces.org/ui">
+	 
+<ui:define name="content">
+<h:outputStylesheet name="contact_search/userhome_cs.css" library="css" />
+
+<style type="text/css">
+	#mylength1 {position:relative;width:110}
+	#mylength2 {position:relative;width:200}
+</style>
+<c:choose>
+<c:when test="#{not empty userBean.icnOnlineHomeOtherSearch and userBean.icnOnlineHomeOtherSearch == 'uc'}">
+<c:set var="nav_other" value="CS,CSS,UC"/>
+</c:when>
+<c:otherwise>
+<c:set var="nav_other" value="CS,CSS,CT"/>
+</c:otherwise>
+</c:choose>
+<c:set var="nav_other" value="${fn:split(nav_other, ',')}" />
+<h:panelGrid width="760" columns="2" cellspacing="0" cellpadding="0" border="0">
+<div bgcolor="#FFFFFF" leftmargin="5" topmargin="5"
+							marginwidth="5" marginheight="5" style="margin: 5px">
+<h:panelGrid cellspacing="0" cellpadding="0" border="0" bgcolor="white" width="365" styleClass="panelGridCenter">
+<c:choose>
+<c:when test="${not fn:containsIgnoreCase(userBean.userFeatures,'Contact Save Search')}">
+<h:link value="javascript:popup_features();"><h:graphicImage name="tabs/navbar_cs_on.gif" library="images" style="border:0;" alt="Contact Search"  id="nav_cs"/> </h:link>
+</c:when>
+<c:otherwise>
+<h:panelGroup  styleClass="tab">
+<c:forEach var="i" begin="0" end="${fn:length(nav_other) - 1}">
+<c:if test="${nav_other[i] == 'SPS' or nav_other[i] == 'CS' or (nav_other[i] == 'CSS' and fn:containsIgnoreCase(userBean.userFeatures,'Contact Tracker'))}">
+<c:choose>
+<c:when test="${fn:toUpperCase(userBean.icnOnlineHomeOtherSearch) == nav_other[i]}">
+ <h:graphicImage name="tabs/navbar_#{fn:toLowerCase(nav_other[i])}_on.gif" library="images" style="border:0;float:left;" alt="#{fn:toLowerCase(nav_other[i])}"  id="nav_#{fn:toLowerCase(nav_other[i])}"  />
+</c:when>
+<c:otherwise>
+<h:form>
+<h:commandLink action="#{csController.contactSearch(request)}" value=" " onmouseover="MM_swapImage('nav_#{fn:toLowerCase(nav_other[i])}','','#{request.contextPath}/resources/images/tabs/navbar_#{fn:toLowerCase(nav_other[i])}_on.gif',1)" onmouseout="MM_swapImgRestore()">
+<f:param value="#{nav_other[i]}" name="navother" />
+<h:graphicImage name="tabs/navbar_#{fn:toLowerCase(nav_other[i])}_off.gif" library="images" style="border:0;float:left;" alt="#{fn:toLowerCase(nav_other[i])}"  id="nav_#{fn:toLowerCase(nav_other[i])}" />
+</h:commandLink>
+</h:form>
+</c:otherwise>
+</c:choose>
+<c:if test="${i lt fn:length(nav_other)}">
+<h:graphicImage name="pixel_trans.gif" library="images" style="width: 3px; height:1px; border:0;float:left;" alt="" /> 
+</c:if>
+</c:if>
+</c:forEach>
+</h:panelGroup>
+</c:otherwise>
+</c:choose>
+
+</h:panelGrid>
+</div>
+		<h:panelGrid cellspacing="0" cellpadding="0" border="0" bgcolor="white" width="365" styleClass="panelGridCenter">
+			<h:panelGroup>
+				<c:choose>
+					<c:when test="${fn:toUpperCase(userBean.icnOnlineHomeOtherSearch) == 'CS'}">
+						<ui:include src="#{csController.userhomeOtherCS(request)}" />
+					</c:when>
+					<c:when test="${fn:toUpperCase(userBean.icnOnlineHomeOtherSearch) == 'CSS'}">
+						<ui:include src="#{cssController.userhomeOtherCSS(request)}" />
+					</c:when>
+					<c:when test="${fn:toUpperCase(userBean.icnOnlineHomeOtherSearch) == 'CT' or fn:toUpperCase(userBean.icnOnlineHomeOtherSearch) == 'UC'}">
+						<ui:include src="/online_product/contact_tracker/contact_tracker_list.xhtml"/>
+					</c:when>
+				</c:choose>
+			</h:panelGroup>
+		</h:panelGrid>
+</h:panelGrid>
+<!--<o:resourceInclude path="/online_product/sessionVariables.jsp" />-->
+</ui:define>
+</ui:composition>

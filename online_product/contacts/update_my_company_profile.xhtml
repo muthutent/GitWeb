@@ -1,0 +1,275 @@
+ <!--
+
+   Copyright 2001-15 Creatus Inc.,
+   2328 Walsh Avenue, Suite G, Santa Clara, CA 95051, U.S.A.
+   All rights reserved.
+
+   This software is the confidential and proprietary information
+   of Creatus Inc. ("Confidential Information").  You shall not disclose
+   such Confidential Information and shall use it only in accordance
+   the terms of the license agreement you entered into with
+   Creatus Inc.
+
+   Company        : Creatus Inc.
+   Author         :	Creatus
+   Date Created   :	03/04/2015
+   Last Modified  : 03/17/2015
+   Modifier       : Sathish
+   Description    :	Displays Company Profile
+ 					After the Lead Manager Migration from coldfusion to JBoss
+-->
+<!DOCTYPE html PUBLIC "-//W3C//Dtd XHTML 1.0 Transitional//EN" "http://www.w3.org/tr/xhtml1/Dtd/xhtml1-transitional.dtd">
+<!-- THE PAGE USES THE JSF 2.0 TEMPLATE -->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	 xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	 template="/WEB-INF/templates/cdc_template.xhtml"
+	  xmlns:a4j="http://richfaces.org/a4j" 
+	 xmlns:rich="http://richfaces.org/rich">
+		
+		
+	 
+		 
+		<!-- AND THE CONTENTS OF THE PAGE -->	
+		<ui:define name="content"> 
+		 	<h:outputStylesheet library="css" name="contacts/company_profile.css" />  
+			<h:outputScript library="js" name="contacts/company_profile.js"  /> 
+			<c:choose>
+				<c:when test="${fn:length(contactBean.contacts) eq 0}">
+					 <h:panelGrid width="800" vorder="0" cellspacing="2" cellpadding="2" styleClass="black12px" h5:align="left">
+						<h:outputLabel value="Your Company Profile is not available to edit yet." style="margin-left:227px"/>
+					 </h:panelGrid>
+				</c:when>
+				<c:otherwise>
+				 <h:panelGrid width="800" vorder="0" cellspacing="2" cellpadding="2" styleClass="black12px" h5:align="left">
+					<h:outputLabel value="Company Profile" styleClass="textBold companyHeader"/>
+					
+					<!-- My Company Profile -->
+					<rich:dataTable id="companyProfile" var="contact" value="#{contactBean.contacts}" styleClass="dataTableWidth">
+						<rich:column>
+							<f:facet name="header">
+								<h:outputLabel value="Company Name" />
+							</f:facet>
+							<h:outputText value="#{contact.companyName}" styleClass="black12px"/>
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputLabel value="Address" />
+							</f:facet>
+							<h:outputText value="#{contact.address1} #{contact.address2}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputLabel value="City" />
+							</f:facet>
+							<h:outputText value="#{contact.city}" styleClass="black12px"/>
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputLabel value="County" />
+							</f:facet>
+							<h:outputText value="#{contact.countyName}" styleClass="black12px"/>
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputLabel value="State"  />
+							</f:facet>
+							<h:outputText value="#{contact.stateName}" styleClass="black12px"/>
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputLabel value="Zip"  />
+							</f:facet>
+							<h:outputText value="#{contact.zipCode}" styleClass="black12px"/>
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputLabel value="Tel"  />
+							</f:facet>
+							<h:outputText value="#{contact.telephone1}" styleClass="black12px"/>
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputLabel value="Fax"  />
+							</f:facet>
+							<h:outputText value="#{contact.fax1}" styleClass="black12px"/>
+						</rich:column>
+						<c:if test="${fn:length(contactBean.contactsTypeList) ne 0}">
+							<rich:column>
+								<f:facet name="header">
+									<h:outputLabel value="Contact Type / Contact Sub Type" />
+								</f:facet>
+								<c:forEach var="typeList" items="#{contactBean.contactsTypeList}">
+									<h:outputText value="#{typeList.contactType} / #{typeList.contactSubType}" styleClass="black12px"/><br/>
+								</c:forEach>
+							</rich:column>
+						</c:if>
+					</rich:dataTable>
+					<!-- End of My Company Profile -->
+					<h:panelGrid styleClass="space"/>
+					<h:outputLabel value="Contact Profile Details" styleClass="textBold companyHeader"/>   
+					<!-- Contact Profile Details-->
+					<rich:dataTable id="contactProfile1" styleClass="dataTableWidth" var="profile" value="#{contactBean.contactProfileDetails}">
+						<rich:column>
+							<f:facet name="header">
+								<h:outputLabel value="Union Type" />
+							</f:facet>   
+							<h:outputText value="#{profile.unionTypeName}" styleClass="black12px"/>  
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputLabel value="Year Established" />
+							</f:facet>
+							<h:outputText value="#{profile.yearEstablished}" styleClass="black12px"/> 
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputLabel value="Special Certifications" />
+							</f:facet>
+						 	<h:outputText value="#{profile.specialCertificationName}" styleClass="black12px"/> 
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputLabel value="Project Classfications" />
+							</f:facet> 
+							<h:outputText value="#{profile.projectClassificationName}" styleClass="black12px"/> 
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputLabel value="Govt Certifications"  />
+							</f:facet>
+							 <h:outputText value="#{profile.governmentCertificationName}" styleClass="black12px"/> 
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputLabel value="Trade Association"  />
+							</f:facet>
+							 <h:outputText value="#{profile.tradeAssociationName}" styleClass="black12px"/> 
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputLabel value="Trade Divisions"  />
+							</f:facet>
+							 <h:outputText value="#{profile.tradeDivisionName}" styleClass="black12px"/> 
+						</rich:column>
+					</rich:dataTable>  
+					
+					<h:panelGrid styleClass="space2"/>
+					<rich:dataTable id="contactProfile2" styleClass="dataTableWidth" var="profile" value="#{contactBean.contactProfileDetails2}">
+						<!-- Contact Profile State -->
+						<rich:column styleClass="rowAlign">
+							<f:facet name="header">
+								<h:outputLabel value="Contact Profile State" />
+							</f:facet>
+							<h:outputText value="#{profile.stateName}" styleClass="black12px"/> 
+						</rich:column>
+						 <!-- Contact Profile County -->
+						<rich:column styleClass="rowAlign">
+							<f:facet name="header">
+								<h:outputLabel value="Contact Profile County" />
+							</f:facet> 
+							 <ui:repeat var="county" value="#{profile.contactCountyNameList}">
+							 	<h:outputText value="#{county}" styleClass="black12px"/> <br/>
+							 </ui:repeat>
+						</rich:column>
+						<!-- Contact Profile Publication -->
+						<rich:column styleClass="rowAlign">
+							<f:facet name="header">
+								<h:outputLabel value="Contact Profile Publication" />
+							</f:facet>
+							 <h:outputText value="#{profile.publicationName}" styleClass="black12px"/> 
+						</rich:column>
+						<!-- Products Installed -->
+						<rich:column styleClass="rowAlign">
+							<f:facet name="header">
+								<h:outputLabel value="Products Installed" />
+							</f:facet> 
+							<h:outputText value="#{profile.productsInstalled}" styleClass="black12px"/>
+						</rich:column>
+						<!-- Company Group -->
+						<rich:column styleClass="rowAlign">
+							<f:facet name="header">
+								<h:outputLabel value="Company Group"  />
+							</f:facet>
+							 <h:outputText value="#{profile.companyGroupName}" styleClass="black12px"/>
+						</rich:column>
+						<!-- Edit Contacts -->
+						<rich:column styleClass="rowAlign">
+							<f:facet name="header">
+								<h:outputLabel value="Edit Company/Contact Profile"  />
+							</f:facet>
+							<h:form id="companyEdit">
+							<a4j:commandLink  onclick="window.location.pathname='#{request.contextPath}/edit-company-profile';" render="companyProfile"> 
+								<h:graphicImage library="images" name="buttons/button_edit_icn.gif" border="0" alt="Edit Company Profile"/>
+							</a4j:commandLink>
+							</h:form>
+						</rich:column>
+					</rich:dataTable>
+					<!-- End of Contact Profile Details --> 
+					<h:panelGrid styleClass="space"/>
+					<!-- Contact Person -->
+					<h:outputLabel value="Contact Person" styleClass="textBold companyHeader"/>
+					<rich:dataTable id="contactPerson" var="person" value="#{contactBean.contactPerson}" styleClass="dataTableWidth">
+						<rich:column>
+							<f:facet name="header">
+								<h:outputLabel value="Contact Name" />
+							</f:facet>
+							<h:outputText value="#{person.contactName}" styleClass="black12px"/>
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputLabel value="Phone" />
+							</f:facet>
+							<h:outputText value="#{person.telephone1}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputLabel value="Ext" />
+							</f:facet>
+							<h:outputText value="#{person.ext}" styleClass="black12px"/>
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputLabel value="Fax" />
+							</f:facet>
+							<h:outputText value="#{person.fax1}" styleClass="black12px"/>
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputLabel value="Email"/>
+							</f:facet>
+							<h:outputText value="#{person.email1}" styleClass="black12px"/>
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">
+								<h:outputLabel value="Edit"  />
+							</f:facet>
+							<h:form id="company">
+							<a4j:commandLink onclick="document.getElementById('contactPerson:0:company').submit(); window.location.pathname='#{request.contextPath}/edit-contact-person'; "  execute="@this"> 
+								<f:setPropertyActionListener target="#{contactBean.contactId}" value="#{contactBean.contactId}"/>
+								<f:setPropertyActionListener target="#{contactBean.contactDetailId}" value="#{person.contactDetailId}"/>
+								<f:setPropertyActionListener target="#{contactBean.firstName}" value="#{person.firstName}"/>
+								<f:setPropertyActionListener target="#{contactBean.lastName}" value="#{person.lastName}"/>
+								<f:setPropertyActionListener target="#{contactBean.telephone1}" value="#{person.telephone1}"/>
+								<f:setPropertyActionListener target="#{contactBean.telephone2}" value="#{person.telephone2}"/>
+								<f:setPropertyActionListener target="#{contactBean.ext}" value="#{person.ext}"/>
+								<f:setPropertyActionListener target="#{contactBean.fax1}" value="#{person.fax1}"/>
+								<f:setPropertyActionListener target="#{contactBean.email1}" value="#{person.email1}"/>
+								<f:setPropertyActionListener target="#{contactBean.title}" value="#{person.title}"/>
+								<f:setPropertyActionListener target="#{contactBean.departmentName}" value="#{person.departmentName}"/> 
+								<f:ajax execute="@this" render="@none"/>
+								<h:graphicImage library="images" name="buttons/button_edit_icn.gif" border="0" alt="Edit Contact Person"/>
+							</a4j:commandLink>
+							</h:form>
+						</rich:column>
+					</rich:dataTable>
+					<!-- End of Contact Person -->
+				 </h:panelGrid>
+			 </c:otherwise>
+			</c:choose>
+		</ui:define>
+</ui:composition>

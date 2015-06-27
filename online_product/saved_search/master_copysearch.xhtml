@@ -1,0 +1,50 @@
+<!--
+
+   Copyright 2001-15 Creatus Inc.,
+   2328 Walsh Avenue, Suite G, Santa Clara, CA 95051, U.S.A.
+   All rights reserved.
+
+   This software is the confidential and proprietary information
+   of Creatus Inc. ("Confidential Information").  You shall not disclose
+   such Confidential Information and shall use it only in accordance
+   the terms of the license agreement you entered into with
+   Creatus Inc.
+
+   Company        : Creatus Inc.
+   Author         : Creatus
+   Date Created   : 03/10/2015
+   Last Modified  : 03/10/2015
+   Modifier       : Selva 
+   Description    : Displays the Warn Message for Master Copy Search
+   					After the Lead Manager Migration from coldfusion to JBoss
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+ 
+<ui:composition template="/WEB-INF/templates/cdc_template.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+<ui:define name="content">
+
+<table width="510" CELLPADDING="0" CELLSPACING="0" BORDER="0">
+		<tr>
+			<td align="center" class="orange12px">
+				<b>This account already has #searches_allowed# searches.
+				Please delete unwanted saved searches</b> 
+			</td>
+		</tr>
+		<tr>
+			<td align="center" class="orange12px">
+				<a href="javascript:history.go(-1)">Back</a>
+			</td>
+		</tr>
+		</table>
+</ui:define>
+
+</ui:composition>

@@ -1,0 +1,122 @@
+<!--
+
+   Copyright 2001-15 Creatus Inc.,
+   2328 Walsh Avenue, Suite G, Santa Clara, CA 95051, U.S.A. 
+   All rights reserved.
+
+   This software is the confidential and proprietary information
+   of Creatus Inc. ("Confidential Information").  You shall not disclose
+   such Confidential Information and shall use it only in accordance
+   the terms of the license agreement you entered into with
+   Creatus Inc.
+
+   Company        : Creatus Inc.
+   Author         : Creatus
+   Date Created   : 03/10/2015
+   Last Modified  : 03/10/2015
+   Modifier       : Selva 
+   Description    : Displays the UI to add Bidder
+   					After the Lead Manager Migration from coldfusion to JBoss
+-->	
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:rich="http://richfaces.org/rich">
+      
+<h:head>      
+	<h:outputStylesheet name="sheet.css" library="css" />
+	<h:outputStylesheet name="buttons.css" library="css" />
+	<h:outputStylesheet name="bidder/bidder_add.css" library="css" />
+	<h:outputScript name="JSScripts/Javascript_template.js" library="js"/>
+	<h:outputScript name="bidder/bidder_add.js" library="js"/>
+</h:head>
+
+<h:body>
+
+<ui:include src="/online_product/check_session_curfolder.xhtml" />
+
+<h:form id="bidder">
+
+<h:panelGrid border="0" cellpadding="0" cellspacing="0" width="494" styleClass="panelGridCenter">
+<h:panelGroup>
+<h:graphicImage name="bidder/header_addbidder.gif" library="images" alt="Add Bidder" style="border:0px;"/>
+</h:panelGroup>
+<h:panelGroup style="width:492px;height:20px;">
+<h:graphicImage name="form_orange_line.gif" library="images" alt="Orange Line" style="width:494px;height:1px;border:0px;"/>
+</h:panelGroup>
+</h:panelGrid>
+
+<h:panelGrid border="0" cellpadding="0" cellspacing="0" width="494" styleClass="panelGridCenter">
+<h:panelGroup>
+
+<h:panelGrid border="0" cellpadding="0" cellspacing="0" width="494" columns="2" styleClass="panelGridCenter" columnClasses="rightAlign,leftAlign" style="border-top:1px solid #3579bd;border-bottom:1px solid #3579bd;border-left:1px solid #3579bd;border-right:1px solid #3579bd;">
+
+<h:column><h:outputText value="CDC ID:" styleClass="black12px rightAlign" style="font-weight:bold" /></h:column>
+<h:column><h:outputText value="#{pTBean.cdcId}" styleClass="black10px leftAlign" /></h:column>
+
+<h:column><h:outputText value="Project Title:" styleClass="black12px rightAlign" style="font-weight:bold" /></h:column>
+<h:column><h:outputText value="#{pTBean.jobTitle}" styleClass="black10px leftAlign" /></h:column>
+
+<h:column/><rich:message for="bidder_name" id="bidder_name_err"/>
+<h:column><h:outputText value="Name:" styleClass="black12px rightAlign" style="font-weight:bold" /></h:column>
+<h:column><h:inputText id="bidder_name" value="#{bidderBean.name}" styleClass="leftAlign" size="30" maxlength="40"/></h:column>
+
+<h:column /><rich:message for="bidder_company" id="bidder_company_err"/>
+<h:column><h:outputText value="Company Name:" styleClass="black12px rightAlign" style="font-weight:bold" /></h:column>
+<h:column><h:inputText id="bidder_company" value="#{bidderBean.companyName}" styleClass="leftAlign" size="30" maxlength="40"/></h:column>
+
+<h:column /><rich:message for="bidder_address" id="bidder_address_err"/>
+<h:column><h:outputText value="Address:" styleClass="black12px" style="align:right;font-weight:bold" /></h:column>
+<h:column><h:inputText id="bidder_address" value="#{bidderBean.address}" size="30" maxlength="40"/></h:column>
+
+<h:column /><rich:message for="bidder_city" id="bidder_city_err"/>
+<h:column><h:outputText value="City:" styleClass="black12px" style="align:right;font-weight:bold" /></h:column>
+<h:column><h:inputText id="bidder_city" value="#{bidderBean.city}" size="20" maxlength="20"/></h:column>
+
+<h:column /><rich:message for="bidder_state" id="bidder_state_err"/>
+<h:column><h:outputText value="State:" styleClass="black12px" style="align:right;font-weight:bold" /></h:column>
+<h:column><h:inputText id="bidder_state" value="#{bidderBean.state}" size="20" maxlength="20"/></h:column>
+
+<h:column /><rich:message for="bidder_zip" id="bidder_zip_err"/>
+<h:column><h:outputText value="Zip Code:" styleClass="black12px" style="align:right;font-weight:bold" /></h:column>
+<h:column><h:inputText id="bidder_zip" value="#{bidderBean.zipCode}" size="20" maxlength="10"/></h:column>
+
+<h:column /><rich:message for="bidder_phone" id="bidder_phone_err"/>
+<h:column><h:outputText value="Phone:" styleClass="black12px" style="align:right;font-weight:bold" /></h:column>
+<h:column><h:inputText id="bidder_phone" value="#{bidderBean.phone}" size="20" maxlength="40"/></h:column>
+
+<h:column /><rich:message for="bidder_fax" id="bidder_fax_err"/>
+<h:column><h:outputText value="Fax:" styleClass="black12px" style="align:right;font-weight:bold" /></h:column>
+<h:column><h:inputText id="bidder_fax" value="#{bidderBean.fax}" size="20" maxlength="40"/></h:column>
+
+<h:column /><rich:message for="request_type" id="request_type_err"/>
+<h:column />
+<h:column>
+<h:selectManyCheckbox id="request_type" value="#{bidderBean.requestTypes}" styleClass="black12px" layout="pageDirection">
+<f:selectItem itemValue="I'd like to be added to the bidder's list" itemLabel="I'd like to be added to the bidder's list"/>
+<f:selectItem itemValue="I'd like the latest bidder's list" itemLabel="I'd like the latest bidder's list"/>
+<f:selectItem itemValue="I'd like bid results" itemLabel="I'd like bid results"/>
+<f:selectItem itemValue="I'd like to be removed from bidder's list" itemLabel="I'd like to be removed from bidder's list"/>
+<f:selectItem itemValue="I'd like to be added as an interested sub-contractor" itemLabel="I'd like to be added as an interested sub-contractor"/>
+<f:selectItem itemValue="I'd like to be added as an interested supplier" itemLabel="I'd like to be added as an interested supplier"/>
+</h:selectManyCheckbox>
+</h:column>
+
+<h:column />
+<h:column>
+<h:panelGroup style="align:center;height:25px;" styleClass="black12px">
+<h:commandButton action="#{projectController.bidderAddAction(request)}" value=" " styleClass="submitButtonImage" onclick="return submitform(this)" />
+<h:commandButton type="reset" value=" " styleClass="resetButtonImage" />
+</h:panelGroup>
+</h:column>
+
+</h:panelGrid>
+
+</h:panelGroup>
+</h:panelGrid>
+
+</h:form>
+</h:body>
+</ui:composition>

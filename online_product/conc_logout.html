@@ -1,0 +1,61 @@
+<!--
+
+   Copyright 2001-15 Creatus Inc.,
+   2328 Walsh Avenue, Suite G, Santa Clara, CA 95051, U.S.A.
+   All rights reserved.
+
+   This software is the confidential and proprietary information
+   of Creatus Inc. ("Confidential Information").  You shall not disclose
+   such Confidential Information and shall use it only in accordance
+   the terms of the license agreement you entered into with
+   Creatus Inc.
+
+   Company        : Creatus Inc.
+   Author         : Creatus
+   Date Created   : 03/10/2015
+   Last Modified  : 03/10/2015
+   Modifier       : Selva
+   Description    : Displays the message to request the user to login again since the user logged in from different computer
+   					After the Lead Manager Migration from coldfusion to JBoss
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+ 
+<html>
+<head>
+<script language="JavaScript">
+<!--
+function logout()
+{
+ top.opener.location="../default.html";
+ 	//top.opener.moveTo(0,0)
+	 if (top.opener && !top.opener.closed) {
+ 		top.opener.focus();
+		window.close();
+	 } else {
+ 		window.open('../default.html');
+ 		window.close();
+	}
+}
+//-->
+</script>
+	<title>Untitled Document</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+	<META HTTP-EQUIV="Expires" CONTENT="Tue, 01 Jan 1985 00:00:01 GMT">
+	<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+	<META HTTP-EQUIV="cache-control" CONTENT="no-cache, no-store, must-revalidate">
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000">
+<div align="center">
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+  <p><font face="Arial, Helvetica, sans-serif" size="4" color="#0000FF">You've
+    been logged out, as you logged in from a different computer.</font></p>
+  <p>&nbsp;</p>
+  <p><font face="Arial, Helvetica, sans-serif" color="#0000FF">Click <a href="../default.cfm">here</a> to go
+    back to the home page.</font></p>
+</div>
+
+</body>
+</html>

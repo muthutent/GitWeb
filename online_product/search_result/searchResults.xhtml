@@ -1,0 +1,34 @@
+<!--
+
+   Copyright 2001-15 Creatus Inc.,
+   2328 Walsh Avenue, Suite G, Santa Clara, CA 95051, U.S.A.
+   All rights reserved.
+
+   This software is the confidential and proprietary information
+   of Creatus Inc. ("Confidential Information").  You shall not disclose
+   such Confidential Information and shall use it only in accordance
+   the terms of the license agreement you entered into with
+   Creatus Inc.
+
+   Company        : Creatus Inc.
+   Author         : Creatus
+   Date Created   : 03/10/2015
+   Last Modified  : 03/10/2015
+   Modifier       : Selva 
+   Description    : Embedds the SearchResults.jsp in to body
+   					After the Lead Manager Migration from coldfusion to JBoss
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:o="http://omnifaces.org/ui"
+	template="/WEB-INF/templates/cdc_template.xhtml">
+		<ui:define name="content">
+		<div class="loading" style="position:absolute; width:100%; text-align:left; top:100px; margin-left:220px; z-index:1">
+		<h:graphicImage name="loading/animated_loading_text_new.gif" library="images" width="310" height="57" border="0" />
+<br /><h:graphicImage name="loading/animated_loading.gif" library="images" border="0" />
+		</div>
+		<o:resourceInclude path="/online_product/search_result/searchResults.jsp" />
+		</ui:define>
+	</ui:composition>

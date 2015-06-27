@@ -1,0 +1,220 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/tr/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+<h:head>
+<h:outputScript name="JSScripts/Javascript_template.js" library="js" />
+<h:outputStylesheet name="sheet.css" library="css" />
+<script>
+
+var flag_menu = 10;
+var flag_sub = 10;
+
+function CF_Check(_CF_this)
+{
+	if (!_CF_hasValue(_CF_this.first_name,"TEXT")){
+		alert("Please enter first name!");
+		_CF_this.first_name.select();_CF_this.first_name.focus();
+		return false;
+	}
+		
+	if (!_CF_hasValue(_CF_this.last_name,"TEXT")){
+		alert("Please enter last name!");
+		_CF_this.last_name.select();_CF_this.last_name.focus();
+		return false;
+	}		
+	if (!_CF_hasValue(_CF_this.phone,"TEXT")){
+		alert("Please enter phone number!");
+		_CF_this.phone.select();_CF_this.phone.focus();
+		return false;
+	}
+	if (!check_phonedash(_CF_this.phone, _CF_this.phone.value, "Please enter a valid phone number!")){
+		return false;
+	}	
+	/*if (!check_phonedash(_CF_this.fax, _CF_this.fax.value, "Please enter a valid fax number!"))
+		return false*/
+	
+	if (!_CF_hasValue(_CF_this.email,"TEXT")){
+		alert("Please enter email address!");
+		_CF_this.email.select();_CF_this.email.focus();
+		return false;
+	}	
+	if (!check_mail(_CF_this.email,_CF_this.email.value, "Please enter a valid email address!")){
+		return false;
+	}
+	if (!_CF_hasValue(_CF_this.company,"TEXT")){
+		alert("Please enter company name!");
+		_CF_this.company.select();_CF_this.company.focus();
+		return false;
+	}
+	if (!_CF_hasValue(_CF_this.address1,"TEXT")){
+		alert("Please enter address!");
+		_CF_this.address1.select();_CF_this.address1.focus();
+		return false;
+	}
+	if (!_CF_hasValue(_CF_this.city,"TEXT")){
+		alert("Please enter city!");
+		_CF_this.city.select();_CF_this.city.focus();
+		return false;
+	}
+	if (!_CF_hasValue(_CF_this.state, "SELECT", 2)){
+		alert("Please select state.");
+		return false;
+	}
+
+	return true;
+
+}
+
+</script>
+</h:head>
+<h:body>
+<!-- top nav -->
+<table border="0" cellpadding="0" cellspacing="0" width="742"  align="center">
+
+<tr>
+	<td  width="742" height="25" valign="top">
+		<h:graphicImage name="freetrial/siteheader.jpg" library="images" />
+	</td>
+</tr>
+<tr>
+	<td  height="1"></td>
+</tr>
+<tr>
+	<td height="1"></td>
+</tr>
+</table>
+
+<!-- main -->
+<table border="0" cellpadding="0" cellspacing="0" width="742" align="center" style="border-left:1px solid #cccccc;border-right:1px solid #cccccc;border-top:1px solid #cccccc;">
+<tr>
+	<td width="150" height="200" class="black11px"  valign="top">
+		<br/>
+		
+	</td>
+	
+	<td valign="top" >
+	<br/>
+	<span class="black12px"><strong>Thank you for your interest in CDCNews.com</strong></span>
+	<br/><br/>
+	<span class="black11px">*&nbsp;required field</span>
+	
+<!-- form start-->
+<form name="theform" action="/online-product/freetrial-register-action" method="post" onsubmit="return CF_Check(this)">	
+	<table border="0" width="434" cellspacing="0" cellpadding="0">
+	<tr bgcolor="CCCCCC"> 
+		<td colspan="3" height="20" class="black12px"><b>Register for a free trial to view the project you were invited to bid</b></td>
+	</tr>
+	<tr> 
+		<td width="120" class="black11px">* First Name</td>
+		<td bgcolor="DADADA" width="10">&nbsp;</td>
+		<td class="black11px"><input type="text" name="first_name" value="" size="20" /></td>
+	</tr>
+	<tr> 
+		<td class="black11px">* Last Name</td>
+		<td bgcolor="DADADA" width="10">&nbsp;</td>
+		<td class="black11px"><input type="text" name="last_name" value="" size="20" /></td>
+	</tr>
+	
+	<tr> 
+		<td class="black11px">* Phone Number</td>
+		<td bgcolor="DADADA" width="10">&nbsp;</td>
+		<td class="black11px"><input type="text" name="phone" size="20" value="" />###-###-####</td>
+	</tr>
+	
+	<tr> 
+		<td class="black11px">&nbsp;&nbsp;&nbsp;Fax.</td>
+		<td bgcolor="DADADA" width="10">&nbsp;</td>
+		<td class="black11px"><input type="text" name="fax" size="20" value="" /></td>
+	</tr>
+	
+	
+	
+	<tr> 
+		<td class="black11px">* Email Address</td>
+		<td bgcolor="DADADA" width="10">&nbsp;</td>
+		<td class="black11px"><input type="text" name="email" value="" size="20" /></td>
+	</tr>
+	
+	<tr> 
+		<td class="black11px">* Company Name</td>
+		<td bgcolor="DADADA" width="10">&nbsp;</td>
+		<td class="black11px"><input type="text" name="company" size="20" value="" /></td>
+	</tr>
+	
+	<tr> 
+		<td class="black11px">*&nbsp;&nbsp;&nbsp;Address1</td>
+		<td bgcolor="DADADA" width="10">&nbsp;</td>
+		<td class="black11px"><input type="text" name="address1" size="20" value="" /></td>
+	</tr>	
+	
+	<tr> 
+		<td class="black11px">&nbsp;&nbsp;&nbsp;Address2</td>
+		<td bgcolor="DADADA" width="10">&nbsp;</td>
+		<td class="black11px"><input type="text" name="address2" size="20" value="" /></td>
+	</tr>		
+	
+	<tr> 
+		<td class="black11px">* City</td>
+		<td bgcolor="DADADA" width="10">&nbsp;</td>
+		<td class="black11px"><input type="text" name="city" size="20" value="" /></td>
+	</tr>	
+	
+	<tr> 
+		<td class="black11px">* State</td>
+		<td bgcolor="DADADA" width="10">&nbsp;</td>
+		<td class="black11px">
+		<select name="state" size="1">
+            <option value="" selected="selected">Select state</option>
+            <c:forEach items="${requestScope.stateAbb}" var="state_abb">
+            <option value="${state_abb}">${state_abb}</option>
+            </c:forEach>
+		</select>
+		</td>
+	</tr>	
+	
+	<tr> 
+		<td class="black11px">&nbsp;&nbsp;*Zip code </td>
+		<td bgcolor="DADADA" width="10">&nbsp;</td>
+		<td class="black11px"><input name="zip" type="text" id="zip" value="" size="20" /></td>
+	</tr>
+	
+	<tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td><h:graphicImage value="${request.contextPath}/images/captcha/captcha.jpg" alt="" /></td>
+	</tr>
+	<tr>			
+		<td class="white10px" align="right">* Enter the code shown:<br/><br/><br/>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td class="white10px">				
+		 <input type="text" name="captcha" size="30" /><br/>
+		 This helps prevent automated submissions.<br/><br/>
+		 <input name="captchaHash" type="hidden" value="${requestScope.captchaCodeHash}" />
+		</td>
+	</tr>
+	
+	
+		<tr>
+			<td bgcolor="BDBDBD" colspan="3" align="center" height="25"> 
+					<input type="submit" name="submit" value="Submit" />
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+					<input type="reset" name="reset" value="Clear" />
+			</td>
+		</tr>
+		
+	</table>
+	<c:if test="${not empty requestScope.encprojectid}">
+	<input type="hidden" name="encprojectid" value="${requestScope.encprojectid}" />
+	</c:if>
+	<input type="hidden" name="projectid" value="${requestScope.projectid}" />
+	</form>
+<!-- form end -->	
+	</td>
+</tr>
+</table>
+<ui:include src="/footer_copyright2.html" />
+</h:body>
+</ui:composition>

@@ -1,0 +1,105 @@
+<!--
+
+   Copyright 2001-15 Creatus Inc.,
+   2328 Walsh Avenue, Suite G, Santa Clara, CA 95051, U.S.A.
+   All rights reserved.
+
+   This software is the confidential and proprietary information
+   of Creatus Inc. ("Confidential Information").  You shall not disclose
+   such Confidential Information and shall use it only in accordance
+   the terms of the license agreement you entered into with 
+   Creatus Inc.
+
+   Company        : Creatus Inc.
+   Author         : Creatus	
+   Date Created   : 02/23/2015
+   Last Modified  : 05/04/2015
+   Modifier       : Sathish
+   Description    : Add to contact tracker/Update handled here
+ 					After the Lead Manager Migration from coldfusion to JBoss
+-->
+<!DOCTYPE html PUBLIC "-//W3C//Dtd XHTML 1.0 Transitional//EN" "http://www.w3.org/tr/xhtml1/Dtd/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:a4j="http://richfaces.org/a4j"
+	 xmlns:rich="http://richfaces.org/rich"
+	 xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+<h:head>
+		<c:if test="${contactBean.jsp == true}">
+			<h:outputStylesheet name="sheet.css" library="css" />
+			<h:outputStylesheet name="buttons.css" library="css" />
+		</c:if>
+		<meta name="robots" content="noindex, nofollow"/>
+</h:head>
+<h:form id="contactTrackerForm">
+<a4j:outputPanel id="contactTrackerRender" ajaxRendered="true">
+				<h:panelGroup id="formContainer"> 
+						 <c:if test="${fn:length(contactBean.contactTrackerList) eq 0}"> 
+						 	  <h:outputText value="Contact Tracker" styleClass="fontWeightBold black12px textAlignCenter"/>
+							  
+						 	  <h:panelGrid cellspacing="2" cellpadding="2" styleClass="black12px" style="text-align:left" rowClasses=" , , , , ,textCenter">
+								<h:outputLabel value="Enter your email to track when contact profile is updated or added to projects." styleClass="black11px"/>
+								<h:outputLabel value="Check &quot;Do not send email&quot; if you do not wish to receive email notifications." styleClass="black11px"/>
+								<rich:message id="emailErr" for="ct_email"/>
+								<h:panelGroup>	
+									<h:outputLabel  value="Email:"/>
+									<h:inputText id="ct_email" value="#{contactBean.email1}" size="23" maxlength="200" style="height:18px" />
+								</h:panelGroup>
+								<h:panelGroup>	 
+									<h:selectBooleanCheckbox id="ct_sendEmail" itemValue="0" value="#{contactBean.doNotSendEmailFlag}" />
+									<h:outputLabel  for="ct_sendEmail" value="Do not send email."/>
+								</h:panelGroup>
+								<h:panelGroup>
+									<!-- Below a4j:commandButton will be shown in rich:popup --> 
+									<a4j:commandButton value=" " styleClass="saveButtonImage" onclick="return validateform(document.contactTrackerForm,0);" 
+									oncomplete="addContactTracker();#{rich:component('viewConProfile')}.show();changeTrackImage('#{contactBean.contactId}');#{rich:component('contactTracker')}.hide();" render="contact_profile_render" limitRender="true"  rendered="#{contactBean.jsp == false}">
+										<f:setPropertyActionListener target="#{contactBean.action}" value="add" />
+									</a4j:commandButton>
+									
+									<!-- Below h:commandButton will be shown in window popup -->
+									<h:commandButton value=" " styleClass="saveButtonImage" onclick="return validateform(document.contactTrackerForm,0);" action="#{ctController.trackContact(request)}" rendered="#{contactBean.jsp == true}">
+										<f:setPropertyActionListener target="#{contactBean.action}" value="add" />
+									</h:commandButton>
+									<a4j:commandButton value=" " type="button" styleClass="cancelButtonImage" onclick="#{rich:component('contactTracker')}.hide(); return false;" render="@none" execute="@none" rendered="#{contactBean.jsp == false}"/>
+								</h:panelGroup>
+							  </h:panelGrid>
+
+						  </c:if>
+						  <c:if test="${fn:length(contactBean.contactTrackerList) gt 0}">
+							  <h:outputText value="View Contact Tracker" styleClass="fontWeightBold black12px textAlignCenter"/>
+						  	   
+							 <h:panelGrid cellspacing="2" cellpadding="2" styleClass="black12px" style="text-align:left"  rowClasses=" , , , ,textCenter">	
+							 	<h:outputLabel value="Enter your email to track contact, you will get updates about this contact via email." styleClass="black11px"/>
+							 	<rich:message id="emailErr" for="ct_email"/>
+								<h:panelGroup>	
+									<h:outputLabel  value="Email:"/>
+									<h:inputText id="ct_email" value="#{contactBean.email1}" size="23" maxlength="200" style="height:18px" />
+								</h:panelGroup>
+								<h:panelGroup>	  
+									<h:selectBooleanCheckbox id="ct_sendEmail" itemValue="0" value="#{contactBean.doNotSendEmailFlag}" />
+									<h:outputLabel  for="ct_sendEmail" value="Do not send email."/>
+								</h:panelGroup>
+								<h:panelGroup>
+									<!-- Below a4j:commandButton will be shown in rich:popup --> 
+								<a4j:commandButton value=" "  styleClass="updateButtonImage" onclick="if(validateform(document.contactTrackerForm,0)){																																	                                      updateContactTracker();#{rich:component('contactTracker')}.hide();}" rendered="#{contactBean.jsp == false}"  render="contact_profile_render,ctList" limitRender="true"  execute="@this"  oncomplete="#{rich:component('viewConProfile')}.show();">     
+								</a4j:commandButton>
+									
+									<!-- Below h:commandButton will be shown in window popup -->
+									<h:commandButton value=" "  styleClass="updateButtonImage" action="#{ctController.trackContact(request)}" onclick="return validateform(document.contactTrackerForm,0);" rendered="#{contactBean.jsp == true}"> 
+										<f:setPropertyActionListener target="#{contactBean.action}" value="update" />
+									</h:commandButton>
+									
+								</h:panelGroup>
+							 </h:panelGrid>
+
+						  </c:if>
+					</h:panelGroup>
+</a4j:outputPanel>
+</h:form>
+		<h:outputScript library="js" name="contact_tracker/contact_tracker.js" />
+</ui:composition>

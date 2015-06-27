@@ -1,0 +1,191 @@
+<!--
+
+   Copyright 2001-15 Creatus Inc.,
+   2328 Walsh Avenue, Suite G, Santa Clara, CA 95051, U.S.A.
+   All rights reserved.
+
+   This software is the confidential and proprietary information
+   of Creatus Inc. ("Confidential Information").  You shall not disclose
+   such Confidential Information and shall use it only in accordance
+   the terms of the license agreement you entered into with
+   Creatus Inc.
+
+   Company        : Creatus Inc.
+   Author         : Sathish
+   Date Created   : 03/02/2015
+   Last Modified  : 03/10/2015
+   Modifier       : Hailing Li
+   Description    : Displays the User Setting Menu (Change Password, ViewDetail window Option, Set reminder default days & Update my company profile)
+   					After the Lead Manager Migration from coldfusion to JBoss
+-->	
+<!DOCTYPE html PUBLIC "-//W3C//Dtd XHTML 1.0 Transitional//EN" "http://www.w3.org/tr/xhtml1/Dtd/xhtml1-transitional.dtd">
+<!-- THE PAGE USES THE JSF 2.0 TEMPLATE -->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	 xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	 template="/WEB-INF/templates/cdc_template.xhtml"
+	  xmlns:a4j="http://richfaces.org/a4j" 
+	 xmlns:rich="http://richfaces.org/rich">
+ 
+	
+	<!-- AND THE CONTENTS OF THE PAGE -->	
+		<ui:define name="content"> 
+			<script>
+					contextPath = '#{request.contextPath}';
+			</script>
+			<h:outputScript library="js" name="JSScripts/Javascript_template.js"  /> 
+			<h:outputScript library="js" name="sitemanager/setting/usersetting_menu.js"/>
+			<h:outputStylesheet name="sheet.css" library="css" />
+			<h:outputStylesheet library="css" name="buttons.css" />
+			 <h:outputStylesheet library="css" name="sitemanager/setting/usersetting_menu.css" />   
+			 
+				<h:panelGrid width="578" border="0" cellspacing="0" cellpadding="0" align="center" bgcolor="white" style="padding-left:199px;">
+					<rich:tabPanel switchType="client" id="panelId" activeItem="#{subUserBean.activeItem}">
+						<rich:tab id="userSetting" h5:name="userSetting" header=" " headerClass="userSettingImage" headerActiveClass="userSettingImageActive" onheaderclick="swapClasses('userSetting');" execute="@none" render="@none">
+							<h:form id="userMenu">
+							<h:panelGrid width="360" border="0" cellspacing="0" cellpadding="0"  bgcolor="white" styleClass="userSettingTable black11px">
+								 
+								<h:panelGroup>
+									<h:outputLabel value="You have logged in as " styleClass="fontWeightBold"/>
+									<h:outputLabel value="#{userBean.loginId}" styleClass="fontWeightBold"/>
+								</h:panelGroup>
+								<h:panelGroup styleClass="padding1px"/>
+								<a4j:commandLink value="Change Password" render="changePasswordRender changePassword2Render" limitRender="true" oncomplete="#{rich:component('changePassword')}.show();"> 
+									<f:setPropertyActionListener target="#{subUserBean.loginId}" value="" />
+									<f:setPropertyActionListener target="#{subUserBean.subUserChangePwdFlag}" value="false" />
+								</a4j:commandLink>
+								<h:outputText value="Allows you to change your password"/>
+								<h:panelGroup styleClass="padding1px"/>
+								<a4j:commandLink value="View Detail window Option" action="#{userSettingController.windowOption(request)}">
+									<a4j:ajax execute="@this" render="winRender" limitRender="true"/>
+									<rich:componentControl target="windowOption" event="click" operation="show"/>
+								</a4j:commandLink>
+								<h:outputText value="Allows you to change detail view settings while viewing projects."/>
+								<h:panelGroup styleClass="padding1px"/>
+								<a4j:commandLink value="Set reminder default days" action="#{userSettingController.reminderOption(request)}">
+									<a4j:ajax execute="@this" render="reminderRender" limitRender="true"/>
+									<rich:componentControl target="setReminder" event="click" operation="show"/>
+								</a4j:commandLink>
+								<h:outputText value="Allows you to choose number of days in advance you receive email reminders."/>
+								<h:panelGroup styleClass="padding1px"/>
+								<c:if  test="${fn:containsIgnoreCase(userBean.userFeatures,'ITB')}">
+								  <h:commandLink   value="Update my company profile" action="#{userSettingController.updateMyCompanyProfile(request)}"/>
+								  <h:outputText value="Allows you to update your company profile and contact person."/>
+								</c:if>
+							</h:panelGrid>
+							</h:form>
+						</rich:tab>
+						
+						<!-- manage sub users -->
+						<c:if test="${userBean.masterId ne ''}">
+						<rich:tab id="manageSubUsers" h5:name="manageSubUsers" header=" " headerClass="manageSubUserImage"   headerActiveClass="manageSubUserImageActive" onheaderclick="swapClasses('manageSubUsers');" execute="@none" render="@none">
+							 <ui:include src="/online_product/sitemanager/manage_sub_user/subusers_menu.xhtml"/>   
+						</rich:tab>
+						</c:if>
+						
+						<!-- sub user report -->
+						<c:if test="${userBean.masterId ne ''}">
+						<a4j:jsFunction name="getSubUserReport" action="#{subUserController.getSubUserLoginReport(request)}"/>
+						<rich:tab id="subUsersLoginReport"  h5:name="subUsersLoginReport" header=" " headerClass="subUserLoginImage" headerActiveClass="subUserLoginImageActive" onheaderclick="swapClasses('subUsersLoginReport');" execute="@none" render="@none">  
+							  <ui:include src="/online_product/sitemanager/report/sub_user_login_report.xhtml"/>  
+						</rich:tab>
+						</c:if>
+						
+					</rich:tabPanel>
+				</h:panelGrid>
+			 
+<!-- change password popup -->
+<ui:include src="/online_product/sitemanager/setting/changePassword.xhtml" />
+<!-- End of Change Password Popup  -->
+
+				<!-- View Detail Window Option Starts-->
+				<rich:popupPanel id="windowOption" modal="true"  movable="true" autosized="true">
+						 
+						<f:facet name="header">
+							User Window Option
+						</f:facet>
+						<f:facet name="controls">
+							<h:commandButton value=" " type="button" styleClass="popupCloseImage" onclick="#{rich:component('windowOption')}.hide(); return false;"/>
+						</f:facet> 
+						<rich:hotKey key="Esc">
+							<rich:componentControl target="windowOption" operation="hide"/>
+						</rich:hotKey>
+						
+						<rich:panel>
+							<h:form id="preference">
+							<a4j:outputPanel id="winRender" ajaxRendered="true">
+								 <h:panelGrid>
+									<h:outputLabel value="Choose which window option you want for displaying" styleClass="black11px fontWeightBold"/>
+									<h:panelGroup styleClass="padding1px"/>
+									<h:column> 
+										<h:selectOneRadio id="winoption" value="#{userBean.userViewJobWindow}" immediate="true"  layout="pageDirection" style="text-align:left">
+											<f:selectItem itemLabel="Display project detail in the separate window." itemValue="1"/>
+											<f:selectItem itemLabel="Display project detail in the current window." itemValue="0"/>
+										</h:selectOneRadio>
+									</h:column>
+									<h:panelGroup styleClass="padding1px"/>
+									<h:column>
+										<h:commandButton value=" " styleClass="okButtonImage" action="#{userSettingController.addWindowOptionUserPreferences(request)}" style="padding-left:10px" />&nbsp;&nbsp;
+										<a4j:commandButton value=" " styleClass="backButtonImage" onclick="#{rich:component('windowOption')}.hide(); return false"/>
+									</h:column>
+								</h:panelGrid>
+								</a4j:outputPanel>
+							</h:form>
+						</rich:panel> 
+						
+				</rich:popupPanel>
+				<!-- End of View Detail Window Option -->
+				 
+				 <!-- set Reminder Popuup Starts--> 
+				 <rich:popupPanel id="setReminder" modal="true"  movable="true"  domElementAttachment="form" autosized="true">
+				 	<f:facet name="header">
+							Set Reminder Default Days
+					</f:facet>
+					<f:facet name="controls">
+						<h:commandButton value=" " type="button" styleClass="popupCloseImage" onclick="#{rich:component('setReminder')}.hide(); return false;"/>
+					</f:facet> 
+					<rich:hotKey key="Esc">
+							<rich:componentControl target="setReminder" operation="hide"/>
+						</rich:hotKey>
+					<a4j:outputPanel id="reminderRender" ajaxRendered="true">
+						<rich:panel>
+							<h:form id="reminder">
+								 <h:panelGrid  styleClass="black11px textAlignLeft">
+									  This option allows you 
+									  to receive an email reminder when Bid Dates, Bid  <br/> 
+									  Walk-thru's and Mandatory Bid Meetings are present within 
+									  a project. <br/>Please select the number of days in advance 
+									  you would like to receive the reminder email. <br/>Please 
+									  note that this functionality only works when you save 
+									  a project to the <br/>Project Tracker functionality and choose 
+									  the Calendar/Email Reminder option.
+								  <h:panelGroup styleClass="padding1px">
+								  	<rich:message id="daysErr" for="daysoption"/>
+								  </h:panelGroup>
+								  <h:panelGroup>
+								  	<h:outputLabel value="How many days do you want send reminder before bid date?"  styleClass="black11px"/>
+									<h:inputText id="daysoption" name="daysoption" value="#{userBean.reminderOption}" maxlength="2" size="2"/> day(s)
+								  </h:panelGroup>
+								  <h:panelGroup styleClass="padding1px"/>
+								  <h:panelGroup styleClass="textAlignCenter">
+								  		 <a4j:commandButton value=" " onclick="return validatedays()" styleClass="okButtonImage"  style="padding-left:10px" >
+											<a4j:ajax execute="@form"/>
+										</a4j:commandButton>&nbsp;&nbsp;
+										<a4j:commandButton value=" " styleClass="backButtonImage" onclick="#{rich:component('setReminder')}.hide(); return false"/>
+									</h:panelGroup>
+								 </h:panelGrid>
+							</h:form>
+						</rich:panel>
+					</a4j:outputPanel>
+				 </rich:popupPanel>
+				 <!-- set Reminder Popuup Starts--> 
+				
+				<script>
+				document.getElementById("oldPassword:currentPassword").value = '';
+				</script>
+		</ui:define>
+</ui:composition>

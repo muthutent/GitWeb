@@ -1,0 +1,143 @@
+ <!--
+
+   Copyright 2001-15 Creatus Inc.,
+   2328 Walsh Avenue, Suite G, Santa Clara, CA 95051, U.S.A.
+   All rights reserved.
+
+   This software is the confidential and proprietary information
+   of Creatus Inc. ("Confidential Information").  You shall not disclose
+   such Confidential Information and shall use it only in accordance
+   the terms of the license agreement you entered into with
+   Creatus Inc.
+
+   Company        : Creatus Inc.
+   Author         :	Creatus
+   Date Created   :	03/17/2015
+   Last Modified  : 03/17/2015
+   Modifier       : Sathish
+   Description    :	Displays the UI to Edit the Contact Person
+ 					After the Lead Manager Migration from coldfusion to JBoss
+-->
+<!DOCTYPE html PUBLIC "-//W3C//Dtd XHTML 1.0 Transitional//EN" "http://www.w3.org/tr/xhtml1/Dtd/xhtml1-transitional.dtd">
+<!-- THE PAGE USES THE JSF 2.0 TEMPLATE -->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	 xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	 template="/WEB-INF/templates/cdc_template.xhtml"
+	  xmlns:a4j="http://richfaces.org/a4j" 
+	 xmlns:rich="http://richfaces.org/rich">
+	 
+	  
+		 
+		<!-- AND THE CONTENTS OF THE PAGE -->	
+		<ui:define name="content">  
+			<h:outputStylesheet library="css" name="buttons.css" /> 
+			<h:outputStylesheet library="css" name="contacts/edit_contact_person.css" />  
+			<h:form id="editPerson">
+				 <a4j:outputPanel ajaxRendered="true">
+				<h:outputLabel value="Contact Person" styleClass="black12px textBold space2"/>
+				<h:panelGrid columns="2">
+						<h:panelGroup styleClass="space"/>
+						<rich:panel styleClass="editPersonBorder">
+						<h:panelGrid columns="2" width="390" border="0" cellspacing="1" cellpadding="4"  bgcolor="white" styleClass="black12px" columnClasses="columnOne,columnTwo">
+							 
+							<h:column/>
+							<rich:message for="firstName" style="text-align:left"/>
+							
+							<h:outputLabel value="First Name:" styleClass="textBold"/>
+							<h:inputText id="firstName" value="#{contactBean.firstName}" required="true" requiredMessage="Please Enter Your First Name" size="30" maxlength="50" style="height:20px"> 
+								<rich:placeholder value="Enter Your FirstName" />
+							</h:inputText>
+							
+							 
+							
+							<h:outputLabel value="Last Name:" styleClass="textBold"/>
+							<h:inputText id="lastName" value="#{contactBean.lastName}"   size="30" maxlength="50" style="height:20px">
+								<rich:placeholder value="Enter Your LastName" />
+							</h:inputText>
+							
+							 
+							
+							<h:outputLabel value="Telephone1:" styleClass="textBold"/>
+							<h:inputText id="telephone1" value="#{contactBean.telephone1}"  size="30" maxlength="50" style="height:20px">
+								<rich:placeholder value="Enter Your Tel.No1" />
+							</h:inputText>
+							
+							 
+							
+							<h:outputLabel value="Telephone2:" styleClass="textBold"/>
+							<h:inputText id="telephone2" value="#{contactBean.telephone2}"   size="30" maxlength="50" style="height:20px">
+								<rich:placeholder value="Enter Your Tel.No2" />
+							</h:inputText>
+							
+							 
+							
+							<h:outputLabel value="Ext:" styleClass="textBold"/>
+							<h:inputText id="ext" value="#{contactBean.ext}"   size="30" style="height:20px">
+								<rich:placeholder value="Enter the Ext"/>
+							</h:inputText>
+							
+							 
+							
+							<h:outputLabel value="Fax:" styleClass="textBold"/>
+							<h:inputText id="fax" value="#{contactBean.fax1}" size="30" style="height:20px">
+								<rich:placeholder value="Enter Your Fax.No"/>
+							</h:inputText>
+							
+							  
+							
+							<h:outputLabel value="Email:" styleClass="textBold"/>
+							<h:inputText id="email" value="#{contactBean.email1}" size="30" maxlength="70" style="height:20px">
+								<rich:placeholder value="Enter Your e-MailID" />
+							</h:inputText>
+							
+							 
+							<h:outputLabel value="Title:" styleClass="textBold"/>
+							<h:inputText id="title" value="#{contactBean.title}" size="30" maxlength="70" style="height:20px">
+								<rich:placeholder value="Enter The Title" />
+							</h:inputText>
+							
+							 
+							<h:outputLabel value="Department:" styleClass="textBold"/>
+							<h:inputText id="department" value="#{contactBean.departmentName}" size="30" maxlength="100" style="height:20px">
+								<rich:placeholder value="Enter The Department" />
+							</h:inputText>
+							
+							 
+							
+							<h:column/>
+							<h:panelGroup> 
+								<a4j:commandButton value=" " styleClass="updateButtonImage space3" action="#{userSettingController.updateContactPerson(request)}" excute="@form" oncomplete="#{rich:component('statusPerson')}.show();">
+									<f:setPropertyActionListener target="#{contactBean.contactDetailId}" value="#{contactBean.contactDetailId}"/>
+								</a4j:commandButton>
+								&nbsp;&nbsp;
+								<a4j:commandButton value=" " styleClass="resetButtonImage space3" h5:type="reset" onclick="return false"/>
+							</h:panelGroup>
+						</h:panelGrid>
+						</rich:panel>
+				</h:panelGrid>
+				 </a4j:outputPanel>
+			</h:form>
+			<rich:popupPanel id="statusPerson" modal="true"  moveable="true">
+						<f:facet name="header">
+							<h:outputText value="Edit Contact Person" />
+						</f:facet>
+						<f:facet name="controls">
+							<h:commandButton value=" " type="button" styleClass="popupCloseImage" onclick="#{rich:component('statusPerson')}.hide(); return false;"/>
+						</f:facet> 
+						<a4j:outputPanel id="msgRender" ajaxRendered="true"> 
+							  <c:if test="${contactBean.contactPersontUpdateStatus eq 1}">
+							  	 <strong>Contact Person of <span class="blue12px"> #{contactBean.firstName} #{contactBean.lastName}'s</span> profile has been sent to CDC for Approval.</strong> <br/><br/>
+								  <h:outputLabel value="Click Back button to return to My Company Profile" styleClass="black12px"/><br/><br/>
+								 <h:form>
+									 <h:commandButton onclick="window.location.pathname='#{request.contextPath}/update-my-company-profile';" value=" " styleClass="backButtonImage"/>
+								</h:form>
+							  </c:if>
+						</a4j:outputPanel>
+					</rich:popupPanel>
+		</ui:define>
+</ui:composition>

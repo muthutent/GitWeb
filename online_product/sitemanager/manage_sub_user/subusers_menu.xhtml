@@ -1,0 +1,125 @@
+<!--
+
+   Copyright 2001-15 Creatus Inc.,
+   2328 Walsh Avenue, Suite G, Santa Clara, CA 95051, U.S.A.
+   All rights reserved.
+
+   This software is the confidential and proprietary information
+   of Creatus Inc. ("Confidential Information").  You shall not disclose
+   such Confidential Information and shall use it only in accordance
+   the terms of the license agreement you entered into with
+   Creatus Inc.
+
+   Company        : Creatus Inc.
+   Author         : Selva
+   Date Created   : 03/12/2015
+   Last Modified  : 03/12/2015
+   Modifier       : Selva
+   Description    : Displays the Sub Users Menu
+   					After the Lead Manager Migration from coldfusion to JBoss
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+      
+<h:outputScript name="sitemanager/manage_sub_user/subusers_menu.js" library="js"/>
+<h:outputStylesheet name="sheet.css" library="css" />
+<h:outputStylesheet library="css" name="sitemanager/manage_sub_user/sub_user.css" />
+
+<h:form id="manageSubUsersForm">
+<a4j:outputPanel>
+<h:panelGrid width="359" border="0" cellspacing="0" cellpadding="0"  bgcolor="EFF4FA" styleClass="subUserListTable black11px "> 
+		<h:panelGrid cellpadding="0" cellspacing="0" border="0" columns="2" styleClass="textAlignLeft padding10px">
+			<h:panelGroup styleClass="black10px row">
+				<h:outputText value="From this area you can manage your sub user accounts. To" />
+				<h:outputText value="&nbsp;Add&nbsp;" styleClass="fontWeightBold" />
+				<h:outputText value="a sub account, simply click the Add button. To" />
+				<h:outputText value="&nbsp;login as, Edit or Delete &nbsp;" styleClass="fontWeightBold" />
+				<h:outputText value="a sub account, click the appropriate button next to the id of the Sub Account." />
+			</h:panelGroup>
+			<h:panelGroup>
+				<h:commandLink  action="#{subUserController.displayAddSubUser(request)}">
+					<h:graphicImage name="buttons/button_add_icnSubuser.gif" library="images" />
+				</h:commandLink>
+			</h:panelGroup>
+		</h:panelGrid> 
+	<rich:dataTable id="subUser" styleClass="dataTableWidth black10px" bgcolor="EFF4FA" var="su"  value="#{subUserBean.subUserList}"   rowClasses="oddRowColor,evenRowColor">
+		
+		<rich:column styleClass="account displayBlock" style="width: 120px; word-wrap: break-word;">
+			<f:facet name="header">	<h:outputText value="Sub User Account" styleClass="black10px fontWeightBold accountHeader" /> </f:facet>
+			<h:outputText value="#{su.loginId} - #{su.firstName} #{su.lastName}" styleClass="black10px" />
+		</rich:column>
+		<!-- Login As -->
+		<rich:column>
+			<f:facet name="header">	<h:outputText value="Login As" styleClass="black10px fontWeightBold textAlignCenter" /> </f:facet>
+			<h:commandLink action="#{loginController.loginAction(request)}" onclick="return subscriptionCheck(#{fn:length(userBean.userStateList)});" value="Login As" styleClass="black10px color3579bd textAlignCenter">
+				<f:setPropertyActionListener target="#{userBean.loginId}" value="#{su.loginId}" />
+				<f:setPropertyActionListener target="#{userBean.subUserLoginFlag}" value="true" />
+			</h:commandLink>
+		</rich:column>
+		<!-- Edit Sub User -->
+		<rich:column>
+			<f:facet name="header">	<h:outputText value="Edit" styleClass="black10px fontWeightBold textAlignCenter" /></f:facet>
+			<h:commandLink action="${subUserController.editSubUser(request)}" value=" " styleClass="black10px textAlignCenter">
+				<f:setPropertyActionListener target="#{subUserBean.loginId}" value="#{su.loginId}" />
+				<h:graphicImage name="buttons/button_edit_icnSubuser.gif" library="images" alt="" />
+			</h:commandLink>
+		</rich:column>
+		<!-- Delete Sub User -->
+		<rich:column>
+			<f:facet name="header">	<h:outputText value="Del" styleClass="black10px fontWeightBold textAlignCenter" /> </f:facet>
+			<h:commandLink action="${subUserController.deleteSubUser(request)}" value=" " onclick="return deleteSubUser();" styleClass="black10px textAlignCenter">
+				<f:setPropertyActionListener target="#{subUserBean.loginId}" value="#{su.loginId}" />
+				<f:param name="delete" value="yes"/>
+				<h:graphicImage name="buttons/button_delete_icnSubuser.gif" library="images" alt="" />
+			</h:commandLink>
+		</rich:column>	
+		<!-- Change Password -->
+		<rich:column>
+			<f:facet name="header">	<h:outputText value="Change Pwd" styleClass="black10px fontWeightBold textAlignCenter" /> </f:facet>
+			<a4j:commandLink value="ChangePwd" render="changePasswordRender changePassword2Render" limitRender="true" styleClass="black10px color3579bd" oncomplete="#{rich:component('changePassword')}.show();"> 
+				<f:setPropertyActionListener target="#{subUserBean.loginId}" value="#{su.loginId}" />
+				<f:setPropertyActionListener target="#{subUserBean.subUserChangePwdFlag}" value="true" />
+			</a4j:commandLink>
+		</rich:column>  
+	 </rich:dataTable>
+	 
+	 <h:panelGrid styleClass="black10px textAlignCenter" style="background-color:white;padding-left:40px;display:block">
+		<h:column>
+			<h:outputText value="You have logged in as" />
+			<h:outputText value="&nbsp;${userBean.loginId}&nbsp;" styleClass="fontWeightBold" />
+			<c:if test="${userBean.loginId ne userBean.masterId}">
+				<h:commandLink action="#{loginController.loginAction(request)}" value="Login As Master User">
+					<f:setPropertyActionListener target="#{userBean.subUserLoginFlag}" value="false" />
+					<f:setPropertyActionListener target="#{userBean.newFeatureViewedFlag}" value="true" />
+				</h:commandLink>
+			</c:if>
+		</h:column>
+		 
+		<h:panelGroup styleClass="textAlignCenter">
+			<h:outputText value="There are " />
+			<h:outputText value="&nbsp;${fn:length(subUserBean.subUserList)}&nbsp;" styleClass="fontWeightBold" />
+			<h:outputText value="active sub user account(s) under #{userBean.masterId}." />
+		</h:panelGroup>
+		
+		<h:panelGroup styleClass="textAlignCenter">
+			<h:outputText value="Total of" />
+			<h:outputText value="&nbsp;#{subUserBean.noSubUserAccAllowed}&nbsp;" styleClass="fontWeightBold" />
+			<h:outputText value="sub user accounts are allowed." />
+		</h:panelGroup>
+	</h:panelGrid> 
+	<h:panelGroup styleClass="padding10px">
+	</h:panelGroup>
+  </h:panelGrid>
+</a4j:outputPanel>
+</h:form>
+
+</ui:composition>

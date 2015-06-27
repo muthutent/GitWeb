@@ -1,0 +1,26 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+<h:outputStylesheet name="sheet.css" library="css" />
+<c:choose>
+<c:when test="${not empty requestScope.verifyCode and requestScope.verifyCode eq true}">
+<script language="JavaScript">
+	alert("24-Hour Access Trial Account created successfully, a confirmation email was sent for your reference. Please look for your 24-Hour Trial Account Login ID and Password in the"+
+" confirmation email to login to CDCNews.com.");
+	window.location="#{request.contextPath}/online-product/login-itb?itb_leadsid=${requestScope.encprojectid}";
+	</script>
+</c:when>
+<c:otherwise>
+<h:panelGroup>
+<h:outputText value="You did not match the image text, please click " />
+<h:link onclick="javascript:history.go(-1);">
+<h:outputText value="back" styleClass="a05"/>
+</h:link>
+<h:outputText value=" to verify all information you filled and try again." />
+</h:panelGroup>
+</c:otherwise>
+</c:choose>
+</ui:composition>

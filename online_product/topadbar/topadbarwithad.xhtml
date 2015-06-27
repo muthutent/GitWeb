@@ -1,0 +1,140 @@
+<!--
+
+   Copyright 2001-15 Creatus Inc.,
+   2328 Walsh Avenue, Suite G, Santa Clara, CA 95051, U.S.A.
+   All rights reserved.
+
+   This software is the confidential and proprietary information
+   of Creatus Inc. ("Confidential Information").  You shall not disclose
+   such Confidential Information and shall use it only in accordance
+   the terms of the license agreement you entered into with
+   Creatus Inc.
+
+   Company        : Creatus Inc.
+   Author         : Creatus
+   Date Created   : 03/10/2015
+   Last Modified  : 03/10/2015
+   Modifier       : Selva
+   Description    : Displays the Adds Images in the top of the CDC Web Pages <br />
+					Displays the Adds Images Randomly 
+   					After the Lead Manager Migration from coldfusion to JBoss
+
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	 xmlns:h5="http://xmlns.jcp.org/jsf/passthrough"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+<h:panelGroup layout="block"> 
+	<ui:include src="/online_product/check_session_curfolder.xhtml" />
+	<c:set var="ad_kwords" scope="session" value="" />
+	 
+		<!-- Location will be changed, because should not display empty image here   Add by Anya Xue -->
+		<!--<h:outputScript>
+			var href = "ad_no.jsf?adsfrom=ss";
+			window.location.href = href;
+		</h:outputScript>-->
+		<!--<cfif url.adsfrom is "ss" or url.adsfrom is "go">-->
+	  <!--<div topmargin="0" leftmargin="0"   marginheight="0">
+		<table width="784" HEIGHT="71" border="0" cellspacing="0" cellpadding="0" BACKGROUND="../resources/images/navigation/topbanner_bg.gif">
+		  <tr>
+		    <td width="173" valign="middle"><h:graphicImage name="navigation/logo_lm.jpg" library="images" id="logo" /></td>
+			<td WIDTH="560" align="center" valign="middle"> 
+			    <a href="javascript:jump()"><img src="../resources/images/publication/trans.gif" name="banner" width="468" height="60" alt="" border="0"/></a>
+			</td>
+		    <td width="51" align="right" valign="middle"><img src="../resources/images/pixel_trans.gif" border="0"/> </td>
+		  </tr>
+		</table>
+	</div>--> 
+	<h:panelGroup rendered="${userBean.adFlag == 0}">
+		<h:panelGrid width="100%" h5:height="71" border="0" cellspacing="0" cellpadding="0" h5:background="/resources/images/navigation/topbanner_bg.gif">
+			<h:column>
+				<h:graphicImage name="navigation/logo_lm.jpg" library="images" id="logo1"  style="float:left;width:142px;height:44px" />
+			</h:column>
+		</h:panelGrid>
+	</h:panelGroup>
+	<!--<cfelseif url.adsfrom is "sh"> 
+	<div topmargin="5" leftmargin="5" leftmargin="5" marginheight="5">
+		<table width="760" border="0" cellspacing="0" cellpadding="0" height="60">
+		<tr>
+			<td width="132" valign="middle" bgcolor="#000000"><img src="images/cdclogo.gif" width="134" height="39"></td>
+			<td>&nbsp;&nbsp;
+			    <img src="" width=200 height=40 border=0 align="baseline" alt="">
+			</td>
+			<td width="98" align="right" valign="middle"><img src="images/toprightnav.gif" width="97" height="39" usemap="#Map" border="0"><BR>
+			<a href="javascript:popup();"><img src="images/logout.gif" width="41" height="13" border="0"></a></td>
+		</tr>
+		</table>
+	</div>
+	 </cfif>
+</cfif> 
+<map name="Map">
+  <area shape="rect" coords="0,0,34,15" href="javascript:open_help();">
+  <area shape="rect" coords="0,15,63,26" href="javascript:open_contact();">
+  <area shape="rect" coords="1,26,96,39" href="javascript:open_agree();">
+</map>
+ 
+</body>--> 
+			
+<!-- ADVERTISEMENT -->
+
+<!-- <c:if test="${fn:length(requestScope.ListImg) > 0} "> -->
+
+<h:outputScript library="js" name="topadbar/topadbarwithad.js?v=4.1" target="head" />
+<h:outputStylesheet target="body">
+img#logo {
+float: left;
+}
+</h:outputStylesheet>
+<!-- ADVERTISEMENT -->
+<!-- </c:if> -->
+				
+<!--<div topmargin="0" leftmargin="0" marginwidth="0" marginheight="0">
+	<table width="1029" height="71" border="0" cellspacing="0"
+		cellpadding="0">
+		<tr>
+			<td valign="middle"><h:graphicImage name="logo/Lead_Manager_Logo.png" library="images" id="logo" /></td>
+			<td align="right" valign="middle" id="imgtd"><a
+				href="javascript:jump()">
+				<img id="bansrc" src="" name="banner"
+					width="468" height="60" alt="" style="border: 1px solid black" />
+					</a></td>
+		 <td align="right" valign="middle"><img src="images/pixel_trans.gif" border="0">&nbsp;&nbsp;</td> 
+	</tr>
+</table>-->
+<h:panelGroup rendered="${userBean.adFlag != 0}">
+		<h:panelGrid width="1029" h5:height="71" border="0" cellspacing="0" cellpadding="0">
+			<h:column>
+				<h:graphicImage name="logo/Lead_Manager_Logo.png" library="images" h5:id="logo" style="float:left" />
+				<h:link h5:href="javascript:jump()">
+					<h:graphicImage  id="bansrc" h5:name="banner" width="468" height="65"   style="border: 1px solid black;float:right"  />
+				</h:link>
+			</h:column>  
+		</h:panelGrid>
+	
+<h:outputScript>
+	contextPath = '#{request.contextPath}';
+	imgpath=contextPath+"/images/ad_images/";
+
+	ids = #{adBarBean.listId};
+	banners = #{adBarBean.listImg};
+	urls = #{adBarBean.listUrl};
+	
+	var img = document.getElementById("bansrc");
+
+	if(typeof(banners) == "undefined"){
+		img.src='images/pixel_trans.gif';
+	}
+	else{
+		img.src=imgpath+banners[0];
+	}
+    
+	setDefBannerImage();
+</h:outputScript>
+
+</h:panelGroup> 
+</h:panelGroup>
+</ui:composition>
